@@ -21,11 +21,14 @@ ceres %>%
 ```
 
 ```{r fig.align="center", echo = FALSE, fig.width = 14, warning=FALSE}
-ceres %>% 
+fig <- ceres %>% 
   filter(Country %in% countries) %>% 
   group_by(Country) %>% 
   ggplot(aes(x = Country, fill = Indicator.database.source)) + geom_bar(stat = "count", width = 0.8) + theme_bw() + xlab("Countries") + labs(title = "Share of policies per database source by country", subtitle = "Filtered by 21 Annex I countries")
 
+fig 
+
+ggsave("Share of policies per database source by country", plot = fig, device = "png", width = 10, height = 8)
 
 ```
 
