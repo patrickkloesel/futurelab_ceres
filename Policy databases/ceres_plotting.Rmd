@@ -28,7 +28,7 @@ fig <- ceres %>%
 
 fig 
 
-ggsave("Share of policies per database source by country", plot = fig, device = "png", width = 10, height = 8)
+ggsave("Share of policies per database source by country.png", plot = fig, device = "png", width = 10, height = 8)
 
 ```
 
