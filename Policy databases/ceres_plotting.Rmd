@@ -1,0 +1,59 @@
+---
+title: "ceres_plotting"
+author: "Laura Menicacci"
+date: "2022-11-30"
+output: html_document
+---
+
+```{r, echo=FALSE}
+library(tidyverse)
+
+ceres <- read.csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\Policy databases\\ceres_firstversion.csv")
+```
+
+```{r, echo=FALSE, warning=FALSE}
+countries <- c("Australia", "Austria", "Belgium","Canada","Denmark", "Finland", "France", "Germany", "Greece", "Ireland", "Italy", "Japan", "Luxembourg", "Netherlands","New Zealand", "Portugal",  "Spain", "Sweden", "Switzerland", "United Kingdom", "United States of America")
+
+ceres %>% 
+  group_by(Country) %>% 
+  ggplot(aes(x = Indicator.database.source)) + geom_bar(stat = "count", fill = "lightblue", alpha = 0.9) + theme_bw() + xlab("Database source") + labs(title = "Share of policies per database source", subtitle = "Filtered by 21 Annex I countries")
+  
+```
+
+```{r fig.align="center", echo = FALSE, fig.width = 14, warning=FALSE}
+ceres %>% 
+  filter(Country %in% countries) %>% 
+  group_by(Country) %>% 
+  ggplot(aes(x = Country, fill = Indicator.database.source)) + geom_bar(stat = "count", width = 0.8) + theme_bw() + xlab("Countries") + labs(title = "Share of policies per database source by country", subtitle = "Filtered by 21 Annex I countries")
+
+
+```
+
+```{r}
+
+```
+
+
+```{r fig.align="center", echo = FALSE,  warning=FALSE}
+ceres %>% 
+  filter(Country %in% countries) %>% 
+  filter(Indicator.database.source %in% c("Climate Policy Database", "EEA")) %>% 
+  ggplot(aes(x = Year..implementation)) + geom_bar(stat = "count", fill = "lightblue") + theme_bw() + labs(title = "Frequency of implementation Years")
+
+```
+
+```{r  fig.align="center", echo = FALSE, fig.width = 14,  warning=FALSE}
+ceres %>% 
+  filter(Country %in% countries) %>% 
+  filter(Indicator.database.source %in% c("Climate Policy Database", "EEA")) %>% 
+  ggplot(aes(x = Year..decision)) + geom_bar(stat = "count", fill = "lightblue") + theme_bw() + labs(title = "Frequency of decision years")
+
+```
+
+```{r fig.align="center", echo = FALSE, fig.width = 14,  warning=FALSE}
+ceres %>% 
+  filter(Country %in% countries) %>% 
+  filter(Indicator.database.source %in% c("UNFCCC National Communications", "IEA")) %>% 
+  ggplot(aes(x = Year)) + geom_bar(stat = "count", fill = "lightblue") + theme_bw() + labs(title = "Frequency of Year - UNFCCC + IEA")
+```
+
