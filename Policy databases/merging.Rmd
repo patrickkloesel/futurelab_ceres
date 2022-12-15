@@ -8,76 +8,95 @@ output: html_document
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(countrycode)
+library(readr)
 ```
 
 ## Loading datasets
 
 ```{r}
-eea <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/Policy databases/eea.csv")
-iea <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/Policy databases/policies_database_IEA_commasep.csv")
-cpd <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/Policy databases/cpd.csv")
-unfccc <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/Policy databases/unfccc_final.csv")
-```
-# check NAs of IEA
+iea <- read_csv("policies_database_IEA_commasep.csv")
+eea <- read_csv("eea.csv") # to be updated
+cpd <- read_csv("cpd.csv")
+unfccc <- read_csv("unfccc_final.csv")
 
-
-# filter all of them with 
-```{r}
-iea[513,]
 ```
-# prep for each of datasets
+
+# Prep for each of datasets
+
+- filter for electricity sector
+- filter for variables of interest: name of policy, policy description, years information, url to original policy
+- add indicator database source column
 ```{r}
 eea_prep <- eea %>% 
   filter(grepl(c("Energy Supply|Other Sectors"), `Sector(s) affected`)) %>% 
   select(Country, `Name of policy or measure`, Description, `Implementation period start`, `Implementation period finish`, `URL to main reference`) %>% 
-  mutate("Country Code" = countrycode(Country, origin = "country.name", destination = "iso3c")) %>% 
-  mutate("Indicator database source" == "EEA")
+  mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>% 
+  mutate(indicator_database_source = "EEA")
 
 cpd_prep <- cpd %>% 
   select(Country, `Country ISO`, `Policy Title`, `Policy description`, `Date of decision`, `Start date of implementation`, `End date of implementation`,  `Source or references`) %>% 
-  mutate("Indicator database source" == "Climate Policy Database")
+  mutate(indicator_database_source = "Climate Policy Database")
 
 iea_prep <- iea %>% 
   filter(grepl(c("Power, Heat and Utilities|Power generation|Electricity and heat generation|Combined heat and power"), Sectors)) %>% 
   select(Country, Year, Policy, Description, URL) %>% 
-  mutate("Country Code" = countrycode(Country, origin = "country.name", destination = "iso3c")) %>%
-  mutate("Indicator database source" == "IEA")
+  mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>%
+  mutate(indicator_database_source = "IEA")
   # mutate("Country Code" = case_when(Country == "European Union" ~ "Country Code" == "EU")) # not working
 
 unfccc_prep <- unfccc %>% 
   select(Country, `Country Code`, `Source NC#`, Year, `Policy Name`, `Policy Description`, Link) %>% 
-  mutate("Year: implementation" = NA) %>% 
-  mutate("Year: decision" = NA) %>% 
-  mutate("Year: end" = NA) %>% 
-  mutate("Indicator database source" = "UNFCCC National Communications")
+  mutate(year_implementation = NA) %>% 
+  mutate(year_decision = NA) %>% 
+  mutate(year_end = NA) %>% 
+  mutate(indicator_database_source = "UNFCCC National Communications")
   
 ```
 
 
+ 
 # Merge 
 ```{r}
 
-unfccc_cpd <- full_join(unfccc_prep, cpd_prep, by = c("Country", "Country Code" = "Country ISO", "Policy Name" = "Policy Title", "Policy Description" = "Policy description", "Year: implementation" = "Start date of implementation", "Year: decision" = "Date of decision","Year: end" = "End date of implementation",  "Link" = "Source or references", "Indicator database source" ))
+unfccc_cpd <- full_join(unfccc_prep, cpd_prep, by = c("Country", "Country Code" = "Country ISO", "Policy Name" = "Policy Title", "Policy Description" = "Policy description", "year_implementation" = "Start date of implementation", "year_decision" = "Date of decision","year_end" = "End date of implementation",  "Link" = "Source or references", "indicator_database_source" ))
 
-unfccc_cpd_eea <- full_join(unfccc_cpd, eea_prep, by = c("Country", "Country Code", "Policy Name" = "Name of policy or measure", "Policy Description" = "Description", "Year: implementation" = "Implementation period start", "Year: end" = "Implementation period finish",  "Link" = "URL to main reference", "Indicator database source"))
+unfccc_cpd_eea <- full_join(unfccc_cpd, eea_prep, by = c("Country", "Country Code" = "country_code", "Policy Name" = "Name of policy or measure", "Policy Description" = "Description", "year_implementation" = "Implementation period start", "year_end" = "Implementation period finish",  "Link" = "URL to main reference", "indicator_database_source"))
 
-unfccc_cpd_eea_iea <- full_join(unfccc_cpd_eea, iea_prep, by = c("Country", "Country Code", "Policy Name" = "Policy", "Policy Description" = "Description", "Year", "Link" = "URL", "Indicator database source"))
+unfccc_cpd_eea_iea <- full_join(unfccc_cpd_eea, iea_prep, by = c("Country", "Country Code" = "country_code", "Policy Name" = "Policy", "Policy Description" = "Description", "Year", "Link" = "URL", "indicator_database_source"))
 
 ```
 
-Questions: 
- 1. does it make sense to have an NC column? Maybe better to put such informationin the Indicator source
- 2. Still dates are a problem: how do we consider Year of IEA and UNFCCC? According to IEA definition, year = "Year that the policy went into force". - maybe for IEA it's okay to put it in the implementation year. What about UNFCCC though? 
+# Filter for all countries of interest are present
+Australia, Austria, Belgium, Canada, Denmark, Finland, France, Germany, Greece, Ireland, Italy, Japan, Luxembourg, Netherlands, New Zealand, Portugal, Spain, Sweden, Switzerland, United Kingdom and the USA
+```{r}
+countries <- c("Australia", "Austria", "Belgium", "Canada", "Denmark", "Finland", "France", "Germany", "Greece", "Ireland", "Italy", "Japan", "Luxembourg", "Netherlands", "New Zealand", "Portugal", "Spain", "Sweden", "Switzerland", "United Kingdom", "United States of America")
+
+unfccc_cpd_eea_iea %>% 
+  filter(Country == c(countries))
+
+```
+
+
+# FILTER FOR JAPAN DUP
+
+```{r}
+
+```
+
+
+# add Elina's code here
+```{r}
+jap <- unfccc_cpd_eea_iea %>% 
+  filter(Country == "Japan")
+
+
+```
+
+
  
+
+
 ```{r}
 write.csv(unfccc_cpd_eea_iea,"C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\Policy databases\\ceres_firstversion.csv")
-```
-
-# plots
-```{r}
-ceres <- unfccc_cpd_eea_iea
-
-ceres %>% 
-  ggplot(aes(x = Year), fill = "Indicator database source") + geom_bar(stat = "count") +theme_bw()
 ```
 
