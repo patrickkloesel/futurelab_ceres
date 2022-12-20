@@ -62,13 +62,13 @@ fig_ints <- c %>%
   geom_bar(width = 0.8) + theme_bw() +
   xlab("Break") + 
   ylab("Count") +
-  labs(title = "Number of policies per break", subtitle = "with intervals", fill = "Database source")+
+  labs(title = "Number of policies per break", subtitle = "Emissions (Levels): Standard controls w/ temperature and ETS, pval = 0.01", fill = "Database source")+
   scale_x_discrete(limits = c("can_05", "can_int", "bel_01", "bel_int", "den_99", "den_int_99", "den_11", "den_int_11", "uk_95","uk_int_95", "uk_16","uk_int_16", "nz_13", "nz_int"), 
                    labels = c("CAN 05", "CAN ±2", "BEL 01", "BEL ±2", "DNK 99", "DNK 99 ±2", "DNK 11", "DNK 11 ±2", "GBR 95", "GBR 95 ±2", "GBR 16", "GBR 16 ±2", "NZL 13", "NZL ±2"))
 
 fig_ints
 
-ggsave("Number of policies per break - with intervals.png", plot = fig_ints, device = "png", width = 10, height = 8)
+ggsave("Number of policies per break - with intervals.png", plot = fig_ints, device = "png", width = 12, height = 8)
 
 
 write_csv(ceres_plot_int, "C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\Policy databases\\ceres_plot.csv")
