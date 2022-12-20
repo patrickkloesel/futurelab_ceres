@@ -96,7 +96,7 @@ fig <- c %>% ggplot(aes(x = breaks, fill = indicator_database_source)) +
   geom_bar(width = 0.8) + theme_bw() +
   xlab("Break") + 
   ylab("Count")+
-  labs(title = "Number of policies per break", subtitle = "without intervals", fill = "Database source") +
+  labs(title = "Number of policies per break without intervals", subtitle = "Emissions (Levels): Standard controls w/ temperature and ETS, pval = 0.01", fill = "Database source") +
   scale_x_discrete(limits = c("can_05", "bel_01", "den_99", "den_11",  "uk_95", "uk_16", "nz_13"), 
                    labels = c("CAN 05","BEL 01", "DNK 99", "DNK 11", "GBR 95", "GBR 16", "NZL 13"))
 
