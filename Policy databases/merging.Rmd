@@ -18,10 +18,25 @@ iea <- read_csv("policies_database_IEA_comma_utf8.csv")
 eea <- read_csv("eea.csv") # to be updated
 cpd <- read_csv("cpd.csv")
 unfccc <- read_csv("unfccc_final.csv")
-
+nc_links <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/Policy databases/nc_links.csv")
 ```
 
-# Prep for each of datasets
+# UNFCCC merging with NC links
+```{r}
+# pivot longer of nc links 
+link_longer <- nc_links %>% 
+  select(!"...1") %>% 
+  pivot_longer(cols = c('NC1', 'NC2', 'NC3', 'NC4', 'NC5', 'NC6', 'NC7'), names_to = ('Source NC#'), values_to = ('Link'))
+
+# left join
+unfccc_new <- unfccc %>% 
+  left_join(link_longer, by = c("Source NC#", "Country" = "country")) %>% 
+  select(!"Link.x") %>% 
+  rename(Link = Link.y)
+```
+
+
+# Datasets preparation
 
 - filter for electricity sector
 - filter for variables of interest: name of policy, policy description, years information, url to original policy
@@ -42,9 +57,8 @@ iea_prep <- iea %>%
   select(Country, Year, Policy, Description, URL) %>% 
   mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>%
   mutate(indicator_database_source = "IEA")
-  # mutate("Country Code" = case_when(Country == "European Union" ~ "Country Code" == "EU")) # not working
 
-unfccc_prep <- unfccc %>% 
+unfccc_prep <- unfccc_new %>% 
   select(Country, `Country Code`, `Source NC#`, Year, `Policy Name`, `Policy Description`, Link) %>% 
   mutate(year_implementation = NA) %>% 
   mutate(year_decision = NA) %>% 
@@ -53,8 +67,6 @@ unfccc_prep <- unfccc %>%
   
 ```
 
-
- 
 # Merge 
 ```{r}
 
@@ -79,6 +91,7 @@ ceres <- unfccc_cpd_eea_iea %>%
 
 
 # Filter for all countries of interest are present
+
 Australia, Austria, Belgium, Canada, Denmark, Finland, France, Germany, Greece, Ireland, Italy, Japan, Luxembourg, Netherlands, New Zealand, Portugal, Spain, Sweden, Switzerland, United Kingdom and the USA
 ```{r}
 ceres_filtered <- ceres %>%
@@ -110,6 +123,10 @@ ceres_final <- ceres_filtered %>%
 
 ```{r}
 write_csv(ceres_final,"C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\Policy databases\\ceres_secondversion.csv")
-
-write_csv(ceres_final,"C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\Policy databases\\ceres_secondversion.csv")
 ```
+
+# New version with UNFCCC links
+```{r}
+write.csv(unfccc_cpd_eea_iea,"C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\Policy databases\\ceres_thirdversion.csv")
+```
+
