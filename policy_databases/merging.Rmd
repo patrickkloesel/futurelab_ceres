@@ -127,6 +127,6 @@ write_csv(ceres_final,"C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\Policy
 
 # New version with UNFCCC links
 ```{r}
-write.csv(unfccc_cpd_eea_iea,"C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\Policy databases\\ceres_thirdversion.csv")
+write_csv(ceres_final,"C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\policy_databases\\ceres_thirdversion.csv")
 ```
 
