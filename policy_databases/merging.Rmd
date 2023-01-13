@@ -127,6 +127,6 @@ ceres_final <- ceres_filtered %>%
 
 # New version with UNFCCC links
 ```{r}
-write_csv(ceres_final,"C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\policy_databases\\ceres_thirdversion.csv")
+write_csv(ceres_final,"C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\ceres_versions\\ceres_thirdversion.csv")
 ```
 
