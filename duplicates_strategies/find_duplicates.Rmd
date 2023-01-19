@@ -1,0 +1,141 @@
+---
+title: "Duplicates"
+author: "Laura Menicacci"
+date: "2023-01-13"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(quanteda)
+library(quanteda.textstats)
+library(lsa)
+library(SnowballC)
+library(R6)
+library(superml)
+```
+
+## Load data 
+
+```{r}
+ceres <- read_csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\ceres_versions\\ceres_thirdversion.csv")
+
+lab_data <- read_csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\Policy databases\\duplicates_testsample.csv")
+
+```
+
+# Detection of IEA and CPD duplicates 
+```{r}
+ceres %>% group_by(indicator_database_source) %>% count() # 1544 UNFCCC in total - 1653 CPD +IEA
+  
+```
+# Cosine similarity
+```{r}
+lab_d <- lab_data %>% 
+  select(policy_name, country, year_all, indicator_database_source) %>% 
+  group_by(country) %>% 
+  tibble::rowid_to_column("index")
+
+corp <- corpus(lab_d$policy_name) 
+docnames(corp) <- paste(lab_d$index)
+
+dfmat <- corp %>% tokens(remove_punc=TRUE) %>%
+  dfm()
+
+sim_mat <- textstat_simil(dfmat, method="cosine")
+sim_df <- as.data.frame(sim_mat, upper=TRUE)
+
+target_text <- 
+
+similar_docs <- sim_df %>% filter(document1==target_text) %>%
+  arrange(desc(cosine)) %>%
+  head() %>%
+  left_join(df, by=c("document2"="id"))
+
+```
+
+```{r}
+sim_new = sim_df
+
+for (i in 1:nrow(sim_new)) {
+  if (sim_new[i, 3] < 0.70){
+    sim_new[i, 3] = NA
+    sim_removed <- na.omit(sim_new)
+  }
+}
+
+for (i in 1:nrow(sim_removed)) {
+  index1 = as.numeric(sim_removed[i,1])
+  index2 = as.numeric(sim_removed[i,2])
+  if(lab_d[index1,3]!=lab_d[index2,3]){
+    sim_removed[i, 3] = NA
+    sim_removed_2 <- na.omit(sim_removed)
+  }
+
+  
+}
+
+for (i in 1:nrow(sim_removed_2)){
+  index1 = as.numeric(sim_removed_2[i,1])
+  lab_d[index1,6] = paste(lab_d[index1,6], sim_removed_2[i,2], sep = ",")
+}
+
+
+
+```
+
+
+
+
+
+# CERES TRY
+
+```{r}
+lab_d <- ceres %>% 
+  select(policy_name, country, indicator_database_source) %>% 
+  #filter(indicator_database_source == c(""))
+  group_by(country) %>% 
+  tibble::rowid_to_column("index")
+
+corp <- corpus(lab_d$policy_name) 
+docnames(corp) <- paste(lab_d$policy_name, lab_d$country, sep = " ")
+
+dfmat <- corp %>% tokens(remove_punc=TRUE) %>%
+  dfm()
+
+sim_mat <- textstat_simil(dfmat, method="cosine")
+sim_df <- as.data.frame(sim_mat, upper=TRUE)
+
+exact <- sim_df %>% 
+   arrange(desc(cosine)) %>%
+  filter(cosine >= 1)
+
+#target_text <- 
+
+#similar_docs <- sim_df %>% filter(document1==target_text) %>%
+#  arrange(desc(cosine)) %>%
+#  head() %>%
+#  left_join(df, by=c("document2"="id"))
+```
+
+################################################################################
+
+```{r}
+dup <- read_csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\Policy databases\\duplicates_1.csv")
+
+filt_dup <- dup %>% filter(`Country Code` %in% c("AUS", "AUT","BEL", "CAN", "DNK", "FIN", "FRA", "DEU", "GRC",
+                      "IRL", "ITA", "JPN", "LUX", "NLD", "NZL", "PRT", "ESP", "SWE",
+                      "CHE", "GBR", "USA"))
+
+filt_dup %>% group_by(indicator_database_source) %>% count()
+
+uni <- unique(filt_dup$`Policy Name`)
+uni 
+```
+
+```{r}
+ceres %>% 
+  group_by(indicator_database_source) %>% # unfccc 1534
+  count()
+```
+
