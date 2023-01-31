@@ -10,6 +10,8 @@ library(tidyverse)
 library(quanteda)
 library(quanteda.textstats)
 library(caret)
+library(countrycode)
+
 ```
 
 ## Load data 
@@ -21,11 +23,6 @@ lab_data <- read_csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\Policy 
 
 ```
 
-# Detection of IEA and CPD duplicates 
-```{r}
-ceres %>% group_by(indicator_database_source) %>% count() # 1544 UNFCCC in total - 1653 CPD +IEA
-  
-```
 # Cosine similarity
 ```{r}
 lab_data <- lab_data %>% 
@@ -127,14 +124,47 @@ lab_copy_scores %>% group_by(country) %>%
 # Remove/merge duplicates
 ```{r}
 
- 
 
 
 ```
 
 
-# Cosine similarity between policies of IEA and CPD 
+# Cosine similarity between policies of IEA and CPD
+
+## Detection of IEA and CPD duplicates 
 ```{r}
+ceres %>% group_by(indicator_database_source) %>% count() # 1544 UNFCCC in total - 1653 CPD +IEA
+  
+```
+# cpd + iea prep & merging
+
+```{r}
+
+iea <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/policy_databases/policies_database_IEA_comma_utf8.csv")
+
+iea_prep <- iea %>% 
+  filter(grepl(c("Power, Heat and Utilities|Power generation|Electricity and heat generation|Combined heat and power"), Sectors)) %>% 
+  select(Country, Year, Policy, Description, URL) %>% 
+  mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>%
+  mutate(indicator_database_source = "IEA")
+
+cpd <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/policy_databases/cpd.csv")
+
+cpd_prep <- cpd %>% 
+  select(Country, `Country ISO`, `Policy Title`, `Policy description`, `Date of decision`, `Start date of implementation`, `End date of implementation`,  `Source or references`) %>% 
+  mutate(indicator_database_source = "Climate Policy Database")
+
+iea_cpd <- full_join(iea_prep, cpd_prep, by = c("Country", "country_code" = "Country ISO", "Policy" = "Policy Title", "Description" = "Policy description", "Year" = "Start date of implementation", "URL" = "Source or references", "indicator_database_source" ))
+
+iea_cpd <- iea_cpd %>% 
+  rename(year = Year) %>% 
+  rename(country = Country) %>% 
+  rename(policy_name = "Policy") %>% 
+  rename(policy_description = "Description") %>% 
+  filter(country_code %in% c("AUS", "AUT","BEL", "CAN", "DNK", "FIN", "FRA", "DEU", "GRC",
+                      "IRL", "ITA", "JPN", "LUX", "NLD", "NZL", "PRT", "ESP", "SWE",
+                      "CHE", "GBR", "USA"))
+
 #sim_new = sim_df
 #
 #for (i in 1:nrow(sim_new)) {
@@ -154,7 +184,54 @@ lab_copy_scores %>% group_by(country) %>%
 ```
 
 
-# CERES try 
+# CPD + IEA Duplicates
+```{r}
+
+lab_data <- iea_cpd %>% 
+  tibble::rowid_to_column("index")
+
+corp <- corpus(lab_data$policy_name) 
+docnames(corp) <- paste(lab_data$index)
+
+dfmat <- corp %>% tokens(remove_punc=TRUE) %>%
+  dfm()
+
+sim_mat <- textstat_simil(dfmat, method="cosine")
+sim_df <- as.data.frame(sim_mat, upper=TRUE)
+
+sim_filt <- sim_df %>% filter(cosine >= 0.7) # threshold for duplicate
+
+lab_copy <- lab_data # create a copy 
+lab_copy$cos_dup <- NA
+
+for (i in 1:nrow(sim_filt)) {        # remove duplicates with different countries
+  index1 = as.numeric(sim_filt[i,1])
+  index2 = as.numeric(sim_filt[i,2])
+  if(lab_copy[index1,2]!=lab_copy[index2,2]){
+    sim_filt[i, 3] = NA
+    sim_filt_2 <- na.omit(sim_filt)
+    }
+}
+for (i in 1:nrow(sim_filt_2)){       # labeling 
+  index1 = as.numeric(sim_filt_2[i,1])
+  lab_copy[index1,11] = paste(lab_copy[index1,11], sim_filt_2[i,2], sep = ",")}
+
+lab_copy$cos_dup <- trimws(lab_copy$cos_dup, whitespace = "NA,")
+
+lab_copy %>% 
+  mutate(cos_dup_n = ifelse(is.na(cos_dup) == F, 1, 0)) %>% 
+  group_by(country) %>% 
+  ggplot(aes(x = country, y = (cos_dup_n))) + geom_col(width = 0.8) + ggtitle("Detected dups per country - IEA + CPD") + theme_bw()
+
+lab_copy %>% 
+  mutate(cos_dup_n = ifelse(is.na(cos_dup) == F, 1, 0)) %>% 
+  count(cos_dup_n)
+
+```
+
+
+
+# CERES trial
 
 ```{r}
 lab_data <- ceres %>% 
@@ -187,6 +264,12 @@ for (i in 1:nrow(sim_filt_2)){       # labeling
   lab_copy[index1,12] = paste(lab_copy[index1,12], sim_filt_2[i,2], sep = ",")}
 
 lab_copy$cos_dup <- trimws(lab_copy$cos_dup, whitespace = "NA,")
+
+lab_copy %>% 
+  mutate(cos_dup_n = ifelse(is.na(cos_dup) == F, 1, 0)) %>% 
+  #count(cos_dup_n) %>% # 1274 detected duplicates out of 3492 %>% 
+  group_by(country) %>% 
+  ggplot(aes(x = country, y = (cos_dup_n))) + geom_col(width = 0.8) + ggtitle("Detected dups per country - CERES trial") + theme_bw()
 
 lab_copy %>% 
   mutate(cos_dup_n = ifelse(is.na(cos_dup) == F, 1, 0)) %>% 

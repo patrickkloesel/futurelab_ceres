@@ -2,7 +2,7 @@
 
 library(tidyverse)
 
-ceres_secondversion <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/ceres_secondversion.csv")
+ceres_secondversion <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/ceres_versions/ceres_secondversion.csv")
 
 canada_attr <- ceres_secondversion %>% 
   filter(country == "Canada") %>% 
@@ -59,7 +59,7 @@ c <- ceres_plot_int %>%
 
 fig_ints <- c %>% 
   ggplot(aes(x = breaks, fill = indicator_database_source)) + 
-  geom_bar(width = 0.8) + theme_bw() +
+  geom_bar(position = "dodge2", width = 0.8) + theme_bw() +
   xlab("Break") + 
   ylab("Count") +
   labs(title = "Number of policies per break", subtitle = "Emissions (Levels): Standard controls w/ temperature and ETS, pval = 0.01", fill = "Database source")+
@@ -93,7 +93,7 @@ c <- ceres_plot %>%
   filter(x == "TRUE")
 
 fig <- c %>% ggplot(aes(x = breaks, fill = indicator_database_source)) + 
-  geom_bar(width = 0.8) + theme_bw() +
+  geom_bar(position = "dodge2", width = 0.8) + theme_bw() +
   xlab("Break") + 
   ylab("Count")+
   labs(title = "Number of policies per break without intervals", subtitle = "Emissions (Levels): Standard controls w/ temperature and ETS, pval = 0.01", fill = "Database source") +
