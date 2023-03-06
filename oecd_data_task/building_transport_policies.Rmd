@@ -5,7 +5,7 @@ date: "2023-02-17"
 output: html_document
 ---
 
-#UNFCCC check things 
+# UNFCCC check things for publication
 
 
 ```{r setup, include=FALSE}
@@ -32,26 +32,55 @@ for (i in unfccc$`Policy Description`){str_replace(i, "\\n", " ")}
 
 ```{r}
 library(readr)
+library(countrycode)
 ceres <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/ceres_versions/ceres_thirdversion.csv")
 ```
-# Buildings - IEA
+
+## Buildings - IEA
 
 ```{r}
 
 IEA <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/policy_databases/policies_database_IEA_comma_utf8.csv")
 
-IEA %>% 
-  filter()
+iea_building <- IEA %>% 
+  mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>%
+  filter(grepl(c("Buildings", "Residential", "building"), Sectors)) %>% 
+  filter(country_code %in% c("ARG","AUS","AUT","BEL","BGR","BRA","CAN","CHE","CHL","CHN","COL","CRI","CZE","DEU","DNK","ESP","EST","EUR","FIN","FRA","GBR","GRC","HRV","HUN","IDN","IND","IRL","ISL","ISR","ITA","JPN","KOR","LTU","LUX","LVA","MEX","MLT","NLD","NOR","PER","POL","PRT","ROU","RUS","SAU","SVK","SVN","SWE","TUR","USA","ZAF"))
 
-oecd_iea <- IEA %>% 
-  filter(indicator_database_source == "IEA" ) %>% 
-  filter(country_code %in% c("ARG","AUS","AUT","BEL","BGR","BRA","CAN","CHE","CHL","CHN","COL","CRI","CZE","DEU","DNK","ESP","EST","EUR","FIN","FRA","GBR","GRC","HRV","HUN","IDN","IND","IRL","ISL","ISR","ITA","JPN","KOR","LTU","LUX","LVA","MEX","MLT","NLD","NOR","PER","POL","PRT","ROU","RUS","SAU","SVK","SVN","SWE","TUR","USA","ZAF")) 
+
+iea_building_renovation <- iea_building %>% 
+  filter(grepl(c("renovation|Renovation"), Description))
   
 
 ```
-# Transport - IEA
+
+## Transport - IEA
 
 ```{r}
+
+IEA <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/policy_databases/policies_database_IEA_comma_utf8.csv")
+
+iea_transport <- IEA %>% 
+  mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>%
+  filter(grepl(c("Transport", "Road transport", "Passenger transport (Road)", "transport"), Sectors)) %>% 
+  filter(country_code %in% c("ARG","AUS","AUT","BEL","BGR","BRA","CAN","CHE","CHL","CHN","COL","CRI","CZE","DEU","DNK","ESP","EST","EUR","FIN","FRA","GBR","GRC","HRV","HUN","IDN","IND","IRL","ISL","ISR","ITA","JPN","KOR","LTU","LUX","LVA","MEX","MLT","NLD","NOR","PER","POL","PRT","ROU","RUS","SAU","SVK","SVN","SWE","TUR","USA","ZAF"))
+
+lowcarbon <- c("low-carbon|electric battery|hybrids|ethanol|natural gas|hydrogen|VAT|tax credits|tax wavers|direct subsidies")
+iea_transport_low_carbon <- iea_transport %>% 
+  filter(grepl(lowcarbon, Description, ignore.case = T))
+
+scrappage <- c("scrappage|scrapping|Scrappage")
+iea_transport_scrappage <- iea_transport %>% 
+  filter(grepl(scrappage, Description, ignore.case = T))
+  
+taxation <- c("purchase tax|registration tax|ownership tax|motor tax|bonus-malus scheme")
+iea_transport_taxation <- iea_transport %>% 
+  filter(grepl(taxation, Description, ignore.case = T))
+
+taxation_loose_search <- c("purchase|registration|ownership|motor|bonus-malus")
+iea_transport_taxation_loose_search <- iea_transport %>% 
+  filter(grepl(taxation_loose_search, Description, ignore.case = T))
+
 
 ```
 
