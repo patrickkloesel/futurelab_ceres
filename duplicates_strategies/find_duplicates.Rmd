@@ -123,7 +123,7 @@ lab_copy_scores %>% group_by(country) %>%
 ```
 # Remove/merge duplicates
 ```{r}
-
+# from dup choose IEA and write in col datab indic = (IEA, CPD)
 
 
 ```
@@ -187,11 +187,11 @@ iea_cpd <- iea_cpd %>%
 # CPD + IEA Duplicates
 ```{r}
 
-lab_data <- iea_cpd %>% 
+lab_data_c <- iea_cpd %>% 
   tibble::rowid_to_column("index")
 
-corp <- corpus(lab_data$policy_name) 
-docnames(corp) <- paste(lab_data$index)
+corp <- corpus(lab_data_c$policy_name) 
+docnames(corp) <- paste(lab_data_c$index)
 
 dfmat <- corp %>% tokens(remove_punc=TRUE) %>%
   dfm()
@@ -199,33 +199,37 @@ dfmat <- corp %>% tokens(remove_punc=TRUE) %>%
 sim_mat <- textstat_simil(dfmat, method="cosine")
 sim_df <- as.data.frame(sim_mat, upper=TRUE)
 
-sim_filt <- sim_df %>% filter(cosine >= 0.7) # threshold for duplicate
+sim_filt <- sim_df %>% filter(cosine == 1) # threshold for duplicate
 
-lab_copy <- lab_data # create a copy 
-lab_copy$cos_dup <- NA
+lab_copy_c <- lab_data_c # create a copy 
+lab_copy_c$cos_dup <- NA
 
 for (i in 1:nrow(sim_filt)) {        # remove duplicates with different countries
   index1 = as.numeric(sim_filt[i,1])
   index2 = as.numeric(sim_filt[i,2])
-  if(lab_copy[index1,2]!=lab_copy[index2,2]){
+  if(lab_copy_c[index1,2]!=lab_copy_c[index2,2]){
     sim_filt[i, 3] = NA
     sim_filt_2 <- na.omit(sim_filt)
     }
 }
 for (i in 1:nrow(sim_filt_2)){       # labeling 
   index1 = as.numeric(sim_filt_2[i,1])
-  lab_copy[index1,11] = paste(lab_copy[index1,11], sim_filt_2[i,2], sep = ",")}
+  lab_copy_c[index1,11] = paste(lab_copy_c[index1,11], sim_filt_2[i,2], sep = ",")}
 
-lab_copy$cos_dup <- trimws(lab_copy$cos_dup, whitespace = "NA,")
+lab_copy_c$cos_dup <- trimws(lab_copy_c$cos_dup, whitespace = "NA,")
 
-lab_copy %>% 
+lab_copy_c %>% 
   mutate(cos_dup_n = ifelse(is.na(cos_dup) == F, 1, 0)) %>% 
   group_by(country) %>% 
   ggplot(aes(x = country, y = (cos_dup_n))) + geom_col(width = 0.8) + ggtitle("Detected dups per country - IEA + CPD") + theme_bw()
 
-lab_copy %>% 
+lab_copy_c %>% 
   mutate(cos_dup_n = ifelse(is.na(cos_dup) == F, 1, 0)) %>% 
   count(cos_dup_n)
+
+lab_copy_c <- lab_copy_c %>% 
+  filter(country == "Australia")
+  
 
 ```
 

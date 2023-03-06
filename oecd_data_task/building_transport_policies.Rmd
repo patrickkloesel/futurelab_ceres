@@ -1,0 +1,57 @@
+---
+title: "Untitled"
+author: "Laura Menicacci"
+date: "2023-02-17"
+output: html_document
+---
+
+#UNFCCC check things 
+
+
+```{r setup, include=FALSE}
+library(tidyverse)
+
+unfccc <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/policy_databases/unfccc_final.csv")
+```
+
+```{r}
+
+for (i in unfccc$`Policy Name`){grepl("\n", i)}
+
+```
+
+
+```{r}
+
+for (i in unfccc$`Policy Description`){str_replace(i, "\\n", " ")}
+
+
+```
+# OECD missing transport and building policies
+
+
+```{r}
+library(readr)
+ceres <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/ceres_versions/ceres_thirdversion.csv")
+```
+# Buildings - IEA
+
+```{r}
+
+IEA <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/policy_databases/policies_database_IEA_comma_utf8.csv")
+
+IEA %>% 
+  filter()
+
+oecd_iea <- IEA %>% 
+  filter(indicator_database_source == "IEA" ) %>% 
+  filter(country_code %in% c("ARG","AUS","AUT","BEL","BGR","BRA","CAN","CHE","CHL","CHN","COL","CRI","CZE","DEU","DNK","ESP","EST","EUR","FIN","FRA","GBR","GRC","HRV","HUN","IDN","IND","IRL","ISL","ISR","ITA","JPN","KOR","LTU","LUX","LVA","MEX","MLT","NLD","NOR","PER","POL","PRT","ROU","RUS","SAU","SVK","SVN","SWE","TUR","USA","ZAF")) 
+  
+
+```
+# Transport - IEA
+
+```{r}
+
+```
+
