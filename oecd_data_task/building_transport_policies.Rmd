@@ -205,10 +205,3 @@ renovation_freq <- iea_building_renovation %>%
 renovation_freq
 
 ```
-## Further filtering
-
-```{r}
-
-
-```
-
