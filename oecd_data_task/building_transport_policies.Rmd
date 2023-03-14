@@ -10,6 +10,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 library(tidyverse)
+library(countrycode)
 
 unfccc <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/policy_databases/unfccc_final.csv")
 ```
@@ -44,12 +45,21 @@ IEA <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/pol
 
 iea_building <- IEA %>% 
   mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>%
-  filter(grepl(c("Buildings", "Residential", "building"), Sectors)) %>% 
+  filter(grepl(c("Buildings|Residential|building"), Sectors)) %>% 
+  filter(grepl(c("Payment|finance and taxation"), `Policy types`, ignore.case = T)) %>% 
+  filter(Year >= 2000 & Year <= 2020) %>% 
   filter(country_code %in% c("ARG","AUS","AUT","BEL","BGR","BRA","CAN","CHE","CHL","CHN","COL","CRI","CZE","DEU","DNK","ESP","EST","EUR","FIN","FRA","GBR","GRC","HRV","HUN","IDN","IND","IRL","ISL","ISR","ITA","JPN","KOR","LTU","LUX","LVA","MEX","MLT","NLD","NOR","PER","POL","PRT","ROU","RUS","SAU","SVK","SVN","SWE","TUR","USA","ZAF"))
 
 
-iea_building_renovation <- iea_building %>% 
+iea_building_renovation_d <- iea_building %>% 
   filter(grepl(c("renovation|Renovation"), Description))
+
+iea_building_renovation_p <- iea_building %>% 
+  filter(grepl(c("renovation|Renovation"), Policy))
+
+iea_building_renovation <- rbind(iea_building_renovation_d, iea_building_renovation_p) %>% distinct(.keep_all = TRUE)
+
+write_csv(iea_building_renovation, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/IEA_building_renovation.csv")
   
 
 ```
@@ -63,23 +73,141 @@ IEA <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/pol
 iea_transport <- IEA %>% 
   mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>%
   filter(grepl(c("Transport", "Road transport", "Passenger transport (Road)", "transport"), Sectors)) %>% 
+  filter(grepl(c("Payment|finance and taxation"), `Policy types`, ignore.case = T)) %>% 
+  filter(Year >= 2000 & Year <= 2020) %>% 
   filter(country_code %in% c("ARG","AUS","AUT","BEL","BGR","BRA","CAN","CHE","CHL","CHN","COL","CRI","CZE","DEU","DNK","ESP","EST","EUR","FIN","FRA","GBR","GRC","HRV","HUN","IDN","IND","IRL","ISL","ISR","ITA","JPN","KOR","LTU","LUX","LVA","MEX","MLT","NLD","NOR","PER","POL","PRT","ROU","RUS","SAU","SVK","SVN","SWE","TUR","USA","ZAF"))
 
-lowcarbon <- c("low-carbon|electric battery|hybrids|ethanol|natural gas|hydrogen|VAT|tax credits|tax wavers|direct subsidies")
-iea_transport_low_carbon <- iea_transport %>% 
-  filter(grepl(lowcarbon, Description, ignore.case = T))
+################
 
 scrappage <- c("scrappage|scrapping|Scrappage")
-iea_transport_scrappage <- iea_transport %>% 
+iea_transport_scrappage_d <- iea_transport %>% 
   filter(grepl(scrappage, Description, ignore.case = T))
+
+iea_transport_scrappage_p <- iea_transport %>% 
+  filter(grepl(scrappage, Policy, ignore.case = T))
+
+iea_transport_scrappage <- rbind(iea_transport_scrappage_d, iea_transport_scrappage_p) %>% distinct(.keep_all = TRUE)
+
+write_csv(iea_transport_scrappage, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/iea_transport_scrappage.csv")
+
+##############
   
-taxation <- c("purchase tax|registration tax|ownership tax|motor tax|bonus-malus scheme")
-iea_transport_taxation <- iea_transport %>% 
+taxation <- c("purchase tax|registration tax|ownership tax|motor tax|bonus-malus scheme|CO2-based|vehicle tax")
+iea_transport_taxation_d <- iea_transport %>% 
   filter(grepl(taxation, Description, ignore.case = T))
 
+iea_transport_taxation_p <- iea_transport %>% 
+  filter(grepl(taxation, Policy, ignore.case = T))
+
+iea_transport_taxation_1 <- rbind(iea_transport_taxation_d, iea_transport_taxation_p) %>% distinct(.keep_all = TRUE)
+
+write_csv(iea_transport_taxation_1, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/iea_transport_taxation.csv")
+
+#############
+
 taxation_loose_search <- c("purchase|registration|ownership|motor|bonus-malus")
-iea_transport_taxation_loose_search <- iea_transport %>% 
+iea_transport_taxation_loose_search_d <- iea_transport %>% 
   filter(grepl(taxation_loose_search, Description, ignore.case = T))
+
+iea_transport_taxation_loose_search_p <- iea_transport %>% 
+  filter(grepl(taxation_loose_search, Policy, ignore.case = T))
+
+iea_transport_taxation_loose_search <- rbind(iea_transport_taxation_loose_search_d, iea_transport_taxation_loose_search_p) %>% distinct(.keep_all = TRUE)
+
+write_csv(iea_transport_taxation_loose_search, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/iea_transport_taxation_loose_search.csv")
+
+```
+
+
+# Double filter for low carbon financial support
+```{r}
+
+instrument_type <- c("VAT|tax credits|tax wavers|direct subsidies|financial aid|financial support") 
+iea_transport_instrument_type_d <- iea_transport %>% 
+  filter(grepl(instrument_type, Description, ignore.case = T))
+
+iea_transport_instrument_type_p <- iea_transport %>% 
+  filter(grepl(instrument_type, Policy, ignore.case = T))
+
+iea_transport_instrument_type <- rbind(iea_transport_instrument_type_d, iea_transport_instrument_type_p) %>% distinct(.keep_all = TRUE)
+
+write_csv(iea_transport_instrument_type, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/iea_transport_instrument_type.csv")
+
+objective <- c("low-carbon vehicles|EV|electric battery|hybrid vehicles|ethanol|natural gas|hydrogen|van|truck|bicycles|private vehicles|commercial vehicles") # filter by objective of instrument
+
+low_carbon_objective_d <- iea_transport_instrument_type %>% 
+  filter(grepl(objective, Description, ignore.case = T))
+
+low_carbon_objective_p <- iea_transport_instrument_type %>% 
+  filter(grepl(objective, Policy, ignore.case = T))
+
+low_carbon_objective <- rbind(low_carbon_objective_p, low_carbon_objective_d) %>% distinct(.keep_all = TRUE)
+
+write_csv(low_carbon_objective, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/low_carbon_objective.csv")
+
+```
+
+# Insights - frequency by year
+
+TO DO: REORDER BINS DESCENDING
+```{r, fig.width=7, fig.height=7}
+labels <- c(2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)
+
+lowcarbon_freq <- low_carbon_objective %>% 
+  ggplot(aes(x = Year)) + geom_bar() + scale_x_continuous(breaks = labels, labels = labels) + scale_y_continuous(breaks = c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)) + theme_bw() + ggtitle("Number of IEA policies including financial support for low-carbon vehicles - broad search")
+
+lowcarbon_freq
+
+# ggsave("iea_transport_freq.png", plot = iea_transport_freq, device = "png", width = 10, height = 10)
+
+taxation_freq <- iea_transport_taxation_1 %>% 
+  ggplot(aes(x = Year)) + geom_bar() + scale_x_continuous(breaks = labels, labels = labels) + scale_y_continuous(breaks = c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)) + theme_bw() + ggtitle("Number of IEA policies including CO2-based taxation schemes")
+
+taxation_freq
+
+scrappage_freq <- iea_transport_scrappage %>% 
+  ggplot(aes(x = Year)) + geom_bar() + scale_x_continuous(breaks = labels, labels = labels) + scale_y_continuous(breaks = c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)) + theme_bw() + ggtitle("Number of IEA policies including scrappage schemes")
+
+scrappage_freq
+
+renovation_freq <- iea_building_renovation %>% 
+   ggplot(aes(x = Year)) + geom_bar() + scale_x_continuous(breaks = labels, labels = labels) + scale_y_continuous(breaks = c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)) + theme_bw() + ggtitle("Number of IEA policies including building renovation support")
+
+renovation_freq
+
+
+```
+
+# Insights - frequency by country 
+
+
+```{r, , fig.width=7, fig.height=7}
+lowcarbon_freq <- low_carbon_objective %>% 
+  ggplot(aes(x = country_code)) + geom_bar() + scale_y_continuous(breaks = c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)) + theme_bw() + ggtitle("Number of IEA policies including financial support for low-carbon vehicles - broad search")
+
+lowcarbon_freq
+
+# ggsave("iea_transport_freq.png", plot = iea_transport_freq, device = "png", width = 10, height = 10)
+
+taxation_freq <- iea_transport_taxation_1 %>% 
+  ggplot(aes(x = country_code)) + geom_bar() + scale_y_continuous(breaks = c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)) + theme_bw() + ggtitle("Number of IEA policies including CO2-based taxation schemes")
+
+taxation_freq
+
+scrappage_freq <- iea_transport_scrappage %>% 
+  ggplot(aes(x = country_code)) + geom_bar() + scale_y_continuous(breaks = c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)) + theme_bw() + ggtitle("Number of IEA policies including scrappage schemes")
+
+scrappage_freq
+
+renovation_freq <- iea_building_renovation %>% 
+   ggplot(aes(x = country_code)) + geom_bar() + scale_y_continuous(breaks = c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)) + theme_bw() + ggtitle("Number of IEA policies including building renovation support")
+
+renovation_freq
+
+```
+## Further filtering
+
+```{r}
 
 
 ```
