@@ -93,15 +93,16 @@ write_csv(iea_transport_scrappage, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/
 ##############
   
 taxation <- c("purchase tax|registration tax|ownership tax|motor tax|bonus-malus scheme|CO2-based|vehicle tax")
+
 iea_transport_taxation_d <- iea_transport %>% 
   filter(grepl(taxation, Description, ignore.case = T))
 
 iea_transport_taxation_p <- iea_transport %>% 
   filter(grepl(taxation, Policy, ignore.case = T))
 
-iea_transport_taxation_1 <- rbind(iea_transport_taxation_d, iea_transport_taxation_p) %>% distinct(.keep_all = TRUE)
+iea_transport_taxation <- rbind(iea_transport_taxation_d, iea_transport_taxation_p) %>% distinct(.keep_all = TRUE)
 
-write_csv(iea_transport_taxation_1, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/iea_transport_taxation.csv")
+write_csv(iea_transport_taxation, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/iea_transport_taxation.csv")
 
 #############
 
@@ -131,7 +132,7 @@ iea_transport_instrument_type_p <- iea_transport %>%
 
 iea_transport_instrument_type <- rbind(iea_transport_instrument_type_d, iea_transport_instrument_type_p) %>% distinct(.keep_all = TRUE)
 
-write_csv(iea_transport_instrument_type, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/iea_transport_instrument_type.csv")
+#write_csv(iea_transport_instrument_type, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/iea_transport_instrument_type.csv")
 
 objective <- c("low-carbon vehicles|EV|electric battery|hybrid vehicles|ethanol|natural gas|hydrogen|van|truck|bicycles|private vehicles|commercial vehicles") # filter by objective of instrument
 
@@ -160,7 +161,7 @@ lowcarbon_freq
 
 # ggsave("iea_transport_freq.png", plot = iea_transport_freq, device = "png", width = 10, height = 10)
 
-taxation_freq <- iea_transport_taxation_1 %>% 
+taxation_freq <- iea_transport_taxation %>% 
   ggplot(aes(x = Year)) + geom_bar() + scale_x_continuous(breaks = labels, labels = labels) + scale_y_continuous(breaks = c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)) + theme_bw() + ggtitle("Number of IEA policies including CO2-based taxation schemes")
 
 taxation_freq
@@ -205,3 +206,199 @@ renovation_freq <- iea_building_renovation %>%
 renovation_freq
 
 ```
+
+
+## Remove dups
+
+### Low-carbon support for vehicles
+```{r}
+library(readxl)
+low_carbon <- read_excel("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/oecd_data_task/OECD_missing_policies_final.xlsx", sheet = 1)
+
+library(tidyverse)
+library(quanteda)
+library(quanteda.textstats)
+
+low_carbon <- low_carbon %>% 
+  tibble::rowid_to_column("index") # add index column
+
+corp <- corpus(low_carbon$Policy) # prepare corpus using policy name 
+docnames(corp) <- paste(low_carbon$index) # index of policy as docname
+
+dfmat <- corp %>% tokens(remove_punc=TRUE) %>%
+  dfm()
+
+sim_mat <- textstat_simil(dfmat, method="cosine")
+sim_df <- as.data.frame(sim_mat, upper=TRUE)
+
+
+sim_filt <- sim_df %>% filter(cosine >= 0.7) # threshold for duplicate
+
+lab_copy <- low_carbon # create a copy 
+lab_copy$cos_dup <- NA
+
+for (i in 1:nrow(sim_filt)) {        # remove duplicates with different countries
+  index1 = as.numeric(sim_filt[i,1])
+  index2 = as.numeric(sim_filt[i,2])
+  if(lab_copy[index1,2]!=lab_copy[index2,2]){
+    sim_filt[i, 3] = NA
+    sim_filt_2 <- na.omit(sim_filt)
+    }
+}
+for (i in 1:nrow(sim_filt_2)){       # labeling 
+  index1 = as.numeric(sim_filt_2[i,1])
+  lab_copy[index1,9] = paste(lab_copy[index1,9], sim_filt_2[i,2], sep = ",")}
+
+lab_copy$cos_dup <- trimws(lab_copy$cos_dup, whitespace = "NA,")
+
+low_carbon <- lab_copy
+
+write_csv(low_carbon, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/oecd_data_task/ low_carbon_nodup.csv")
+
+```
+
+
+### Scrappage schemes
+```{r}
+library(readxl)
+scrappage <- read_excel("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/oecd_data_task/OECD_missing_policies_final.xlsx", sheet = 2)
+
+library(tidyverse)
+library(quanteda)
+library(quanteda.textstats)
+
+scrappage <- scrappage %>% 
+  tibble::rowid_to_column("index") # add index column
+
+corp <- corpus(scrappage$Policy) # prepare corpus using policy name 
+docnames(corp) <- paste(scrappage$index) # index of policy as docname
+
+dfmat <- corp %>% tokens(remove_punc=TRUE) %>%
+  dfm()
+
+sim_mat <- textstat_simil(dfmat, method="cosine") # compute cosine similarity
+sim_df <- as.data.frame(sim_mat, upper=TRUE) # create df 
+
+
+sim_filt <- sim_df %>% filter(cosine >= 0.7) # filter df by cosine similarity threshold
+
+lab_copy <- scrappage # create a copy 
+lab_copy$cos_dup <- NA # create new col
+
+for (i in 1:nrow(sim_filt)) {        # remove duplicates with different countries
+  index1 = as.numeric(sim_filt[i,1])
+  index2 = as.numeric(sim_filt[i,2])
+  if(lab_copy[index1,2]!=lab_copy[index2,2]){ # if countries are diff, then it's not a dup 
+    sim_filt[i, 3] = NA
+    sim_filt_2 <- na.omit(sim_filt)
+    }
+}
+
+for (i in 1:nrow(sim_filt)){       # labeling 
+  index1 = as.numeric(sim_filt[i,1])
+  lab_copy[index1,9] = paste(lab_copy[index1,9], sim_filt[i,2], sep = ",")}
+
+lab_copy$cos_dup <- trimws(lab_copy$cos_dup, whitespace = "NA,")
+
+scrappage <- lab_copy
+
+write_csv(scrappage, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/oecd_data_task/ scrappage_nodup.csv")
+
+```
+
+### Taxation
+```{r}
+library(readxl)
+taxation <- read_excel("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/oecd_data_task/OECD_missing_policies_final.xlsx", sheet = 3)
+
+library(tidyverse)
+library(quanteda)
+library(quanteda.textstats)
+
+taxation <- taxation %>% 
+  tibble::rowid_to_column("index") # add index column
+
+corp <- corpus(taxation$Policy) # prepare corpus using policy name 
+docnames(corp) <- paste(taxation$index) # index of policy as docname
+
+dfmat <- corp %>% tokens(remove_punc=TRUE) %>%
+  dfm()
+
+sim_mat <- textstat_simil(dfmat, method="cosine")
+sim_df <- as.data.frame(sim_mat, upper=TRUE)
+
+
+sim_filt <- sim_df %>% filter(cosine >= 0.7) # threshold for duplicate
+
+lab_copy <- taxation # create a copy 
+lab_copy$cos_dup <- NA
+
+for (i in 1:nrow(sim_filt)) {        # remove duplicates with different countries
+  index1 = as.numeric(sim_filt[i,1])
+  index2 = as.numeric(sim_filt[i,2])
+  if(lab_copy[index1,2]!=lab_copy[index2,2]){
+    sim_filt[i, 3] = NA
+    sim_filt_2 <- na.omit(sim_filt)
+    }
+}
+for (i in 1:nrow(sim_filt_2)){       # labeling 
+  index1 = as.numeric(sim_filt_2[i,1])
+  lab_copy[index1,9] = paste(lab_copy[index1,9], sim_filt_2[i,2], sep = ",")}
+
+lab_copy$cos_dup <- trimws(lab_copy$cos_dup, whitespace = "NA,")
+
+taxation <- lab_copy
+
+write_csv(taxation, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/oecd_data_task/ taxation_nodup.csv")
+
+```
+
+
+### Building renovation
+
+```{r}
+library(readxl)
+renovation <- read_excel("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/oecd_data_task/OECD_missing_policies_final.xlsx", sheet = 4)
+
+library(tidyverse)
+library(quanteda)
+library(quanteda.textstats)
+
+renovation <- renovation %>% 
+  tibble::rowid_to_column("index") # add index column
+
+corp <- corpus(renovation$Policy) # prepare corpus using policy name 
+docnames(corp) <- paste(renovation$index) # index of policy as docname
+
+dfmat <- corp %>% tokens(remove_punc=TRUE) %>%
+  dfm()
+
+sim_mat <- textstat_simil(dfmat, method="cosine")
+sim_df <- as.data.frame(sim_mat, upper=TRUE)
+
+
+sim_filt <- sim_df %>% filter(cosine >= 0.7) # threshold for duplicate
+
+lab_copy <- renovation # create a copy 
+lab_copy$cos_dup <- NA
+
+for (i in 1:nrow(sim_filt)) {        # remove duplicates with different countries
+  index1 = as.numeric(sim_filt[i,1])
+  index2 = as.numeric(sim_filt[i,2])
+  if(lab_copy[index1,2]!=lab_copy[index2,2]){
+    sim_filt[i, 3] = NA
+    sim_filt_2 <- na.omit(sim_filt)
+    }
+}
+for (i in 1:nrow(sim_filt)){       # labeling 
+  index1 = as.numeric(sim_filt[i,1])
+  lab_copy[index1,9] = paste(lab_copy[index1,9], sim_filt[i,2], sep = ",")}
+
+lab_copy$cos_dup <- trimws(lab_copy$cos_dup, whitespace = "NA,")
+
+renovation <- lab_copy
+
+write_csv(renovation, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/oecd_data_task/ renovation_nodup.csv")
+
+```
+
