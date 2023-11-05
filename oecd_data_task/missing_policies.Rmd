@@ -1,0 +1,212 @@
+---
+title: "assign_missing_breaks"
+author: "Laura Menicacci"
+date: "2023-05-24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(countrycode)
+
+ceres <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/ceres_versions/ceres_thirdversion.csv")
+
+IEA <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/policy_databases/policies_database_IEA_comma_utf8.csv")
+
+eea <- read_csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\policy_databases\\eea.csv")
+
+cpd <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/policy_databases/cpd.csv", show_col_types = F) 
+
+unfccc <- read_csv("C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/policy_databases/unfccc_final.csv", show_col_types = F)
+```
+
+# IEA 
+
+```{r}
+uk_iea <- IEA %>% 
+  select(Country, `Policy types`,Sectors, Policy, Description, Year) %>% 
+  mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>%
+  mutate(Source = "IEA") %>% 
+  filter(grepl(c("Electricity|Power|Heat|heat"), Sectors)) %>% 
+  filter(Country %in% c("United Kingdom")) %>% 
+  filter(Year < 2021)
+
+china_iea <- IEA %>% 
+  select(Country, `Policy types`,Sectors, Policy, Description, Year) %>% 
+  mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>%
+  mutate(Source = "IEA") %>% 
+  filter(grepl(c("Industry"), Sectors)) %>% 
+  filter(Country %in% c("People's Republic Of China")) %>% 
+  filter(Year < 2021)
+
+```
+# CPD
+
+```{r}
+# Country, `Policy types`,Sectors, Policy, Description, Year
+uk_cpd <- cpd %>% 
+  select(Country, `Type of policy instrument`, `Sector name`, `Policy name`,`Policy description`, `Date of decision`) %>% 
+  mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>%
+  mutate(Source = "CPD") %>% 
+  filter(Country == "United Kingdom") %>% 
+  filter(grepl(c("Electricity and heat|Renewables"), `Sector name`))
+
+china_cpd <- cpd %>% 
+  select(Country, `Type of policy instrument`, `Sector name`, `Policy name`,`Policy description`, `Date of decision`) %>% 
+  mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>%
+  mutate(Source = "CPD") %>% 
+  filter(Country == "China") %>% 
+  filter(grepl(c("Industry"), `Sector name`))
+
+```
+# EEA 
+
+```{r}
+# Country, `Policy types`,Sectors, Policy, Description, Year
+eea %>% select(Country, `Type of policy instrument`, `Sector(s) affected`,`Name of policy or measure`,Description,`Implementation period start`) %>% 
+  mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>%
+  mutate(Source = "EEA") %>% 
+  filter(Country == "United Kingdom") %>% 
+  filter(grepl(c("Energy"), `Sector(s) affected`))
+  
+```
+# UNFCCC
+
+```{r}
+unfccc %>% 
+  select(Country, `Policy Name`, `Policy Description`, Year) %>% 
+  mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>%
+  mutate(Source = "UNFCCC") %>% 
+  filter(Country == "United Kingdom")
+  
+```
+
+# select policies
+
+```{r}
+
+nz1 <- IEA %>%  select(Country, `Policy types`, Sectors, Policy, Description, Year) %>% filter(grepl("Warm up New Zealand: Healthy Homes Extension", Policy)) # subsidy in 2016
+
+nz2 <- IEA %>% select(Country, `Policy types`, Sectors, Policy, Description, Year) %>%filter(grepl("Warmer Kiwi Homes", Policy)) # code as one subsidy in 2018
+
+bga1 <- eea %>% select(Country, `Type of policy instrument`, `Sector(s) affected`,`Name of policy or measure`, Description,  `Implementation period start`) %>%  filter(grepl("Industry: AUDITS FOR ENERGY EFFICIENCY", `Name of policy or measure`)) # introduction of financing mechanism in 2008
+
+czech1 <- IEA %>% select(Country, `Policy types`, Sectors, Policy, Description, Year) %>%filter(grepl("Operational Programme Industry and Enterprise", Policy)) # introduction of financing mechanism in 2007
+
+fra1 <- cpd %>% select(Country, `Type of policy instrument`, `Sector name`, `Policy name`,`Policy description`, `Date of decision`) %>% filter(grepl("Carbon Charge Component", `Policy name`)) # Code carbon tax (industry) in 2014 (introduction), 2017 (reform)
+
+ire1 <- IEA %>% select(Country, `Policy types`, Sectors, Policy, Description, Year) %>%filter(grepl("Ireland Carbon Tax", Policy)) # carbon tax (industry) in 2010
+
+ger1 <- IEA %>% select(Country, `Policy types`, Sectors, Policy, Description, Year) %>%filter(grepl("Improving the infrastructure for using bicycles", Policy)) # Code congestion charge in 2005
+
+ger2 <- IEA %>% select(Country, `Policy types`, Sectors, Policy, Description, Year) %>%filter(grepl("Heavy goods vehicle toll", Policy)) # same congestion charge 2005
+
+pol1 <- IEA %>% select(Country, `Policy types`, Sectors, Policy, Description, Year) %>%filter(grepl("Economy of 25 April 2013 on the detailed conditions, manner and procedure of granting funding of the implementation of activities related to the production of biocomponents, liquid biofuels or other renewable", Policy)) # subsidy in 2013
+
+pol2 <- IEA %>% select(Country, `Policy types`, Sectors, Policy, Description, Year) %>%filter(grepl("Low emission urban transport - GAZELA BIS", Policy)) # subsidy in 2013
+
+arg1 <- cpd %>% select(Country, `Type of policy instrument`, `Sector name`, `Policy name`,`Policy description`, `Date of decision`) %>% filter(grepl("Law 27,430 on Carbon Tax on Energy", `Policy name`)) # carbon tax (buildings) in 2018
+
+col1 <- cpd %>% select(Country, `Type of policy instrument`, `Sector name`, `Policy name`,`Policy description`, `Date of decision`) %>% filter(grepl("Law 788/2002, establishing the Tax Reform Colombia", `Policy name`)) # "renewable subsidy" in 2002
+
+col2 <- IEA %>% select(Country, `Policy types`, Sectors, Policy, Description, Year) %>%filter(grepl("Policy guideline for the promotion of sustainable biofuels", Policy)) #  MEPS in 2008
+
+```
+
+# Add all into single df 
+
+```{r}
+missing_policies_IEA <- rbind(nz1, nz2, czech1, ire1, ger1, ger2, pol1, pol2, col2) %>% mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>% mutate(Source = "IEA")
+
+bga1_renamed <- bga1 %>% 
+  rename("Policy types" = "Type of policy instrument") %>% 
+  rename("Sectors" = "Sector(s) affected") %>% 
+  rename("Policy" = "Name of policy or measure") %>% 
+  rename("Year" = "Implementation period start") %>%
+  mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>%
+  mutate(Source = "EEA")
+
+cpd_pols <- rbind(fra1, arg1, col1) %>% 
+  rename("Policy types" = "Type of policy instrument") %>% 
+  rename("Sectors" = "Sector name") %>% 
+  rename("Policy" = "Policy name") %>% 
+  rename("Description" = "Policy description") %>% 
+  rename("Year" = "Date of decision") %>% 
+  mutate(country_code = countrycode(Country, origin = "country.name", destination = "iso3c")) %>%
+  mutate(Source = "CPD")
+  
+
+missing_policies <- rbind(missing_policies_IEA, bga1_renamed, cpd_pols)
+#index_dups	country_code	Policy type	Sector	Policy	Description	Year/Date of decision	Source	raw_indicator
+
+write_csv(missing_policies, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/oecd_data_task/blank_breaks.csv")
+
+```
+
+## 1.	electricity: UK 
+
+```{r}
+uk_cpd_renamed <- uk_cpd %>% 
+  rename("Policy types"= "Type of policy instrument") %>% 
+  rename("Sectors" = "Sector name") %>% 
+  rename("Policy" = "Policy name") %>% 
+  rename("Description" = "Policy description") %>% 
+  rename("Year" = "Date of decision")
+
+uk <- rbind(uk_iea, uk_cpd_renamed) %>% arrange(Year)
+
+write_csv(uk, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/oecd_data_task/uk.csv")
+
+library(readxl)
+
+oecd <- read_excel("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\CAPMF_Comp_Sub_10022023.xlsx", sheet = 1) %>% 
+  filter(ISO == "GBR") %>% 
+  arrange(year)
+
+write_csv(oecd_ftd, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/oecd_data_task/oecd_ftd.csv")
+
+
+```
+
+## 2.	industry: China
+```{r}
+china_cpd_renamed <- china_cpd %>% 
+  rename("Policy types"= "Type of policy instrument") %>% 
+  rename("Sectors" = "Sector name") %>% 
+  rename("Policy" = "Policy name") %>% 
+  rename("Description" = "Policy description") %>% 
+  rename("Year" = "Date of decision")
+
+china <- rbind(china_iea, china_cpd_renamed) %>% arrange(Year)
+
+write_csv(china, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/oecd_data_task/china.csv")
+
+library(readxl)
+
+oecd <- read_excel("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\CAPMF_Comp_Sub_10022023.xlsx", sheet = 1) %>% 
+  filter(ISO == "CHN") %>% 
+  arrange(year)
+
+#write_csv(oecd_ftd, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/futurelab_ceres/oecd_data_task/oecd_ftd.csv")
+
+```
+
+
+
+## PERU 
+```{r}
+
+peru <- IEA %>% 
+  select(Country, Year, Policy, Description) %>% 
+  filter(Country == "Peru") %>% 
+  filter(Year < 2010) %>% 
+  arrange(Year)
+
+peru
+
+write_csv(peru, "C:/Users/laura/OneDrive/Documenti/LAURA/MCC/peru.csv")
+
+```
+

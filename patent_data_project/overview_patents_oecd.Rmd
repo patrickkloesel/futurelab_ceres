@@ -1,0 +1,459 @@
+---
+title: "Patent data project: an overview of the data"
+author: "Laura Menicacci"
+date: "2023-10-23"
+output: html_document
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(viridis)
+library(scales)
+library("sf")
+library("rnaturalearth")
+library("rnaturalearthdata")
+library(kableExtra)
+
+df <- read_csv("D:\\Aggregated\\PATS_IPC_25102023154540606.csv") 
+
+df_ccs <- read_csv("D:\\Aggregated\\PATS_IPC_3010_w_CCS.csv") # always remember to remove World
+
+
+```
+
+## Patents by technology 
+
+Link: https://stats.oecd.org/index.aspx?queryid=29068#
+
+Selected: 
+ - Y02 
+ - priority applications 
+ - country of inventor’s residence
+
+ - TYPE OF PATENTS: 
+ "Total Patents"                                                                                    
+ "Climate change mitigation technologies related to buildings"                                      
+ "Climate change mitigation technologies related to energy generation, transmission or distribution"
+ "Climate change mitigation technologies related to transportation"                                 
+ "Climate change mitigation technologies in the production or processing of goods"    
+ 
+ - PATENT OFFICES:
+  "Patent applications to the EPO"          
+  "Patent applications filed under the PCT"
+  "Patent applications to the USPTO"       
+  "IP5 Patent families"    
+
+## Country coverage
+
+Print list of present countries. Total countries: 100
+```{r, echo=FALSE}
+agg_df <- df %>% 
+  filter(`Technology domains & IPC` == "Total Patents") %>% 
+  # check other filters
+  select(Country, Value) %>% 
+  group_by(Country) %>% 
+  summarise(tot_counts = sum(Value))
+
+agg_df %>% 
+  select(Country) %>% 
+  kable(format = "html") %>% 
+  kable_styling(bootstrap_options = c("hover", "responsive"), full_width = F, fixed_thead = T, position = "left") %>% 
+  scroll_box(width = "300px", height = "400px")
+
+```
+
+### Print world map for detailed overview of country coverage:
+```{r worldmap, echo=FALSE, fig.height=6, fig.width=12}
+
+# ADD CHINA + HONG KONG TOGETHER
+# Unique names of the rows you want to sum
+row_name1 <- "Hong Kong, China"
+row_name2 <- "China (People's Republic of)"
+
+# Find the indices of the rows with the specific names
+indices <- which(agg_df$Country %in% c(row_name1, row_name2))
+
+# Create a new row with the sum
+new_row <- data.frame(Country = "China", tot_counts = sum(agg_df[indices, 2]))
+
+# Add the new row to the data frame
+agg_df2 <- rbind(agg_df, new_row)
+
+world <- map_data("world")
+
+agg_df2 <- agg_df2 %>% # rename countries the same to left join w lat lon data
+  filter(!Country %in% c(row_name1, row_name2)) %>% 
+  mutate(Country = str_replace(Country, "United States", "USA")) %>% 
+  mutate(Country = str_replace(Country, "Slovak Republik", "Slovakia")) %>% 
+  mutate(Country = str_replace(Country, "United Kingdom", "UK")) %>% 
+  mutate(Country = str_replace(Country, "Türkiye", "Turkey")) %>% 
+  mutate(Country = str_replace(Country, "Korea", "South Korea")) %>% 
+  mutate(Country = str_replace(Country, "Democratic People's Republic of South Korea", "North Korea"))
+  
+#world_names <- world %>% pull(region)
+#
+#oecd_names <- agg_df2 %>% pull(Country)
+#
+#setdiff(world_names,oecd_names)
+
+world_oecd <- left_join(world, agg_df2, by = c("region" = "Country"))
+
+
+p <- ggplot()
+p + geom_polygon(data=world_oecd, 
+          aes(x=long, y=lat, group=group, fill = tot_counts/1000), # to remove one order of magnitude
+          color="white", linewidth = 0.2) + 
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", 
+                       midpoint = 3000, 
+                       breaks = seq(0, 6000, 500), 
+                       limits = c(0, 6754.368)) +
+  theme_bw() + ggtitle("More fine-grained")
+
+
+```
+
+
+
+
+## NAs?
+```{r}
+
+table(is.na(df$Value))
+
+table(is.na(df$Time))
+
+```
+
+### Distribution
+```{r, echo=FALSE}
+df_ccs %>% 
+  filter(`Patents Office & Patents Families` == "Patent applications filed under the PCT") %>% 
+  filter(`Technology domains & IPC` == "Total Patents") %>% 
+  filter(!(Country == "World")) %>% 
+  ggplot(aes(x = Value)) +
+  geom_histogram(binwidth = 1.0000, fill = "navy", colour = "black", alpha = 0.7) +
+  #scale_x_continuous(limits = c(0.0000, 68696.7000))+ 
+                     #breaks = c(0, 1000, 2000, 3000, 4000, 5000, 6000, 7000)) +
+  #scale_y_continuous(limits = c(0, 750))+
+  xlab("Patent count") +
+  ylab("") +
+  theme_bw()
+```
+```{r, echo=FALSE}
+df %>% 
+ggplot(aes(x = Value)) +
+ geom_boxplot(outlier.color = "red") +
+  xlab("Patent count") +
+  ylab("") +
+  theme_bw()
+```
+
+## Time coverage
+
+```{r, fig.height=10, fig.width=15, echo=FALSE}
+df_ccs %>% 
+  filter((Country == "World")) %>% 
+  filter(!(`Technology domains & IPC` == "Total Patents")) %>% 
+  #filter(`Patents Office & Patents Families` == "Patent applications to the EPO") %>% 
+  select(Country, Value, Time, `Patents Office & Patents Families`, `Technology domains & IPC`) %>% 
+  group_by(Country) %>% 
+  ggplot(aes(x = Time, y= Value, colour = `Technology domains & IPC`)) + 
+  geom_line() +
+  facet_wrap(~`Patents Office & Patents Families`, scales = "free") + 
+  theme_bw() +
+  theme(legend.position = "right") + ggtitle("Patent applications by Patenting Office + technology type")
+
+#df %>% 
+#  filter(`Technology domains & IPC` == "Total Patents") %>% 
+#  filter(`Patents Office & Patents Families` == "Patent applications filed under the PCT") %>% 
+#  select(Country, Value, Time) %>% 
+#  group_by(Country) %>% 
+#  ggplot(aes(x = Time, y= Value, colour = Country)) + 
+#  geom_line() +
+#  theme_bw() +
+#  theme(legend.position = "none") + ggtitle("Patent applications filed under the PCT")
+#
+#df %>% 
+#  filter(`Technology domains & IPC` == "Total Patents") %>% 
+#  filter(`Patents Office & Patents Families` == "Patent applications to the USPTO") %>% 
+#  select(Country, Value, Time) %>% 
+#  group_by(Country) %>% 
+#  ggplot(aes(x = Time, y= Value, colour = Country)) + 
+#  geom_line() +
+#  theme_bw() +
+#  theme(legend.position = "none") + ggtitle("Patent applications to the USPTO")
+#
+#df %>% 
+#  filter(`Technology domains & IPC` == "Total Patents") %>% 
+#  filter(`Patents Office & Patents Families` == "IP5 Patent families") %>% 
+#  select(Country, Value, Time) %>% 
+#  group_by(Country) %>% 
+#  ggplot(aes(x = Time, y= Value, colour = Country)) + 
+#  geom_line() +
+#  theme_bw() +
+#  theme(legend.position = "none") + ggtitle("IP5 Patent families")
+
+```
+
+```{r,echo=FALSE,fig.height=5, fig.width=10}
+df %>% 
+  filter(`Technology domains & IPC` == "Total Patents") %>% 
+  #filter(`Patents Office & Patents Families` == "Patent applications to the EPO") %>% 
+  select(`Patents Office & Patents Families`, Value, Time) %>% 
+  group_by(`Patents Office & Patents Families`, Time) %>% 
+  summarise(tot_pats = sum(Value)) %>%
+  ggplot(aes(x = Time, y= tot_pats, colour = `Patents Office & Patents Families`)) + 
+  geom_line() +
+  theme_bw() +
+  theme(legend.position = "right") + ggtitle("Patent applications by Patenting Office")
+```
+
+### with CCS technologies
+```{r,echo=FALSE,fig.height=5, fig.width=10}
+df_ccs %>% 
+  filter(!(Country == "World")) %>% 
+  filter(`Technology domains & IPC` == "Total Patents") %>% 
+  #filter(`Patents Office & Patents Families` == "Patent applications to the EPO") %>% 
+  select(`Patents Office & Patents Families`, Value, Time) %>% 
+  group_by(`Patents Office & Patents Families`, Time) %>% 
+  summarise(tot_pats = sum(Value)) %>%
+  ggplot(aes(x = Time, y= tot_pats, colour = `Patents Office & Patents Families`)) + 
+  geom_line() +
+  theme_bw() +
+  theme(legend.position = "right") + ggtitle("Patent applications by Patenting Office, with CCS technologies")
+
+```
+
+
+```{r, fig.width=15, echo=FALSE, include=FALSE}
+df_ccs %>% 
+  filter(!(Country == "World")) %>% 
+  filter(!(`Technology domains & IPC` == "Total Patents")) %>% 
+  #filter(`Patents Office & Patents Families` == "Patent applications to the EPO") %>% 
+  select(`Technology domains & IPC`, Value, Time) %>% 
+  group_by(`Technology domains & IPC`, Time) %>% 
+  summarise(tot_pats = sum(Value)) %>%
+  ggplot(aes(x = Time, y= tot_pats, colour = `Technology domains & IPC`)) + 
+  geom_line() +
+  theme_bw() +
+  theme(legend.position = "right") + ggtitle("Patent applications by technology, with CCS technologies")
+```
+
+```{r, fig.width=20}
+#rd  <- read_csv("C:\\Users\\laura\\Downloads\\DP_LIVE_30102023130505034.csv")
+#
+#rd %>% pull(LOCATION) %>% unique() %>% length()
+#
+#rd %>% pull(LOCATION) %>% unique() 
+
+df_ccs %>% 
+  filter(!(Country == "World")) %>% 
+  filter(!(`Technology domains & IPC` == "Total Patents")) %>% 
+  #filter(`Patents Office & Patents Families` == "Patent applications to the EPO") %>% 
+  filter(Country %in% c("Germany", "Japan", "United States", "China (People's Republic of)")) %>% 
+  select(`Technology domains & IPC`, Country, Value, Time) %>% 
+  group_by(`Technology domains & IPC`,Country, Time) %>% 
+  summarise(tot_pats = sum(Value)) %>%
+  ggplot(aes(x = Time, y= tot_pats, colour = `Technology domains & IPC`)) + 
+  geom_line() +
+  facet_wrap(~Country, scales = "fixed") + 
+  theme_bw() +
+  theme(legend.position = "right") + ggtitle("Patent applications by country")
+
+```
+
+# NUOVA PROVA 
+
+https://stats.oecd.org/Index.aspx?DataSetCode=PAT_DEV#
+
+```{r}
+dat <- read_csv("D:\\Aggregated\\PAT_DEV_01112023143241837.csv")
+
+# cambia palette
+
+dat %>% 
+  filter((`Inventor country` == "World")) %>% 
+  select(`Technology domain`, Value, Year) %>% 
+  group_by(`Technology domain`, Year) %>% 
+  summarise(tot_pats = sum(Value)) %>%
+  ggplot(aes(x = Year, y= tot_pats, colour = `Technology domain`)) + 
+  geom_line() +
+  #facet_wrap(~Country, scales = "fixed") + 
+  scale_x_continuous(limits = c(1960, 2019))+
+  theme_bw() +
+  theme(legend.position = "right") + ggtitle("Patent applications by Y02E10 technology: Renewable energy generation")
+  
+```
+## MAP with new dataset 
+```{r, fig.width=20}
+
+agg_dat <- dat %>% 
+  #filter(`Technology domains & IPC` == "Total Patents") %>% 
+  # check other filters
+  rename("Inventor_country" = "Inventor country") %>% 
+  select(Inventor_country, Value) %>% 
+  group_by(Inventor_country) %>% 
+  summarise(tot_counts = sum(Value))
+
+agg_dat2 <- agg_dat[-151,] # remove world count
+
+# ADD CHINA + HONG KONG + MACAU COUNT TOGETHER
+# Unique names of the rows you want to sum
+row_name1 <- "Hong Kong, China"
+row_name2 <- "China (People's Republic of)"
+row_name3 <- "Macau, China"
+
+# Find the indices of the rows with the specific names
+indices <- which(agg_dat2$Inventor_country %in% c(row_name1, row_name2, row_name3))
+
+# Create a new row with the sum
+new_row <- data.frame(Inventor_country = "China", tot_counts = sum(agg_dat2[indices, 2]))
+
+# Add the new row to the data frame
+agg_dat3 <- rbind(agg_dat2, new_row)
+
+# Remove old rows
+agg_dat3 <- agg_dat3[-indices,]
+
+
+world <- map_data("world") # latitude and longitude data
+
+# rename countries the same to left join w lat lon data
+agg_dat4 <- agg_dat3 %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "United States", "USA")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Slovak Republic", "Slovakia")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "United Kingdom", "UK")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Türkiye", "Turkey")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Korea", "South Korea")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Democratic People's Republic of South Korea", "North Korea")) %>%
+  mutate(Inventor_country = str_replace(Inventor_country, "Palestinian Authority or West Bank and Gaza Strip", "Palestine")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Viet Nam", "Vietnam")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Brunei Darussalam", "Brunei")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Chinese Taipei", "Taiwan")) %>% 
+mutate(Inventor_country = str_replace(Inventor_country, "Faeroe Islands", "Faroe Islands")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Lao People's Democratic Republic", "Laos")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Réunion", "Reunion")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Saint Vincent and the Grenadines", "Saint Vincent")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Syrian Arab Republic", "Syria"))
+  
+  
+#world_names <- world %>% pull(region)
+#
+#oecd_names <- agg_df2 %>% pull(Country)
+#
+#setdiff(world_names,oecd_names)
+
+world_oecd <- left_join(world, agg_dat4, by = c("region" = "Inventor_country"))
+
+
+p <- ggplot()
+p + geom_polygon(data=world_oecd, 
+          aes(x=long, y=lat, group=group, fill = tot_counts),
+          color="white", linewidth = 0.2) + 
+  #scale_fill_gradient2(low = "blue", mid = "white", high = "red", 
+  #                     midpoint = 3000, 
+  #                     breaks = seq(0, 6000, 500), 
+  #                     limits = c(0, 6754.368)) +
+  #
+  theme_bw() 
+
+```
+
+# Focus on renewable energy technologies 
+```{r}
+agg_tech <- dat %>% 
+  #filter(`Technology domains & IPC` == "Total Patents") %>% 
+  rename("Inventor_country" = "Inventor country") %>% 
+  rename("Technology" = "Technology domain") %>% 
+  select(Inventor_country, Technology, Value) %>% 
+  group_by(Inventor_country, Technology) %>% 
+  summarise(tot_counts = sum(Value))
+
+# add row for each technology for each country 
+tech_types <- dat %>% pull(`Technology domain`) %>% unique()
+countries <- dat %>% pull(`Inventor country`) %>% unique()
+count <- 0
+ 
+new_agg_tech <- data.frame(
+    Inventor_country = rep(countries, each = length(tech_types)),
+    Technology = rep(tech_types, times = length(countries))
+)
+
+agg_tech1 <- left_join(new_agg_tech, agg_tech, by = c("Inventor_country", "Technology")) %>% 
+    mutate_if(is.numeric, funs(ifelse(is.na(.), 0, .)))
+
+##############################
+
+agg_tech2 <- agg_tech1 %>% filter(!(Inventor_country == "World")) # remove world count
+
+# ADD CHINA + HONG KONG + MACAU COUNT TOGETHER
+# Unique names of the rows you want to sum
+row_name1 <- "Hong Kong, China"
+row_name2 <- "China (People's Republic of)"
+row_name3 <- "Macau, China"
+
+# ADD STEP: SUM OVER TECHNOLOGY TYPES
+col_list <- c(row_name1, row_name2, row_name3)
+
+china <- agg_tech2 %>% 
+  filter(Inventor_country %in% col_list) %>% 
+  pivot_wider(names_from = Inventor_country, values_from = tot_counts) %>% 
+  replace(is.na(.), 0) %>%
+  rowwise() %>% 
+  mutate(China = sum(c_across(all_of(col_list)))) %>% 
+  select(!(col_list)) %>% 
+  pivot_longer(cols = "China", names_to = "Inventor_country", values_to = "tot_counts")
+
+# Add the new row to the data frame
+agg_tech3 <- rbind(agg_tech2, china)
+
+# Remove old rows
+indices <- which(agg_tech3$Inventor_country %in% c(row_name1, row_name2, row_name3))
+
+agg_tech3 <- agg_tech3[-indices,]
+
+world <- map_data("world") # latitude and longitude data
+
+# rename countries the same to left join w lat lon data
+agg_tech4 <- agg_tech3 %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "United States", "USA")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Slovak Republic", "Slovakia")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "United Kingdom", "UK")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Türkiye", "Turkey")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Korea", "South Korea")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Democratic People's Republic of South Korea", "North Korea")) %>%
+  mutate(Inventor_country = str_replace(Inventor_country, "Palestinian Authority or West Bank and Gaza Strip", "Palestine")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Viet Nam", "Vietnam")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Brunei Darussalam", "Brunei")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Chinese Taipei", "Taiwan")) %>% 
+mutate(Inventor_country = str_replace(Inventor_country, "Faeroe Islands", "Faroe Islands")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Lao People's Democratic Republic", "Laos")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Réunion", "Reunion")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Saint Vincent and the Grenadines", "Saint Vincent")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Syrian Arab Republic", "Syria"))
+  
+
+```
+
+
+# Plot patent count by tech type
+```{r, fig.height=15, fig.width=20}
+world_oecd_tech <- left_join(world, agg_tech4, by = c("region" = "Inventor_country")) %>% drop_na(Technology)
+
+p <- ggplot()
+p + geom_polygon(data=world_oecd_tech, 
+          aes(x=long, y=lat, group=group, fill = tot_counts), # to remove one order of magnitude
+          color="white", linewidth = 0.2) + 
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", 
+                       midpoint = 8000,  # mean
+                       breaks = seq(0, 16000, 1500), 
+                       limits = c(0, 16108.99)) +
+  facet_wrap(~Technology) +
+  theme_bw() + 
+  ggtitle("By Y02E10 technology")
+
+
+```
+
