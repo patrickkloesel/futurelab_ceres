@@ -1,0 +1,918 @@
+---
+title: "OECD Patent Data Project"
+author: "Laura Menicacci"
+date: "2023-11-05"
+output: html_document
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+options(warn = 0)           
+
+library(tidyverse)
+library(viridis)
+library(scales)
+library("sf")
+library(cowplot)
+library(patchwork)
+library(kableExtra)
+library(plm)
+library(forecast)
+
+df <- read_csv(".\\PAT_DEV_05112023163538234.csv", show_col_types = F) 
+
+df1 <- df %>% select(COU, `Inventor country`, `Technology domain`, Year, Value)
+
+#dat <- read_csv("D:\\Aggregated\\PAT_DEV_01112023143241837.csv")
+```
+
+
+https://stats.oecd.org/Index.aspx?DataSetCode=PAT_DEV#
+
+Data selected: 
+
+* Family size >= 2
+* Filtered for climate change mitigation technologies
+* Possibility to scale down to specific technology class according to CPC code classification
+* 200ca (209) countries
+* 1960-2020 (not for all countries)
+* Patent count by technology subsectors: 
+```{r, echo=FALSE}
+tech_fields <- c("Climate change mitigation technologies related to wastewater treatment or waste management", "Climate change mitigation technologies related to energy generation, transmission or distribution", "Climate change mitigation in information and communication technologies (ICT)", "Capture, storage, sequestration or disposal of greenhouse gases", "Climate change mitigation technologies related to transportation", "Climate change mitigation technologies related to buildings", "Climate change mitigation technologies in the production or processing of goods" )
+
+df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% tech_fields) %>% 
+  select(`Technology domain`, Value, Year) %>% 
+  group_by(`Technology domain`) %>% 
+  summarise(tot_pats = sum(Value), .groups = "keep") %>% 
+  arrange(desc(tot_pats)) %>% 
+  kable(format = "html") %>% 
+  kable_styling(bootstrap_options = c("hover", "responsive"), full_width = F, fixed_thead = T, position = "left") %>% 
+  scroll_box(width = "600px", height = "300px")
+
+
+```
+
+## Main trends
+
+```{r, fig.height=15, fig.width=20, echo=FALSE}
+
+general_counts <- c("Environment-related technologies" , "Climate change mitigation")
+
+tech_fields <- c("Climate change mitigation technologies related to wastewater treatment or waste management", "Climate change mitigation technologies related to energy generation, transmission or distribution", "Climate change mitigation in information and communication technologies (ICT)", "Capture, storage, sequestration or disposal of greenhouse gases", "Climate change mitigation technologies related to transportation", "Climate change mitigation technologies related to buildings", "Climate change mitigation technologies in the production or processing of goods" )
+
+#"Enabling technologies or technologies with a potential or indirect contribution to GHG #emissions mitigation"
+
+general_trends <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% general_counts) %>% 
+  select(`Technology domain`, Value, Year) %>% 
+  group_by(`Technology domain`, Year) %>% 
+  summarise(tot_pats = sum(Value), .groups = "keep") %>%
+  ggplot(aes(x = Year, y= log(tot_pats), colour = `Technology domain`)) + 
+  geom_line(na.rm = F) +
+  geom_point(na.rm = F) +
+  #facet_wrap(~Country, scales = "fixed") + 
+  scale_x_continuous(breaks= seq(1960, 2020, 2), limits = c(1960, 2020))+
+  scale_colour_brewer(palette="Paired", breaks= general_counts) +
+  theme_bw() +
+  theme(legend.position = "bottom") + 
+  labs(title = c("All environmental-related patents vs climate-mitigation ones")) +
+  ylab("log(patent count)") +
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), legend.spacing = unit(0, 'pt'), axis.text.x = element_text(angle = 45, hjust=1), panel.grid.minor.x = element_blank()) + guides(col = guide_legend(title = "Technology domain", ncol = 1))
+
+
+tech_fields_plot <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% tech_fields) %>% 
+  select(`Technology domain`, Value, Year) %>% 
+  group_by(`Technology domain`, Year) %>% 
+  summarise(tot_pats = sum(Value), .groups = "keep") %>%
+  ggplot(aes(x = Year, y= log(tot_pats), colour = `Technology domain`)) + 
+  geom_line(na.rm = F) +
+  geom_point(na.rm = F) +
+  scale_x_continuous(breaks= seq(1960, 2020, 2), limits = c(1960, 2020))+
+  scale_colour_brewer(palette="Paired", breaks= tech_fields) +
+  theme_bw() +
+  theme(legend.position = "bottom") + 
+  ggtitle("Patents by Y02 technology class") + 
+  ylab("log(patent count)") +
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), panel.grid.minor.x = element_blank()) + guides(col = guide_legend(title = "Y02 class", ncol = 2))
+
+main_trends_log_scales <- (general_trends / tech_fields_plot) + 
+  plot_annotation(title = 'Green patents over time (1960-2020)', theme = theme(title = element_text(size= 22, color="Black"))) 
+
+main_trends_log_scales
+
+ggsave(".\\main_trends_log_scales.pdf", plot = main_trends_log_scales, device = "pdf", width = 25, height = 18)
+  
+```
+
+### Look into specific technologies of four Y02 sub-sectors: energy, buildings, transport, ccs
+
+```{r, fig.height=22, fig.width=30, echo=FALSE, warning=FALSE}
+
+df1 <- df1 %>% filter(Year > 1989)
+############# energy
+tech_types <- c("Wind energy", "Solar thermal energy","Solar photovoltaic (PV) energy", "Solar thermal-PV hybrids", "Geothermal energy","Marine energy, e.g. using wave energy or salinity gradient", "Hydro energy", "Energy storage", "Fuel cells")
+
+tech_types_labels <- c("Wind energy", "Solar thermal energy","Solar photovoltaic (PV) energy", "Solar thermal-PV hybrids", "Geothermal energy","Marine energy", "Hydro energy", "Energy storage, e.g. batteries", "Fuel cells")
+
+energy <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% tech_types) %>% 
+  select(`Technology domain`, Value, Year) %>% 
+  group_by(`Technology domain`, Year) %>% 
+  summarise(tot_pats = sum(Value), .groups = "keep") %>%
+  ggplot(aes(x = Year, y= log(tot_pats), colour = `Technology domain`)) + 
+  geom_line(na.rm = F) +
+  geom_point(na.rm = F) +
+  scale_colour_brewer(breaks= tech_types, labels = tech_types_labels, palette = "Paired")+
+  scale_x_continuous(breaks= seq(1990, 2020, 2), limits = c(1990, 2020))+
+  theme_bw() +
+  ylab("log(patent count)") +
+  xlab("")+ 
+  ggtitle("Climate change mitigation technologies related to energy generation, transmission or distribution") +
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "", ncol = 3))
+
+############# transport
+transport <- c("Hybrid vehicles", "Electric vehicles", "Rail transport", "Maritime or waterways transport", "Aeronautics or air transport", "Enabling technologies in transport")
+
+transport_labels <- c("Road transport: Hybrid vehicles", "Road transport: Electric vehicles", "Rail transport", "Maritime or waterways transport", "Aeronautics or air transport", "Enabling technologies, e.g. electric vehicle charging")
+
+transport <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% transport) %>% 
+  select(`Technology domain`, Value, Year) %>% 
+  group_by(`Technology domain`, Year) %>% 
+  summarise(tot_pats = sum(Value), .groups = "keep") %>%
+  ggplot(aes(x = Year, y= log(tot_pats), colour = `Technology domain`)) + 
+  geom_line(na.rm = F) +
+  geom_point(na.rm = F) +
+#  scale_colour_discrete(breaks= transport)+
+  scale_colour_brewer(breaks= transport, labels = transport_labels, palette = "Paired") +
+  scale_x_continuous(breaks= seq(1990, 2020, 2), limits = c(1990, 2020))+
+  theme_bw() +
+  ylab("") +
+  xlab("") +
+  ggtitle("Climate change mitigation technologies related to transportation") +
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "", ncol = 2))
+
+########### buildings
+buildings <- c("Integration of renewable energy sources in buildings", "Energy efficiency in buildings", "Architectural or constructional elements improving the thermal performance of buildings", "Enabling technologies in buildings")
+
+buildings_labels <- c("Integration of renewable energy sources", "Energy efficiency", "Architectural/constructional elements improving thermal performance", "Enabling technologies")
+
+buildings <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% buildings) %>% 
+  select(`Technology domain`, Value, Year) %>% 
+  group_by(`Technology domain`, Year) %>% 
+  summarise(tot_pats = sum(Value), .groups = "keep") %>%
+  ggplot(aes(x = Year, y= log(tot_pats), colour = `Technology domain`)) + 
+  geom_line(na.rm = F) +
+  geom_point(na.rm = F) +
+# scale_colour_discrete(breaks= buildings) +
+  scale_colour_brewer(breaks= buildings, labels = buildings_labels, palette = "Paired") +
+  scale_x_continuous(breaks= seq(1990, 2020, 2), limits = c(1990, 2020))+
+  theme_bw() +
+  ylab("log(patent count)") +
+  ggtitle("Climate change mitigation technologies related to buildings")+
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "",ncol = 2))
+
+
+############## ccs
+ccs <- c("Capture or disposal of carbon dioxide (CO2)", "Capture or disposal of nitrous oxide (N2O)", "Capture or disposal of methane (CH4)", "Capture or disposal of perfluorocarbons (PFC), hydrofluorocarbons (HFC) or sulfur hexafluoride (SF6)")
+
+ccs_labels <- c("Capture or disposal of carbon dioxide (CO2)", "Capture or disposal of nitrous oxide (N2O)", "Capture or disposal of methane (CH4)", "Other GHG capture or storage")
+
+ccs <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% ccs) %>% 
+  select(`Technology domain`, Value, Year) %>% 
+  group_by(`Technology domain`, Year) %>% 
+  summarise(tot_pats = sum(Value), .groups = "keep") %>%
+  ggplot(aes(x = Year, y= log(tot_pats), colour = `Technology domain`)) + 
+  geom_line(na.rm = F) +
+  geom_point(na.rm = F) +
+#  scale_colour_discrete(breaks= ccs)+
+  scale_colour_brewer(breaks= ccs, labels = ccs_labels, palette = "Paired") +
+  scale_x_continuous(breaks= seq(1990, 2020, 2), limits = c(1990, 2020))+
+  theme_bw() +
+  ylab("") +
+  ggtitle("Capture, storage, sequestration or disposal of greenhouse gases")+
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "", ncol = 2))
+
+sectors_techs_log_trends <- ((energy + transport) / (buildings + ccs)) + plot_annotation(title = c("Trends for selected technology sectors (1960-2020)"), theme = theme(text = element_text(size= 22, color="Black")))
+
+sectors_techs_log_trends
+
+#ggsave(".\\sectors_techs_log_trends.pdf", plot = sectors_techs_log_trends, device = "pdf", width = 33, height = 22)
+
+```
+## Four key technologies
+
+```{r, fig.height=15, fig.width=15, echo=FALSE, warning=FALSE}
+
+key_techs <- c("Solar photovoltaic (PV) energy", "Wind energy", "Batteries", "Hydrogen technology")
+
+key_techs_labels <- c("Solar photovoltaic (PV) energy", "Wind energy", "Batteries (storage)", "Hydrogen technology")
+
+key_techs_plot <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(Year>=1990) %>% 
+  filter(`Technology domain` %in% key_techs) %>% 
+  select(`Technology domain`, Value, Year) %>% 
+  group_by(`Technology domain`, Year) %>% 
+  summarise(tot_pats = sum(Value), .groups = "keep") %>%
+  ggplot(aes(x = Year, y= log(tot_pats), colour = `Technology domain`)) + 
+  geom_line(na.rm = F) +
+  geom_point(na.rm = F) +
+  scale_colour_brewer(breaks= key_techs, labels = key_techs_labels, palette = "Set2") +
+  theme_bw() +
+  ylab("log(patent count)") +
+  ggtitle("Yearly inventions of four key technologies (1990-2020)")+
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "", ncol = 2))
+
+key_techs_plot
+
+#ggsave(".\\key_techs_plot.pdf", plot = key_techs_plot, device = "pdf", width = 15, height = 15)
+```
+## Key technologies full time-series
+
+```{r, fig.height=15, fig.width=15, echo=FALSE, warning=FALSE}
+
+key_techs <- c("Solar photovoltaic (PV) energy", "Wind energy", "Batteries", "Hydrogen technology", "Nuclear energy")
+
+key_techs_labels <- c("Solar photovoltaic (PV) energy", "Wind energy", "Batteries (storage)", "Hydrogen technology", "Nuclear energy")
+
+key_techs_plot_full_series <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% key_techs) %>% 
+  select(`Technology domain`, Value, Year) %>% 
+  group_by(`Technology domain`, Year) %>% 
+  summarise(tot_pats = sum(Value), .groups = "keep") %>%
+  ggplot(aes(x = Year, y= log(tot_pats), colour = `Technology domain`)) + 
+  geom_line(na.rm = F) +
+  geom_point(na.rm = F) +
+  scale_colour_brewer(breaks= key_techs, labels = key_techs_labels, palette = "Set2") +
+  theme_bw() +
+  ylab("log(patent count)") +
+  ggtitle("Yearly inventions of four key technologies (1960-2020)")+
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "", ncol = 2))
+
+key_techs_plot_full_series
+
+#ggsave(".\\key_techs_plot_full_series.pdf", plot = key_techs_plot_full_series, device = "pdf", width = 15, height = 15)
+```
+
+
+## Geographical distribution of climate change mitigation technologies (CCMT)
+```{r, fig.width=22,fig.height=13, echo=FALSE}
+
+agg_dat2 <- df1 %>% 
+  filter(`Technology domain` == "Climate change mitigation") %>% 
+  rename("Inventor_country" = "Inventor country") %>% 
+  filter(!(Inventor_country == "World")) %>% 
+  select(Inventor_country, Value) %>% 
+  group_by(Inventor_country) %>% 
+  summarise(tot_counts = sum(Value))
+
+# ADD CHINA + HONG KONG + MACAU COUNT TOGETHER
+# Unique names of the rows you want to sum
+row_name1 <- "Hong Kong, China"
+row_name2 <- "China (People's Republic of)"
+row_name3 <- "Macau, China"
+
+# Find the indices of the rows with the specific names
+indices <- which(agg_dat2$Inventor_country %in% c(row_name1, row_name2, row_name3))
+
+# Create a new row with the sum
+new_row <- data.frame(Inventor_country = "China", tot_counts = sum(agg_dat2[indices, 2]))
+
+# Add the new row to the data frame
+agg_dat3 <- rbind(agg_dat2, new_row)
+
+# Remove old rows
+agg_dat3 <- agg_dat3[-indices,]
+
+
+world <- map_data("world") # latitude and longitude data
+
+# rename countries the same to left join w lat lon data
+agg_dat4 <- agg_dat3 %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "United States", "USA")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Slovak Republic", "Slovakia")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "United Kingdom", "UK")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Türkiye", "Turkey")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Korea", "South Korea")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Democratic People's Republic of South Korea", "North Korea")) %>%
+  mutate(Inventor_country = str_replace(Inventor_country, "Palestinian Authority or West Bank and Gaza Strip", "Palestine")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Viet Nam", "Vietnam")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Brunei Darussalam", "Brunei")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Chinese Taipei", "Taiwan")) %>% 
+mutate(Inventor_country = str_replace(Inventor_country, "Faeroe Islands", "Faroe Islands")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Lao People's Democratic Republic", "Laos")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Réunion", "Reunion")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Saint Vincent and the Grenadines", "Saint Vincent")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Syrian Arab Republic", "Syria"))
+  
+  
+#world_names <- world %>% pull(region)
+#
+#oecd_names <- agg_df2 %>% pull(Country)
+#
+#setdiff(world_names,oecd_names)
+
+world_oecd <- left_join(world, agg_dat4, by = c("region" = "Inventor_country"))
+
+p <- ggplot()
+world_map <- p + geom_polygon(data=world_oecd, 
+          aes(x=long, y=lat, group=group, fill = log(tot_counts)),
+          color="white", size = 0.1) + 
+  #scale_fill_gradient2(low = "blue", mid = "white", high = "red", 
+  #                     midpoint = 000, 
+  #                     breaks = seq(0, 18000, 2000), 
+  #                     limits = c(0, 18000)) +
+  #
+  theme_bw() + 
+  scale_fill_viridis() +
+  ggtitle("Geographical distribution of climate-change mitigation technologies (CCMT)") + 
+  labs(fill='log(patent count)') +
+  theme(title = element_text(size= 22, color="Black"), legend.text = element_text(size= 20, color="Black"), legend.position = c(0.12, 0.30), legend.box.background = element_rect(colour = "black")) + 
+   theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(), 
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(), 
+        panel.border = element_blank(), 
+        panel.background = element_blank(), 
+        panel.grid = element_blank())
+
+world_map
+
+ggsave(".\\world_map_prova_size.pdf", plot = world_map, device = "pdf", width = 22, height = 13)
+
+```
+
+### Inspection into low-patenting countries (count <= 50k)
+
+```{r, echo=FALSE, fig.width=20, fig.height=15}
+
+low_world <- world_oecd %>% 
+  mutate(tot_counts = ifelse(tot_counts >= 50000, NA, tot_counts))
+
+p <- ggplot()
+world_low <- p + geom_polygon(data=low_world, 
+          aes(x=long, y=lat, group=group, fill = tot_counts),
+          color="white", linewidth = 0.2) + 
+  #scale_fill_gradient2(low = "blue", mid = "white", high = "red", 
+  #                     midpoint = 000, 
+  #                     breaks = seq(0, 18000, 2000), 
+  #                     limits = c(0, 18000)) +
+  #
+  theme_bw() + 
+  labs(title = c("Geographical distribution of CCMT - low-patenting countries"), subtitle = c("Notice: USA, Germany, Japan and South Korea are now switched off")) + 
+  theme(title = element_text(size= 12, color="Black"), legend.text = element_text(size= 12, color="Black"))
+
+world_low
+
+```
+
+
+# Growth rates
+
+Two plots that reuse the same time series used in the "main trends" figure. The top figure shows
+
+### t-1 growth rate
+```{r, fig.height=17, fig.width=23, echo=FALSE, warning=FALSE}
+########## general
+growth <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% general_counts) %>% 
+  rename("Tech_domain" = "Technology domain") %>% 
+  select(Tech_domain, Value, Year)
+
+pgr <- pdata.frame(growth, index = c("Tech_domain","Year"))
+
+library(collapse)
+# This computes the proper panel growth rate of all numeric variables
+growth_rate <- G(pgr, n = 1)
+
+growth_rate <- drop_na(growth_rate)
+growth_rate$G1.Value <- as.numeric(growth_rate$G1.Value)
+
+gr_general <- growth_rate %>% 
+  ggplot(aes(x = Year, y = G1.Value, colour = Tech_domain, group = Tech_domain)) + 
+  geom_line() +
+  theme_bw() +
+  scale_colour_discrete(breaks= general_counts) +
+  theme(legend.position = "right") + 
+  ggtitle("Growth rates for green patents over time") + 
+  theme(title = element_text(size= 12, color="Black"), legend.text = element_text(size= 12, color="Black"))
+  
+########### tech fields
+
+growth <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% tech_fields) %>% 
+  rename("Tech_domain" = "Technology domain") %>% 
+  select(Tech_domain, Value, Year)
+
+pgr <- pdata.frame(growth, index = c("Tech_domain","Year"))
+
+library(collapse)
+# This computes the proper panel growth rate of all numeric variables
+growth_rate <- G(pgr, n = 1)
+
+growth_rate <- drop_na(growth_rate)
+growth_rate$G1.Value <- as.numeric(growth_rate$G1.Value)
+
+
+
+gr_fields <- growth_rate %>% 
+  ggplot(aes(x = Year, y = G1.Value, colour = Tech_domain, group = Tech_domain)) + 
+  geom_line() +
+  scale_colour_discrete(breaks= tech_fields) +
+  theme_bw() +
+  theme(legend.position = "right") + 
+  ggtitle("Growth rates for Y02 technology fields") + 
+  theme(title = element_text(size= 12, color="Black"), legend.text = element_text(size= 12, color="Black"))
+
+growth_rates_plot <- gr_general / gr_fields
+
+growth_rates_plot 
+
+#ggsave(".\\growth_rates_plot.pdf", plot = growth_rates_plot, device = "pdf", width = 23, height = 17)
+
+```
+
+## 3-year moving average smoother
+
+```{r, fig.height=17, fig.width=25, echo=FALSE, warning=FALSE}
+library(collapse)
+########## general
+growth <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% general_counts) %>% 
+  rename("Tech_domain" = "Technology domain") %>% 
+  select(Tech_domain, Value, Year)
+
+pgr <- pdata.frame(growth, index = c("Tech_domain","Year"))
+
+# This computes the proper panel growth rate of all numeric variables
+growth_rate <- G(pgr, n = 1)
+
+ma_gr_general <- growth_rate %>% 
+  group_by(Tech_domain) %>% 
+  mutate(smoothed_ma = ma(G1.Value,3)) %>% 
+  ggplot(aes(x = Year, y = smoothed_ma, colour = Tech_domain, group = Tech_domain)) + 
+  geom_line(na.rm = F) +
+#  scale_x_continuous(breaks= seq(1960, 2020, 2), limits = c(1960, 2020))+
+  theme_bw() +
+  scale_colour_brewer(breaks= general_counts, labels = general_counts, palette = "Paired") +
+  ylab("3y moving avg growth rate (percentages)") +
+  ggtitle("All environmental-related patents vs climate-mitigation ones")+
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "Technology domain", ncol = 1))
+
+########### tech fields
+
+growth <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% tech_fields) %>% 
+  rename("Tech_domain" = "Technology domain") %>% 
+  select(Tech_domain, Value, Year)
+
+pgr <- pdata.frame(growth, index = c("Tech_domain","Year"))
+
+# This computes the proper panel growth rate of all numeric variables
+growth_rate <- G(pgr, n = 1)
+
+ma_gr_fields <- growth_rate %>% 
+  group_by(Tech_domain) %>% 
+  mutate(smoothed_ma = ma(G1.Value,3)) %>% 
+  ggplot(aes(x = Year, y = smoothed_ma, colour = Tech_domain, group = Tech_domain)) + 
+  geom_line(na.rm = F) +
+  theme_bw() +
+ # scale_x_continuous(breaks= seq(1960, 2020, 2), limits = c(1960, 2020))+
+  scale_colour_brewer(breaks= tech_fields, labels = tech_fields, palette = "Paired") +
+  ylab("3y moving avg growth rate (percentages)") +
+  ggtitle("Y02 technology class")+
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "Y02 class", ncol = 2))
+
+growth_rates_plot_ma <- (ma_gr_general / ma_gr_fields) + 
+  plot_annotation(title = 'Smoothed growth rate of green patents over time (1960-2020)', theme = theme(title = element_text(size= 22, color="Black"))) 
+
+growth_rates_plot_ma
+
+ggsave(".\\growth_rates_plot_ma.pdf", plot = growth_rates_plot_ma, device = "pdf", width = 25, height = 17)
+
+
+```
+
+## Smoothed growth rate by technology
+
+```{r, fig.width=20, fig.height=15}
+
+key_techs <- c("Solar photovoltaic (PV) energy", "Wind energy", "Batteries", "Hydrogen technology")
+
+key_techs_labels <- c("Solar photovoltaic (PV) energy", "Wind energy", "Batteries (storage)", "Hydrogen technology")
+
+growth <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(Year>=1990) %>% 
+  filter(`Technology domain` %in% key_techs) %>% 
+  rename("Tech_domain" = "Technology domain") %>% 
+  select(Tech_domain, Value, Year)
+
+pgr <- pdata.frame(growth, index = c("Tech_domain","Year"))
+
+library(collapse)
+# This computes the proper panel growth rate of all numeric variables
+growth_rate <- G(pgr, n = 1)
+
+key_techs_plot_ma <- growth_rate %>% 
+  group_by(Tech_domain) %>% 
+  mutate(smoothed_ma = ma(G1.Value,3)) %>%
+  ggplot(aes(x = Year, y= smoothed_ma, colour = Tech_domain, group = Tech_domain)) + 
+  geom_line(na.rm = F) +
+  scale_colour_brewer(breaks= key_techs, labels = key_techs_labels, palette = "Set2") +
+  theme_bw() +
+  ylab("3y moving avg growth rate (percentages)") +
+  ggtitle("Yearly inventions of four key technologies, growth rate (1990-2020)") +
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "", ncol = 2))
+
+key_techs_plot_ma
+
+ggsave(".\\key_techs_plot_ma.pdf", plot = key_techs_plot_ma, device = "pdf", width = 20, height = 15)
+
+
+```
+
+
+## Smoothed growth rate by country
+
+```{r, fig.width= 20, fig.height=15}
+
+########## solar pv 
+top_countries <- c("Germany", "United States", "Japan")
+
+growth <- df1 %>% 
+  filter((`Inventor country` %in% top_countries)) %>% 
+  filter(`Technology domain` == "Solar photovoltaic (PV) energy") %>% 
+  rename("Tech_domain" = "Technology domain", 
+         "Inv_country" = "Inventor country") %>% 
+  select(Inv_country, Value, Year)
+
+pgr <- pdata.frame(growth, index = c("Inv_country","Year"))
+
+library(collapse)
+
+# This computes the proper panel growth rate of all numeric variables
+growth_rate <- G(pgr, n = 1)
+
+gr_countries_pv <- growth_rate %>% 
+  group_by(Inv_country) %>% 
+  mutate(smoothed_ma = ma(G1.Value,3)) %>% 
+  ggplot(aes(x = Year, y = smoothed_ma, colour = Inv_country, group = Inv_country)) + 
+  geom_line(na.rm = F) +
+  scale_colour_brewer(breaks = top_countries, labels = top_countries, palette = "Set2") +
+  theme_bw()+ 
+  ylab("3y moving avg growth rate (percentages)") +
+  ggtitle("Solar PV") +
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "Country", ncol = 3))
+
+############ all techs
+
+top_countries <- c("Germany", "United States", "Japan")
+
+growth <- df1 %>% 
+  filter((`Inventor country` %in% top_countries)) %>% 
+  filter(`Technology domain` == "Climate change mitigation") %>% 
+  rename("Tech_domain" = "Technology domain", 
+         "Inv_country" = "Inventor country") %>% 
+  select(Inv_country, Value, Year)
+
+pgr <- pdata.frame(growth, index = c("Inv_country","Year"))
+
+library(collapse)
+# This computes the proper panel growth rate of all numeric variables
+growth_rate <- G(pgr, n = 1)
+
+gr_countries_all <- growth_rate %>% 
+  group_by(Inv_country) %>% 
+  mutate(smoothed_ma = ma(G1.Value,3)) %>% 
+  ggplot(aes(x = Year, y = smoothed_ma, colour = Inv_country, group = Inv_country)) + 
+  geom_line(na.rm = F) +
+  scale_colour_brewer(breaks = top_countries, labels = top_countries, palette = "Set2") +
+  theme_bw()+ 
+  ylab("3y moving avg growth rate (percentages)") +
+  ggtitle("All CCMT")+
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "none") + guides(col = guide_legend(title = "Country", ncol = 3))
+
+gr_countries <- gr_countries_all / gr_countries_pv + plot_annotation(title = 'Smoothed growth rate by top patenting countries (1960-2020)', theme = theme(title = element_text(size= 22, color="Black"))) 
+
+gr_countries
+
+ggsave(".\\gr_countries.pdf", plot = gr_countries, device = "pdf", width = 20, height = 15)
+
+
+```
+
+## Smoothed growth rate by four key sectors
+
+```{r, fig.height=22, fig.width=35, echo=FALSE, warning=FALSE}
+############# energy
+tech_types <- c("Wind energy", "Solar thermal energy","Solar photovoltaic (PV) energy", "Solar thermal-PV hybrids", "Geothermal energy","Marine energy, e.g. using wave energy or salinity gradient", "Hydro energy", "Energy storage", "Fuel cells")
+
+tech_types_labels <- c("Wind energy", "Solar thermal energy","Solar photovoltaic (PV) energy", "Solar thermal-PV hybrids", "Geothermal energy","Marine energy", "Hydro energy", "Energy storage, e.g. batteries", "Fuel cells")
+
+growth <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% tech_types) %>% 
+  rename("Tech_domain" = "Technology domain") %>% 
+  select(Tech_domain, Value, Year)
+
+pgr <- pdata.frame(growth, index = c("Tech_domain","Year"))
+
+# This computes the proper panel growth rate of all numeric variables
+growth_rate <- G(pgr, n = 1)
+
+energy <- growth_rate %>% 
+  group_by(Tech_domain) %>% 
+  mutate(smoothed_ma = ma(G1.Value,3)) %>% 
+  ggplot(aes(x = Year, y= smoothed_ma, colour = Tech_domain, group = Tech_domain)) + 
+  geom_line(na.rm = F) +
+  scale_colour_brewer(breaks= tech_types, labels = tech_types_labels, palette = "Paired")+
+  theme_bw() +
+  ylab("3y moving avg growth rate (percentages)") +
+  xlab("")+ 
+  ggtitle("Climate change mitigation technologies related to energy generation, transmission or distribution") +
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "", ncol = 3))
+
+############# transport
+transport <- c("Hybrid vehicles", "Electric vehicles", "Rail transport", "Maritime or waterways transport", "Aeronautics or air transport", "Enabling technologies in transport")
+
+transport_labels <- c("Road transport: Hybrid vehicles", "Road transport: Electric vehicles", "Rail transport", "Maritime or waterways transport", "Aeronautics or air transport", "Enabling technologies, e.g. electric vehicle charging")
+
+growth <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% transport) %>% 
+  rename("Tech_domain" = "Technology domain") %>% 
+  select(Tech_domain, Value, Year)
+
+pgr <- pdata.frame(growth, index = c("Tech_domain","Year"))
+
+# This computes the proper panel growth rate of all numeric variables
+growth_rate <- G(pgr, n = 1)
+
+transport <- growth_rate %>% 
+  group_by(Tech_domain) %>% 
+  mutate(smoothed_ma = ma(G1.Value,3)) %>% 
+  ggplot(aes(x = Year, y= smoothed_ma, colour = Tech_domain, group = Tech_domain)) + 
+  geom_line(na.rm = F) +
+  scale_colour_brewer(breaks= transport, labels = transport_labels, palette = "Paired") +
+  theme_bw() +
+  ylab("") +
+  xlab("") +
+  ggtitle("Climate change mitigation technologies related to transportation") +
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "", ncol = 2))
+
+########### buildings
+buildings <- c("Integration of renewable energy sources in buildings", "Energy efficiency in buildings", "Architectural or constructional elements improving the thermal performance of buildings", "Enabling technologies in buildings")
+
+buildings_labels <- c("Integration of renewable energy sources", "Energy efficiency", "Architectural/constructional elements improving thermal performance", "Enabling technologies")
+
+growth <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% buildings) %>% 
+  rename("Tech_domain" = "Technology domain") %>% 
+  select(Tech_domain, Value, Year)
+
+pgr <- pdata.frame(growth, index = c("Tech_domain","Year"))
+
+# This computes the proper panel growth rate of all numeric variables
+growth_rate <- G(pgr, n = 1)
+
+buildings <- growth_rate %>% 
+  group_by(Tech_domain) %>% 
+  mutate(smoothed_ma = ma(G1.Value,3)) %>% 
+  ggplot(aes(x = Year, y= smoothed_ma, colour = Tech_domain, group = Tech_domain)) + 
+  geom_line(na.rm = F) +
+#  scale_colour_discrete(breaks= buildings)+
+  scale_colour_brewer(breaks= buildings, labels = buildings_labels, palette = "Paired") +
+  theme_bw() +
+  ylab("3y moving avg growth rate (percentages)") +
+  ggtitle("Climate change mitigation technologies related to buildings")+
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "",ncol = 2))
+
+
+############## ccs
+ccs <- c("Capture or disposal of carbon dioxide (CO2)", "Capture or disposal of nitrous oxide (N2O)", "Capture or disposal of methane (CH4)", "Capture or disposal of perfluorocarbons (PFC), hydrofluorocarbons (HFC) or sulfur hexafluoride (SF6)")
+
+ccs_labels <- c("Capture or disposal of carbon dioxide (CO2)", "Capture or disposal of nitrous oxide (N2O)", "Capture or disposal of methane (CH4)", "Other GHG capture or storage")
+
+growth <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% ccs) %>% 
+  rename("Tech_domain" = "Technology domain") %>% 
+  select(Tech_domain, Value, Year)
+
+pgr <- pdata.frame(growth, index = c("Tech_domain","Year"))
+
+# This computes the proper panel growth rate of all numeric variables
+growth_rate <- G(pgr, n = 1)
+
+ccs <- growth_rate %>% 
+  group_by(Tech_domain) %>% 
+  mutate(smoothed_ma = ma(G1.Value,3)) %>% 
+  ggplot(aes(x = Year, y= smoothed_ma, colour = Tech_domain, group = Tech_domain)) + 
+  geom_line(na.rm = F) +
+#  scale_colour_discrete(breaks= ccs)+
+  scale_colour_brewer(breaks= ccs, labels = ccs_labels, palette = "Paired") +
+  theme_bw() +
+  ylab("") +
+  ggtitle("Capture, storage, sequestration or disposal of greenhouse gases")+
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "", ncol = 2))
+
+sectors_techs_gr <- ((energy + transport) / (buildings + ccs)) + plot_annotation(title = c("Growth rates for selected technology sectors (1960-2020)"), theme = theme(text = element_text(size= 22, color="Black")))
+
+sectors_techs_gr
+
+ggsave(".\\sectors_techs_gr.pdf", plot = sectors_techs_gr, device = "pdf", width = 35, height = 22)
+
+```
+
+## Other three sectors (log scales)
+
+```{r, fig.height=25, fig.width=25, echo=FALSE, warning=FALSE}
+
+###### ict
+ict <- c("Energy efficient computing", "Energy efficiency in communication networks")
+
+ict_labels <- c("Energy efficient computing", "Energy efficiency in communication networks")
+
+ict <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% ict) %>% 
+  select(`Technology domain`, Value, Year) %>% 
+  group_by(`Technology domain`, Year) %>% 
+  summarise(tot_pats = sum(Value), .groups = "keep") %>%
+  ggplot(aes(x = Year, y= log(tot_pats), colour = `Technology domain`)) + 
+  geom_line(na.rm = F) +
+  scale_colour_brewer(breaks= ict, labels = ict_labels, palette = "Paired")+
+  theme_bw() +
+  ylab("log(patent count)") +
+  xlab("")+ 
+  ggtitle("Climate change mitigation in information and communication technologies (ICT)") +
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "", ncol = 3))
+
+
+####### waste
+
+waste <- c("Wastewater treatment","Solid waste management","Enabling technologies or technologies with a potential or indirect contribution to GHG emissions mitigation")
+
+waste_labels <- c("Wastewater treatment","Solid waste management","Enabling technologies")
+
+waste <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% waste) %>% 
+  select(`Technology domain`, Value, Year) %>% 
+  group_by(`Technology domain`, Year) %>% 
+  summarise(tot_pats = sum(Value), .groups = "keep") %>%
+  ggplot(aes(x = Year, y= log(tot_pats), colour = `Technology domain`)) + 
+  geom_line(na.rm = F) +
+  scale_colour_brewer(breaks= waste, labels = waste_labels, palette = "Paired")+
+  theme_bw() +
+  ylab("log(patent count)") +
+  xlab("")+ 
+  ggtitle("Climate change mitigation technologies related to wastewater treatment or waste management") +
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "", ncol = 3))
+
+
+####### production
+
+goods <- c("Technologies related to metal processing", "Technologies relating to chemical industry","Technologies relating to oil refining and petrochemical industry", "echnologies relating to the processing of minerals", "Technologies relating to agriculture, livestock or agroalimentary industries", "Technologies in the production process for final industrial or consumer products","Climate change mitigation technologies for sector-wide applications","Enabling technologies with a potential contribution to GHG emissions mitigation")
+
+goods_labels <- c("Technologies related to metal processing", "Technologies relating to chemical industry","Technologies relating to oil refining and petrochemical industry", "echnologies relating to the processing of minerals", "Technologies relating to agriculture, livestock or agroalimentary industries", "Technologies in the production process for final industrial or consumer products","Climate change mitigation technologies for sector-wide applications","Enabling technologies")
+
+goods <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% goods) %>% 
+  select(`Technology domain`, Value, Year) %>% 
+  group_by(`Technology domain`, Year) %>% 
+  summarise(tot_pats = sum(Value), .groups = "keep") %>%
+  ggplot(aes(x = Year, y= log(tot_pats), colour = `Technology domain`)) + 
+  geom_line(na.rm = F) +
+  scale_colour_brewer(breaks= goods, labels = goods_labels, palette = "Paired")+
+  theme_bw() +
+  ylab("log(patent count)") +
+  xlab("Year")+ 
+  ggtitle("Climate change mitigation technologies in the production or processing of goods") +
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "", ncol = 3))
+
+sectors_techs_3 <- (ict / waste / goods) + plot_annotation(title = c("Trends for the three remaining technology sectors (1960-2020)"), theme = theme(text = element_text(size= 22, color="Black")))
+
+sectors_techs_3
+
+ggsave(".\\sectors_techs_3.pdf", plot = sectors_techs_3, device = "pdf", width = 25, height = 25)
+
+```
+
+
+## Balanced panel check
+
+- by sectors 
+- by key technologies: ev, solar, wind, batteries, Hydrogen technology
+- start anyways from 1990 due to policy data availability 
+
+general thing: the more we scale down to single technology --> the less balanced the panel is 
+
+```{r}
+
+key_technologies = c("Batteries", "Solar photovoltaic (PV) energy", "Wind energy", "Electric vehicles", "Hydrogen technology")
+
+df_sectors <- df1 %>% 
+  filter(Year > 1989) %>% 
+  filter(!(`Inventor country` == "World")) %>% 
+  filter(Tech_domain %in% tech_fields)
+
+energy <- df_sectors %>% filter(`Technology domain` == "Climate change mitigation technologies related to energy generation, transmission or distribution") %>% select(`Inventor country`, Year, Value)
+
+prova_fill <- make.pbalanced(energy, balance.type = "fill")
+
+
+```
+
+
+# Main trends levels
+
+```{r, fig.height=15, fig.width=20, echo=FALSE}
+
+general_counts <- c("Environment-related technologies" , "Climate change mitigation")
+
+tech_fields <- c("Climate change mitigation technologies related to wastewater treatment or waste management", "Climate change mitigation technologies related to energy generation, transmission or distribution", "Climate change mitigation in information and communication technologies (ICT)", "Capture, storage, sequestration or disposal of greenhouse gases", "Climate change mitigation technologies related to transportation", "Climate change mitigation technologies related to buildings", "Climate change mitigation technologies in the production or processing of goods" )
+
+#"Enabling technologies or technologies with a potential or indirect contribution to GHG #emissions mitigation"
+
+general_trends <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% general_counts) %>% 
+  select(`Technology domain`, Value, Year) %>% 
+  group_by(`Technology domain`, Year) %>% 
+  summarise(tot_pats = sum(Value), .groups = "keep") %>%
+  ggplot(aes(x = Year, y= tot_pats, colour = `Technology domain`)) + 
+  geom_line(na.rm = F) +
+  #facet_wrap(~Country, scales = "fixed") + 
+  scale_x_continuous(breaks= seq(1960, 2020, 2), limits = c(1960, 2020))+
+  scale_colour_brewer(palette="Paired", breaks= general_counts) +
+  theme_bw() +
+  theme(legend.position = "bottom") + 
+  labs(title = c("All environmental-related patents vs climate-mitigation ones (levels)")) +
+  ylab("patent count") +
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), legend.spacing = unit(0, 'pt'), axis.text.x = element_text(angle = 45, hjust=1), panel.grid.minor.x = element_blank()) + guides(col = guide_legend(title = "Technology domain", ncol = 1))
+
+
+tech_fields_plot <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% tech_fields) %>% 
+  select(`Technology domain`, Value, Year) %>% 
+  group_by(`Technology domain`, Year) %>% 
+  summarise(tot_pats = sum(Value), .groups = "keep") %>%
+  ggplot(aes(x = Year, y= tot_pats, colour = `Technology domain`)) + 
+  geom_line(na.rm = F) +
+  scale_x_continuous(breaks= seq(1960, 2020, 2), limits = c(1960, 2020))+
+  scale_colour_brewer(palette="Paired", breaks= tech_fields) +
+  theme_bw() +
+  theme(legend.position = "bottom") + 
+  ggtitle("Patents by Y02 technology class (levels)") + 
+  ylab("patent count") +
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), panel.grid.minor.x = element_blank()) + guides(col = guide_legend(title = "Y02 class", ncol = 2))
+
+main_trends_levels <- (general_trends / tech_fields_plot) + 
+  plot_annotation(title = 'Green patents over time', theme = theme(title = element_text(size= 22, color="Black"))) 
+
+main_trends_levels
+
+ggsave(".\\main_trends_levels.pdf", plot = main_trends_levels, device = "pdf", width = 25, height = 18)
+  
+```
+### BOXPLOTS/histograms IN COMPARISON
+```{r}
+tech_fields <- c("Climate change mitigation technologies related to wastewater treatment or waste management", "Climate change mitigation technologies related to energy generation, transmission or distribution", "Climate change mitigation in information and communication technologies (ICT)", "Capture, storage, sequestration or disposal of greenhouse gases", "Climate change mitigation technologies related to transportation", "Climate change mitigation technologies related to buildings", "Climate change mitigation technologies in the production or processing of goods")
+
+
+```
+
+
+### Policy data
+```{r}
+library(tidyverse)
+stip <- read.csv("C:\\Users\\laura\\Downloads\\STIP_Survey.csv", encoding = "utf-8", sep = "|") 
+
+stip %>% pull(CountryLabel) %>% unique()
+```
+

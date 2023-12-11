@@ -141,6 +141,7 @@ df_ccs %>%
   ylab("") +
   theme_bw()
 ```
+
 ```{r, echo=FALSE}
 df %>% 
 ggplot(aes(x = Value)) +
@@ -457,3 +458,229 @@ p + geom_polygon(data=world_oecd_tech,
 
 ```
 
+```{r, fig.height=15, echo=FALSE, fig.width=15}
+tech_fields_2 <- c("Climate change mitigation technologies related to wastewater treatment or waste management", "Climate change mitigation technologies related to energy generation, transmission or distribution", "Climate change mitigation in information and communication technologies (ICT)", "Capture, storage, sequestration or disposal of greenhouse gases", "Climate change mitigation technologies related to transportation", "Climate change mitigation technologies related to buildings", "Climate change mitigation technologies in the production or processing of goods" )
+
+df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% tech_fields_2) %>% 
+  group_by(`Technology domain`) %>% 
+  summarise(tot_pats = sum(Value), .groups = "keep") %>%
+  arrange(desc(tot_pats)) %>% 
+  ggplot(aes(reorder(`Technology domain`, tot_pats),tot_pats)) +
+  geom_col(fill = "#00846b", alpha = 0.7) +
+  scale_y_continuous(breaks = seq(0, 300000, 30000))+
+  coord_flip() +
+  theme_bw() +
+  xlab("Tecnology domains")
+```
+
+### Geographical inspection into renewable energy technologies (Y02E10 class)
+
+```{r, fig.width=20, fig.height=15, echo=FALSE, warning=FALSE}
+
+agg_tech <- df1 %>% 
+  filter(`Technology domain` %in% tech_types) %>% 
+  rename("Inventor_country" = "Inventor country") %>% 
+  rename("Technology" = "Technology domain") %>% 
+  select(Inventor_country, Technology, Value) %>% 
+  group_by(Inventor_country, Technology) %>% 
+  summarise(tot_counts = sum(Value), .groups = "keep")
+  
+
+# add row for each technology for each country 
+tech_types <- dat %>% pull(`Technology domain`) %>% unique()
+countries <- dat %>% pull(`Inventor country`) %>% unique()
+count <- 0
+ 
+new_agg_tech <- data.frame(
+    Inventor_country = rep(countries, each = length(tech_types)),
+    Technology = rep(tech_types, times = length(countries))
+)
+
+agg_tech1 <- left_join(new_agg_tech, agg_tech, by = c("Inventor_country", "Technology")) %>% 
+    mutate_if(is.numeric, funs(ifelse(is.na(.), 0, .)))
+
+##############################
+
+agg_tech2 <- agg_tech1 %>% filter(!(Inventor_country == "World")) # remove world count
+
+# ADD CHINA + HONG KONG + MACAU COUNT TOGETHER
+# Unique names of the rows you want to sum
+row_name1 <- "Hong Kong, China"
+row_name2 <- "China (People's Republic of)"
+row_name3 <- "Macau, China"
+
+# ADD STEP: SUM OVER TECHNOLOGY TYPES
+col_list <- c(row_name1, row_name2, row_name3)
+
+china <- agg_tech2 %>% 
+  filter(Inventor_country %in% col_list) %>% 
+  pivot_wider(names_from = Inventor_country, values_from = tot_counts) %>% 
+  replace(is.na(.), 0) %>%
+  rowwise() %>% 
+  mutate(China = sum(c_across(all_of(col_list)))) %>% 
+  select(!(col_list)) %>% 
+  pivot_longer(cols = "China", names_to = "Inventor_country", values_to = "tot_counts")
+
+# Add the new row to the data frame
+agg_tech3 <- rbind(agg_tech2, china)
+
+# Remove old rows
+indices <- which(agg_tech3$Inventor_country %in% c(row_name1, row_name2, row_name3))
+
+agg_tech3 <- agg_tech3[-indices,]
+
+world <- map_data("world") # latitude and longitude data
+
+# rename countries the same to left join w lat lon data
+agg_tech4 <- agg_tech3 %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "United States", "USA")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Slovak Republic", "Slovakia")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "United Kingdom", "UK")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Türkiye", "Turkey")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Korea", "South Korea")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Democratic People's Republic of South Korea", "North Korea")) %>%
+  mutate(Inventor_country = str_replace(Inventor_country, "Palestinian Authority or West Bank and Gaza Strip", "Palestine")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Viet Nam", "Vietnam")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Brunei Darussalam", "Brunei")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Chinese Taipei", "Taiwan")) %>% 
+mutate(Inventor_country = str_replace(Inventor_country, "Faeroe Islands", "Faroe Islands")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Lao People's Democratic Republic", "Laos")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Réunion", "Reunion")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Saint Vincent and the Grenadines", "Saint Vincent")) %>% 
+  mutate(Inventor_country = str_replace(Inventor_country, "Syrian Arab Republic", "Syria"))
+
+world_oecd_tech <- left_join(world, agg_tech4, by = c("region" = "Inventor_country")) %>% drop_na(Technology)
+
+p <- ggplot()
+p + geom_polygon(data=world_oecd_tech, 
+          aes(x=long, y=lat, group=group, fill = tot_counts), # to remove one order of magnitude
+          color="white", linewidth = 0.2) + 
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", 
+                       midpoint = 8000,  # mean
+                       breaks = seq(0, 16000, 1500), 
+                       limits = c(0, 16108.99)) +
+  facet_wrap(~Technology) +
+  theme_bw() + 
+  ggtitle("By Y02E10 technology") +
+  theme(title = element_text(size= 12, color="Black"), legend.text = element_text(size= 12, color="Black"))
+
+
+```
+
+
+## How many of these countries have a complete time series? 
+
+Selecting a sample technology: Solar photovoltaic (PV) energy and checking whether the panel is balanced
+
+```{r}
+example <- df1 %>% filter(`Technology domain` == "Solar photovoltaic (PV) energy") %>% select(`Inventor country`, Year, Value)
+
+is.pbalanced(example)
+```
+
+## Summary statistics CCMT
+
+```{r, echo=FALSE}
+df1 %>% 
+ filter(!(`Inventor country` == "World")) %>% 
+  filter((`Technology domain` == "Climate change mitigation")) %>% 
+  summarise(median = median(Value, na.rm=TRUE), 
+            q25 = quantile(Value, 0.25),
+            mean = mean(Value, na.rm=TRUE), 
+            q75 = quantile(Value, 0.75), 
+            max = max(Value, na.rm=TRUE))
+
+# df1 %>% pull(`Technology domain`) %>% unique()
+```
+
+
+```{r, echo=FALSE, fig.width=10, fig.height=10}
+
+box <- df1 %>%
+  filter(!(`Inventor country` == "World")) %>% 
+  filter((`Technology domain` == "Climate change mitigation")) %>% 
+  ggplot(aes(x = Value))+ 
+  geom_boxplot(outlier.color = "red") +
+  theme_bw() +
+  ggtitle("Distribution for Climate change mitigation")
+
+hist <- df1 %>%
+  filter(!(`Inventor country` == "World")) %>% 
+  filter((`Technology domain` == "Climate change mitigation")) %>% 
+  ggplot(aes(x = Value)) +
+  geom_histogram(binwidth = 1000, fill = "navy", colour = "black", alpha = 0.7) +
+  theme_bw() + ggtitle("Binwidth = 1000")
+
+box_hist_dist <- plot_grid(box, hist, align = 'v', nrow = 2, ncol = 1)
+
+box_hist_dist
+
+```
+
+## 3-year compound growth rat
+```{r, fig.height=17, fig.width=24, echo=FALSE, warning=FALSE, include =FALSE}
+
+e
+
+#(t-1 + t_0 + t+1) / 3 
+
+########## general
+
+growth <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% general_counts) %>% 
+  rename("Tech_domain" = "Technology domain") %>% 
+  select(Tech_domain, Value, Year)
+
+pgr <- pdata.frame(growth, index = c("Tech_domain","Year"))
+
+gr_3compound <- G(pgr, -1:1, power = 1/3)
+
+gr_3compound <- drop_na(gr_3compound)
+gr_3compound$FG1.Value <- as.numeric(gr_3compound$FG1.Value)
+
+gr_general_comp <- gr_3compound %>% 
+  ggplot(aes(x = Year, y = FG1.Value, colour = Tech_domain, group = Tech_domain)) + 
+  geom_line() +
+  theme_bw() +
+  scale_colour_discrete(breaks= general_counts) +
+  theme(legend.position = "right") + 
+  ggtitle("3 years compound growth rate for green patents over time") + 
+  theme(title = element_text(size= 12, color="Black"), legend.text = element_text(size= 12, color="Black"))
+
+gr_general_comp
+
+########### tech fields
+
+growth <- df1 %>% 
+  filter((`Inventor country` == "World")) %>% 
+  filter(`Technology domain` %in% tech_fields) %>% 
+  rename("Tech_domain" = "Technology domain") %>% 
+  select(Tech_domain, Value, Year)
+
+pgr <- pdata.frame(growth, index = c("Tech_domain","Year"))
+
+# This computes the proper panel growth rate of all numeric variables
+growth_rate <- G(pgr, -1:1, power = 1/3)
+
+growth_rate <- drop_na(growth_rate)
+growth_rate$FG1.Value <- as.numeric(growth_rate$FG1.Value)
+
+gr_fields_comp <- growth_rate %>% 
+  ggplot(aes(x = Year, y = FG1.Value, colour = Tech_domain, group = Tech_domain)) + 
+  geom_line() +
+  scale_colour_discrete(breaks= tech_fields) +
+  theme_bw() +
+  theme(legend.position = "right") + 
+  ggtitle("3 years compound growth rate for Y02 technology fields") + 
+  theme(title = element_text(size= 12, color="Black"), legend.text = element_text(size= 12, color="Black"))
+
+growth_rates_plot_compound <- gr_general_comp / gr_fields_comp
+
+growth_rates_plot_compound
+
+#ggsave(".\\growth_rates_plot_smoothed.pdf", plot = growth_rates_plot_smoothed, device = "pdf", width = 23, height = 17)
+
+```

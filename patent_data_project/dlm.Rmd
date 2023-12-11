@@ -1,0 +1,101 @@
+---
+title: "distributed_lag_model"
+author: "Laura Menicacci"
+date: "2023-11-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(plm)
+library(dynamac)
+
+
+df <- read_csv(".\\PAT_DEV_05112023163538234.csv", show_col_types = F) 
+
+df1 <- df %>% select(COU, `Inventor country`, `Technology domain`, Year, Value)
+
+```
+
+## Data
+
+```{r}
+ccmt <- c("Climate change mitigation")
+
+tech_fields <- c("Climate change mitigation technologies related to energy generation, transmission or distribution")
+
+#, "Climate change mitigation technologies related to wastewater treatment or waste management", "Climate change mitigation in information and communication technologies (ICT)", "Capture, storage, sequestration or disposal of greenhouse gases", "Climate change mitigation technologies related to transportation", "Climate change mitigation technologies related to buildings", "Climate change mitigation technologies in the production or processing of goods" 
+
+AC1 <- c("Australia", "Austria", "Belgium", "Bulgaria", "Canada", "Croatia",        
+         "Czech Republic" , "Denmark", "Estonia" ,"Finland","France", "Germany",  
+         "Greece", "Hungary","Iceland","Ireland", "Italy","Japan" ,         
+         "Latvia","Lithuania", "Luxembourg","Malta","Netherlands","New Zealand",
+         "Norway","Poland","Portugal","Romania", "Slovak Republic", "Slovenia"  ,
+         "Spain","Sweden","Switzerland","United Kingdom" , "United States") 
+
+df2 <- df1 %>% 
+  filter(`Inventor country` %in% AC1) %>% 
+  filter(`Technology domain` %in% ccmt) %>% 
+  filter(Year > 1989) %>% 
+#  mutate(Value1 = Value) %>% 
+  rename("country" = "Inventor country")
+
+```
+
+## Controls
+
+Gross capital formation: <https://data.worldbank.org/indicator/NE.GDI.TOTL.KN>
+
+```{r}
+# capital investment over time: 
+inv <- read_csv(".\\gross_capital_formation_lcu.csv", skip = 4) %>% 
+  filter(`Country Name` %in% AC1) %>% 
+  select(!c(`Indicator Code`, `Indicator Name`, "1960":"1989", "...68"))
+
+library(reshape2)
+
+invpanel <- melt(inv, id.vars=c("Country Name", "Country Code"))
+invpanel$variable <- as.numeric(levels(invpanel$variable))[invpanel$variable]
+
+df3 <- left_join(df2, invpanel, by = c("COU"= "Country Code", "Year" = "variable")) %>% 
+  rename("capital_inv" = "value") %>% 
+  mutate(capital_inv_logs = log(capital_inv), 
+         patent_count_logs = log(Value)) %>%
+  select(country, Year, Value, patent_count_logs, capital_inv, capital_inv_logs)
+
+df3 %>% filter(!complete.cases(.)) # Australia + czech rep are missing + some countries are missing until 1994
+
+df4 <- df3 %>% filter(!(country %in% c("Australia", "Czech Republic"))) %>% filter(Year > 1994)
+
+df4 %>% filter(!complete.cases(.))
+
+```
+## Hausman test
+```{r}
+f_logs <- formula(patent_count_logs ~ lshift(df4$patent_count_logs, 1) + capital_inv_logs)
+
+f_levels <- formula(Value ~ lshift(df4$Value, 1))
+
+phtest(f_logs, data = df4, effect = "twoways")
+
+phtest(f_levels, data = df4, effect = "twoways")
+```
+
+## Model
+
+```{r}
+fixed <- plm(f_logs, data=df4, index=c("country", "Year"), effect = "twoways", model="within") 
+
+summary(fixed)
+```
+
+```{r}
+#res <- dynardl(patent_count_logs ~ patent_count_logs, data = df4, 
+#        lags = list("patent_count_logs" = 1),
+##        diffs = c("incshare10", "urate"), 
+#        ec = FALSE, simulate = FALSE, 
+#        noLDV = TRUE)
+#
+#summary(res)
+
+```

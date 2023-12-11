@@ -1,0 +1,550 @@
+---
+title: "Preliminary results"
+author: "Laura Menicacci"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width = 3000)
+```
+
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, max.height = '300px', fig.width = 16, fig.height = 8) #fig.show="hold",,
+
+library(data.table)
+library(tidyverse)
+library(openxlsx)
+library(gets)
+library(getspanel)
+library(here)
+library(doParallel)
+library(gridExtra)
+library(conflicted)
+library(viridis)
+library(kableExtra)
+#library(gplots)
+library(parameters)
+library(pander)
+
+conflict_prefer("filter", "dplyr")
+conflict_prefer("first", "dplyr")
+conflict_prefer("lag", "dplyr")
+conflict_prefer("plot_grid", "getspanel")
+
+```
+
+
+
+```{r, include = FALSE}
+# Plotting functions
+
+f <- function(k) {
+  step <- k
+  function(y) seq(floor(min(y)), ceiling(max(y)), by = step)
+}
+
+# Arranges result plots (plot and plot_grid) and prints model results
+# Option to suppress model results using results = FALSE is required for automatic tabsetting.
+gen_p <- function(df, results = TRUE, auto = FALSE){
+  if(nrow(df) == 0){return("Empty data frame. Model likely not run.")}else{
+    for(i in 1:nrow(df)){
+      mt <- paste0( " (", df$year_range[i],")", "; p.value: ",df$p_val[i],  "; AR: ",df$ar[i]) # df$state_sample[i], removed from beginning of paste0
+      st <- paste0("Formula: ", df$source[i])
+      
+      res <- df %>% slice(i) %>% pull(is) %>% first
+      
+      pl <- res %>% 
+        plot(zero_line = FALSE) +
+        ggtitle(label = mt, subtitle = st) +
+        scale_x_continuous(breaks = f(10))
+      
+      pg <- res %>%
+        plot_grid() +
+        ggtitle(label = mt, subtitle = st)
+      grid.arrange(pl, pg, ncol = 2)
+      
+      if(results == TRUE & auto == FALSE){
+        print(st)
+        print(mt)
+        print(res)
+      }else if(results == TRUE & auto == TRUE){
+        p <- invisible(capture.output(res$isatpanel.result))
+        # Spacing included to trick knitr into reading as verbatim code.
+        cat(c("                         \n", 
+              "                         \n", 
+              paste("                  ", st,'     \n'),
+              paste("                  ", mt,'     \n'),
+              paste("                  ", p,'     \n')))
+      }
+    }
+  }
+}
+
+```
+
+
+
+```{r, include=FALSE}
+
+library(assertthat)
+
+# Data manipulation function: extracts plot_grid input data from getspanel
+# mod = df of models as created above. Minimum requirement is 2 columns (is =  isatpanel object, model = model name)
+# na.rm removes countries for which NO model reveals a break/effect
+convert <- function(mod){
+  if(nrow(mod) == 0){
+    print("No models to plot.")
+  }else{
+    c_mods <- tibble()
+    for(m in 1:nrow(mod)){
+      if(mod %>% slice(m) %>% pull(is) %>% first %>% plot_grid %>% ggplot_build %>% try %>% is.error){next}else{
+      mod_name <- mod %>% slice(m) %>% pull(mod_name)
+      # Currently, this extracts the data used to build the plot_grid in isatpanel; not ideal
+      grid_dat <- mod %>% slice(m) %>% pull(is) %>% first %>% plot_grid %>% ggplot_build
+      grid_dat <- grid_dat$plot$data
+      grid_dat$model <- mod_name
+      c_mods <- rbind(c_mods, grid_dat)
+    }
+  }
+  return(c_mods)
+  }
+}
+
+# Possible that this incorrectly distinguishes negative and positive breaks by including impulse effects? To be checked and corrected.
+plot_comp <- function(mod, panel = "country", na.rm = TRUE, sign = NULL){
+  tmp <- convert(mod)
+  
+  if(panel == "model"){
+    tmp <- tmp %>% rename(id = model, model = id)
+  }else if(!(panel == "country")){
+    print("Error")
+    break}else{}
+  
+  if(na.rm == TRUE){
+    tmp <- tmp %>% group_by(id) %>% filter(!all(is.na(effect)))
+  }
+  if(sign == "pos"){
+    tmp <- tmp %>% group_by(id) %>% filter(any(effect > 0))
+    
+  }else if(sign == "neg") { tmp <- tmp %>% group_by(id) %>% filter(any(effect < 0))}
+  
+  p <- tmp %>% ggplot(aes(x = time, y = model)) +
+    geom_tile(aes(fill = effect), na.rm = NA) +
+    scale_fill_gradient2(na.value = NA, name = "Effect")+
+    scale_x_continuous(expand = c(0,0)) +
+    scale_y_discrete(expand = c(0,0), limits = rev) +
+    facet_grid(id~.) +
+    theme_bw() +
+    theme(panel.grid = element_blank(),
+          panel.border = element_rect(fill = NA),
+          strip.background = element_blank(),
+          axis.text = element_text(size = 12, color = "black"),
+          strip.text.y = element_text(size = 14, angle = 0)) +
+    labs(x = NULL, y = NULL,title= "Model Overview")
+  
+  print(p)
+}
+```
+
+
+
+```{r, echo=FALSE}
+results <- readRDS(here("ccmt_IIS.RDS")) %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula),
+         mod_name = case_when(grepl("TRUE", iis) ~ "Model w IIS")) 
+
+noiis <- readRDS(here("ccmt_noIIS.RDS")) %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula),
+         mod_name = case_when(grepl("FALSE", iis) ~ "Model w/o IIS"))
+
+final_models <- rbind(results, noiis)
+  
+```
+
+ * **Time series: 1995:2019**
+ * **Sample: 21 countries**
+ * **Function: levels, logs, growth rates**
+ * **p-val: 0.01, 0.05**
+ * **AR(0,1)**
+
+# Climate change mitigation technologies {.tabset} 
+
+## with IIS {.tabset}
+
+```{r mod1 , echo = FALSE, results = 'asis'}
+
+final_models %>%
+  filter(mod_name == "Model w IIS") %>% 
+  #filter(ar == 0 & p_val == 0.01) %>% 
+       dplyr::group_split(dep) %>%
+       purrr::iwalk(.,~{
+         name <- unique(.x$dep)
+         cat('### ', name, '{.tabset}   \n')
+              for(a in unique(.x$ar)){
+                   cat('#### ', a, '{.tabset}   \n')
+                for(p in unique(.x$p_val)){
+                   cat('##### ', p, '{.tabset}   \n')
+                   filter(.x, ar == a & p_val == p) %>% gen_p(., auto = TRUE)
+                cat('\n')
+                cat('\n')
+                }
+           cat('\n')
+           cat('\n')
+           }
+         cat('\n')
+         cat('\n')
+       })
+
+
+
+```
+
+
+## without IIS {.tabset}
+
+```{r  mod2, echo = FALSE, results = 'asis'}
+
+final_models %>%
+  filter(mod_name == "Model w/o IIS") %>% 
+  #filter(ar == 1) %>% 
+       dplyr::group_split(dep) %>%
+       purrr::iwalk(.,~{
+         name <- unique(.x$dep)
+         cat('### ', name, '{.tabset}   \n')
+              for(a in unique(.x$ar)){
+                   cat('#### ', a, '{.tabset}   \n')
+                for(p in unique(.x$p_val)){
+                   cat('##### ', p, '{.tabset}   \n')
+                   filter(.x, ar == a & p_val == p) %>% gen_p(., auto = TRUE)
+                cat('\n')
+                cat('\n')
+                }
+           cat('\n')
+           cat('\n')
+           }
+         cat('\n')
+         cat('\n')
+       })
+
+```
+
+# Energy {.tabset}
+
+```{r, echo=FALSE}
+results_energy <- readRDS(here("energy_IIS.RDS")) %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula),
+         mod_name = case_when(grepl("TRUE", iis) ~ "Model w IIS")) 
+
+noiis_energy <- readRDS(here("energy_noIIS.RDS")) %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula),
+         mod_name = case_when(grepl("FALSE", iis) ~ "Model w/o IIS"))
+
+final_models_energy <- rbind(results_energy, noiis_energy)
+
+```
+
+## with IIS {.tabset}
+
+```{r mod_energy_iis , echo = FALSE, results = 'asis'}
+
+final_models_energy %>%
+  filter(mod_name == "Model w IIS") %>% 
+  #filter(ar == 0 & p_val == 0.01) %>% 
+       dplyr::group_split(dep) %>%
+       purrr::iwalk(.,~{
+         name <- unique(.x$dep)
+         cat('### ', name, '{.tabset}   \n')
+              for(a in unique(.x$ar)){
+                   cat('#### ', a, '{.tabset}   \n')
+                for(p in unique(.x$p_val)){
+                   cat('##### ', p, '{.tabset}   \n')
+                   filter(.x, ar == a & p_val == p) %>% gen_p(., auto = TRUE)
+                cat('\n')
+                cat('\n')
+                }
+           cat('\n')
+           cat('\n')
+           }
+         cat('\n')
+         cat('\n')
+       })
+
+
+
+```
+
+
+## without IIS {.tabset}
+
+```{r mod_energy_noiis , echo = FALSE, results = 'asis'}
+
+final_models_energy %>%
+  filter(mod_name == "Model w/o IIS") %>% 
+  #filter(ar == 0 & p_val == 0.01) %>% 
+       dplyr::group_split(dep) %>%
+       purrr::iwalk(.,~{
+         name <- unique(.x$dep)
+         cat('### ', name, '{.tabset}   \n')
+              for(a in unique(.x$ar)){
+                   cat('#### ', a, '{.tabset}   \n')
+                for(p in unique(.x$p_val)){
+                   cat('##### ', p, '{.tabset}   \n')
+                   filter(.x, ar == a & p_val == p) %>% gen_p(., auto = TRUE)
+                cat('\n')
+                cat('\n')
+                }
+           cat('\n')
+           cat('\n')
+           }
+         cat('\n')
+         cat('\n')
+       })
+
+
+
+```
+
+# Solar {.tabset}
+
+```{r, echo=FALSE}
+results_solar <- readRDS(here("solar_IIS.RDS")) %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula),
+         mod_name = case_when(grepl("TRUE", iis) ~ "Model w IIS")) 
+
+noiis_solar <- readRDS(here("solar_noIIS.RDS")) %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula),
+         mod_name = case_when(grepl("FALSE", iis) ~ "Model w/o IIS"))
+
+final_models_solar <- rbind(results_solar, noiis_solar)
+
+```
+
+## with IIS {.tabset}
+
+```{r mod_solar_iis , echo = FALSE, results = 'asis'}
+
+final_models_solar %>%
+  filter(mod_name == "Model w IIS") %>% 
+  #filter(ar == 0 & p_val == 0.01) %>% 
+       dplyr::group_split(dep) %>%
+       purrr::iwalk(.,~{
+         name <- unique(.x$dep)
+         cat('### ', name, '{.tabset}   \n')
+              for(a in unique(.x$ar)){
+                   cat('#### AR', a, '{.tabset}   \n')
+                for(p in unique(.x$p_val)){
+                   cat('##### ', p, '{.tabset}   \n')
+                   filter(.x, ar == a & p_val == p) %>% gen_p(., auto = TRUE)
+                cat('\n')
+                cat('\n')
+                }
+           cat('\n')
+           cat('\n')
+           }
+         cat('\n')
+         cat('\n')
+       })
+
+```
+
+## without IIS {.tabset}
+
+```{r mod_solar_noiis , echo = FALSE, results = 'asis'}
+
+final_models_solar %>%
+  filter(mod_name == "Model w/o IIS") %>% 
+  #filter(ar == 0 & p_val == 0.01) %>% 
+       dplyr::group_split(dep) %>%
+       purrr::iwalk(.,~{
+         name <- unique(.x$dep)
+         cat('### ', name, '{.tabset}   \n')
+              for(a in unique(.x$ar)){
+                   cat('#### ', a, '{.tabset}   \n')
+                for(p in unique(.x$p_val)){
+                   cat('##### ', p, '{.tabset}   \n')
+                   filter(.x, ar == a & p_val == p) %>% gen_p(., auto = TRUE)
+                cat('\n')
+                cat('\n')
+                }
+           cat('\n')
+           cat('\n')
+           }
+         cat('\n')
+         cat('\n')
+       })
+
+
+
+```
+
+
+# Wind {.tabset}
+
+```{r, echo=FALSE}
+results_wind <- readRDS(here("wind_IIS.RDS")) %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula),
+         mod_name = case_when(grepl("TRUE", iis) ~ "Model w IIS")) 
+
+noiis_wind <- readRDS(here("wind_noIIS.RDS")) %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula),
+         mod_name = case_when(grepl("FALSE", iis) ~ "Model w/o IIS"))
+
+final_models_wind <- rbind(results_wind, noiis_wind)
+
+```
+
+## with IIS {.tabset}
+
+```{r mod_wind_iis , echo = FALSE, results = 'asis'}
+
+final_models_wind %>%
+  filter(mod_name == "Model w IIS") %>% 
+  #filter(ar == 0 & p_val == 0.01) %>% 
+       dplyr::group_split(dep) %>%
+       purrr::iwalk(.,~{
+         name <- unique(.x$dep)
+         cat('### ', name, '{.tabset}   \n')
+              for(a in unique(.x$ar)){
+                   cat('#### AR', a, '{.tabset}   \n')
+                for(p in unique(.x$p_val)){
+                   cat('##### ', p, '{.tabset}   \n')
+                   filter(.x, ar == a & p_val == p) %>% gen_p(., auto = TRUE)
+                cat('\n')
+                cat('\n')
+                }
+           cat('\n')
+           cat('\n')
+           }
+         cat('\n')
+         cat('\n')
+       })
+
+```
+
+
+## without IIS {.tabset}
+
+```{r mod_wind_noiis , echo = FALSE, results = 'asis'}
+
+final_models_wind %>%
+  filter(mod_name == "Model w/o IIS") %>% 
+  #filter(ar == 0 & p_val == 0.01) %>% 
+       dplyr::group_split(dep) %>%
+       purrr::iwalk(.,~{
+         name <- unique(.x$dep)
+         cat('### ', name, '{.tabset}   \n')
+              for(a in unique(.x$ar)){
+                   cat('#### ', a, '{.tabset}   \n')
+                for(p in unique(.x$p_val)){
+                   cat('##### ', p, '{.tabset}   \n')
+                   filter(.x, ar == a & p_val == p) %>% gen_p(., auto = TRUE)
+                cat('\n')
+                cat('\n')
+                }
+           cat('\n')
+           cat('\n')
+           }
+         cat('\n')
+         cat('\n')
+       })
+
+
+
+```
+
+# Batteries {.tabset}
+
+```{r, echo=FALSE}
+results_batteries <- readRDS(here("batteries_IIS.RDS")) %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula),
+         mod_name = case_when(grepl("TRUE", iis) ~ "Model w IIS")) 
+
+noiis_batteries <- readRDS(here("batteries_noIIS.RDS")) %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula),
+         mod_name = case_when(grepl("FALSE", iis) ~ "Model w/o IIS"))
+
+final_models_batteries <- rbind(results_batteries, noiis_batteries)
+
+```
+
+## with IIS {.tabset}
+
+```{r mod_batteries_iis , echo = FALSE, results = 'asis'}
+
+final_models_batteries %>%
+  filter(mod_name == "Model w IIS") %>% 
+  #filter(ar == 0 & p_val == 0.01) %>% 
+       dplyr::group_split(dep) %>%
+       purrr::iwalk(.,~{
+         name <- unique(.x$dep)
+         cat('### ', name, '{.tabset}   \n')
+              for(a in unique(.x$ar)){
+                   cat('#### AR', a, '{.tabset}   \n')
+                for(p in unique(.x$p_val)){
+                   cat('##### ', p, '{.tabset}   \n')
+                   filter(.x, ar == a & p_val == p) %>% gen_p(., auto = TRUE)
+                cat('\n')
+                cat('\n')
+                }
+           cat('\n')
+           cat('\n')
+           }
+         cat('\n')
+         cat('\n')
+       })
+
+```
+
+
+## without IIS {.tabset}
+
+```{r mod_batteries_noiis , echo = FALSE, results = 'asis'}
+
+final_models_batteries %>%
+  filter(mod_name == "Model w/o IIS") %>% 
+  #filter(ar == 0 & p_val == 0.01) %>% 
+       dplyr::group_split(dep) %>%
+       purrr::iwalk(.,~{
+         name <- unique(.x$dep)
+         cat('### ', name, '{.tabset}   \n')
+              for(a in unique(.x$ar)){
+                   cat('#### ', a, '{.tabset}   \n')
+                for(p in unique(.x$p_val)){
+                   cat('##### ', p, '{.tabset}   \n')
+                   filter(.x, ar == a & p_val == p) %>% gen_p(., auto = TRUE)
+                cat('\n')
+                cat('\n')
+                }
+           cat('\n')
+           cat('\n')
+           }
+         cat('\n')
+         cat('\n')
+       })
+
+
+
+```
+

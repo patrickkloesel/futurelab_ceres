@@ -1,0 +1,704 @@
+---
+title: "setup_model"
+author: "Laura Menicacci"
+date: "2023-12-05"
+output: html_document
+---
+
+# Exploration Break detection 
+
+* Controls: GDP and population
+* Data samples: Y02(all ccmts), Y02E (energy), solar, wind, batteries 
+* Country sample: 
+
+Specifications:
+
+* levels
+* levels + AR(1)
+* IIS on & off
+* p-values (0.05, 0.01)
+* growth rates
+* growth rates + AR(1)
+* IIS on & off
+* p-values (0.05, 0.01)
+
+## Libraries
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(gets)
+library(getspanel)
+library(here)
+library(doParallel)
+library(readxl)
+library(gdata)
+library(ggthemes)
+library(collapse)
+library(plm)
+library(forecast)
+
+df <- read_csv(".\\Data\\PAT_DEV_MOD_SPEC.csv", show_col_types = F) 
+
+df1 <- df %>% select(COU, `Inventor country`, `Technology domain`, Year, Value) %>% rename("ISO" = "COU", "country" = "Inventor country", "tech" = "Technology domain", "count" = "Value", "year" = "Year")
+
+################# aggregate the solar technology counts together 
+
+solar_list <- c("Solar thermal-PV hybrids", "Solar photovoltaic (PV) energy", "Solar thermal energy")
+
+df1 <- df1 %>% 
+  mutate(tech = case_when(tech %in% solar_list ~ "Solar energy",
+    TRUE ~ as.character(tech))) %>%
+  group_by(ISO, year, tech) %>%
+  summarise(count = sum(count)) %>%
+  ungroup()
+
+
+```
+
+## Prepare data
+
+* 196 countries
+* aggregate 3 types of solar techs into 1
+* Add 0 values for missing years
+
+```{r}
+years <- 1990:2020
+
+# Create a data frame with all combinations of countries, years, and tech types
+expand_df <- expand.grid(ISO = unique(df1$ISO), year = years, tech = unique(df1$tech))
+expand_df$count <- 0  # Initialize count column with 0
+
+# Merge with the original data
+merged_df <- merge(expand_df, df1, by = c("ISO", "year", "tech"), all.x = TRUE)
+
+# Replace NA values in the count column with 0
+merged_df$count.y[is.na(merged_df$count.y)] <- 0
+
+df2 <- merged_df %>% select(ISO, year, tech, count.y) %>% rename("count" = "count.y")
+
+```
+
+## Histogram & boxplot
+
+```{r}
+stats_pat <- df2 %>% 
+  group_by(ISO, tech) %>% 
+  summarise(median = median(count, na.rm=TRUE),
+            q25 = quantile(count, 0.25),
+            mean = mean(count, na.rm=TRUE), 
+            q75 = quantile(count, 0.75), 
+            max = max(count, na.rm=TRUE))
+
+box <- stats_pat %>% 
+  ggplot(aes(x = mean))+ 
+  geom_boxplot(colour = "black") +
+  geom_vline(xintercept = quantile(stats_pat$mean, 0.3), color = "red")+
+  xlab("")+
+  ylab("") +
+  theme_clean() +
+  theme(plot.background = element_blank(), 
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+hist <- stats_pat %>% 
+  ggplot(aes(x = mean)) +
+  geom_histogram(bins = 51, binwidth = 1, fill = "navy", colour = "black", alpha = 0.7) +
+  geom_vline(xintercept = quantile(stats_pat$mean, 0.3), color = "red") +
+  ylab("") +
+  xlab("mean patent counts by country") +
+  theme_clean() +
+  theme(plot.background = element_blank())
+
+
+library(cowplot)
+box_hist_dist <- plot_grid(box, hist, align = 'v', nrow = 2, ncol = 1)
+
+box_hist_dist
+
+
+
+```
+
+## Remove non-patenting countries 
+
+TO DO:
+- Need to assess by each technology class how is the distribution 
+
+```{r}
+
+stats_pat2 <- stats_pat[order(stats_pat$mean, decreasing = TRUE),]
+
+top_pat_countries <- unique(stats_pat2[1:70, 1]) # top patenting countries
+
+df3 <- df2 %>% filter(ISO %in% top_pat_countries$ISO)
+
+```
+
+
+## Add here time series analysis 
+
+- check for stationarity
+- take in case first differences ? 
+
+## Add controls 
+
+```{r}
+gdp <- read_csv(".\\Data\\GDP.csv", skip = 4) %>% 
+  select(`Country Name`, `Country Code`, "1990", "1991", "1992", "1993", "1994", "1995", "1996","1997", "1998", "1999","2000" ,"2001" ,"2002" ,"2003" ,"2004" ,"2005" ,"2006" ,"2007" ,"2008" ,"2009" ,"2010" ,"2011", "2012","2013","2014","2015","2016","2017","2018","2019","2020") %>% 
+  pivot_longer(cols = c("1990", "1991", "1992", "1993", "1994", "1995", "1996","1997", "1998", "1999","2000" ,"2001" ,"2002" ,"2003" ,"2004" ,"2005" ,"2006" ,"2007" ,"2008" ,"2009" ,"2010" ,"2011", "2012","2013","2014","2015","2016","2017","2018","2019","2020"), 
+               names_to = "year", 
+               values_to = "gdp")
+
+pop <- read_csv(".\\Data\\POP.csv", skip = 4) %>% 
+  select(`Country Name`, `Country Code`, "1990", "1991", "1992", "1993", "1994", "1995", "1996","1997", "1998", "1999","2000" ,"2001" ,"2002" ,"2003" ,"2004" ,"2005" ,"2006" ,"2007" ,"2008" ,"2009" ,"2010" ,"2011", "2012","2013","2014","2015","2016","2017","2018","2019","2020") %>% 
+  pivot_longer(cols = c("1990", "1991", "1992", "1993", "1994", "1995", "1996","1997", "1998", "1999","2000" ,"2001" ,"2002" ,"2003" ,"2004" ,"2005" ,"2006" ,"2007" ,"2008" ,"2009" ,"2010" ,"2011", "2012","2013","2014","2015","2016","2017","2018","2019","2020"), 
+               names_to = "year", 
+               values_to = "pop")
+
+controls <- left_join(gdp, pop, by = c("Country Name", "Country Code", "year")) %>% 
+  select(!`Country Name`)
+
+controls$year <- as.numeric(controls$year)
+
+df3 <- left_join(df3, controls, by = c("ISO" = "Country Code" , "year"))
+```
+
+
+## Create logs 
+
+```{r}
+df_mod <- df3 %>% 
+  mutate(lpop = log(pop), # log pop
+         lgdp = log(gdp), # log gdp
+         lgdp_sq = log(gdp)^2, # squared gdp
+         log_count = log(count+1)) # log+1 transformation
+
+df_mod %>% pull(ISO) %>% unique # sanity check
+
+df_mod %>% filter(!complete.cases(.)) # Israel does not have GDP for all years (1990-1994 are missing)
+
+df_mod <- df_mod %>% drop_na()
+
+```
+
+## Load samples for different techs & create growth rates
+
+```{r}
+techs <- c("Climate change mitigation", "Climate change mitigation technologies related to energy generation, transmission or distribution", "Batteries", "Wind energy", "Solar energy")
+
+ccmt <- df_mod %>% filter(tech == "Climate change mitigation")
+
+pgr <- pdata.frame(ccmt, index = c("ISO","year")) 
+
+ccmt$count_gr <- G(pgr$count, n = 1) 
+ccmt$pop_gr <- G(pgr$pop, n = 1) 
+ccmt$gdp_gr <- G(pgr$gdp, n = 1) 
+
+ccmt <- ccmt %>% mutate(count_ma = ma(count_gr,3), 
+                        pop_ma = ma(pop_gr,3), 
+                        gdp_ma = ma(gdp_gr,3)) %>% 
+  drop_na() %>% 
+  filter(year > 1994)
+
+ccmt %>% filter(!complete.cases(.))
+
+ccmt1 <- make.pbalanced(ccmt)
+
+is.pbalanced(ccmt1)
+
+```
+
+# Functional forms
+
+```{r}
+controls <- c("~ gdp + pop", "~ lgdp + lpop", "~ gdp_ma + pop_ma") # specify controls 
+
+dep_var <- c("count", "log_count", "count_ma") # specify dependent var  
+
+base_forms <- paste0(dep_var, controls) # paste together
+
+base_forms
+
+```
+
+# Analysis: CCMT
+
+```{r}
+
+cl <- makeCluster(6) 
+registerDoParallel(cl)
+
+models <- foreach(f = base_forms, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:% # specify functional form 
+  #foreach(smpl = techs, .combine = rbind) %:% # specify samples
+  foreach(a = c(0,1), .combine = rbind) %:%
+  foreach(p.value = c(0.01, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
+    dat <- ccmt1
+      is <- isatpanel( # main function
+            data = dat,
+            formula = as.formula(f),
+            index = c("ISO", "year"), # id and time
+            effect = "twoways", # twoway fixed effects chosen as estimator
+            iis = TRUE, # enable impulse indicator saturation
+            fesis = TRUE, # enable fixed effects indicator saturation
+            ar = a, # specify auto-regressive terms
+            t.pval = p.value,  # false positive rate
+            max.block.size = 20 # size for block search 
+            )
+          models = tibble(source = f, 
+                          #state_sample = smpl,    # which sample 
+                          year_range = paste0(min(ccmt1$year),":",max(ccmt1$year)), # time series
+                          p_val = p.value, # false positive rates 
+                          is = list(is), # model
+                          iis = TRUE, # IIS
+                          b_size = 20,
+                          ar = a)
+  }
+
+stopCluster(cl) # stop parallelizing 
+
+saveRDS(models, ".\\ccmt_IIS.RDS")  # save model output 
+```
+
+## Analysis: no IIS 
+
+```{r}
+cl <- makeCluster(6)
+registerDoParallel(cl)
+
+models <- foreach(f = base_forms, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:% # specify functional form 
+  #foreach(smpl = techs, .combine = rbind) %:% # specify samples
+  foreach(a = c(0,1), .combine = rbind) %:%
+  foreach(p.value = c(0.01, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
+    dat <- ccmt1
+      is <- isatpanel( # main function
+            data = dat,
+            formula = as.formula(f),
+            index = c("ISO", "year"), # id and time
+            effect = "twoways", # twoway fixed effects chosen as estimator
+            iis = FALSE, # enable impulse indicator saturation
+            fesis = TRUE, # enable fixed effects indicator saturation
+            ar = a, # specify auto-regressive terms
+            t.pval = p.value,  # false positive rate
+            max.block.size = 20 # size for block search 
+            )
+          models = tibble(source = f, 
+                          #state_sample = smpl,    # which sample 
+                          year_range = paste0(min(ccmt1$year),":",max(ccmt1$year)), # time series
+                          p_val = p.value, # false positive rates 
+                          is = list(is), # model
+                          iis = FALSE, # IIS
+                          b_size = 20,
+                          ar = a)
+  }
+
+stopCluster(cl) # stop parallelizing 
+
+saveRDS(models, ".\\ccmt_noIIS.RDS")
+```
+
+
+## Energy 
+
+```{r}
+
+energy <- df_mod %>% filter(tech == "Climate change mitigation technologies related to energy generation, transmission or distribution")
+
+pgr <- pdata.frame(energy, index = c("ISO","year")) 
+
+energy$count_gr <- G(pgr$count, n = 1) 
+energy$pop_gr <- G(pgr$pop, n = 1) 
+energy$gdp_gr <- G(pgr$gdp, n = 1) 
+
+energy <- energy %>% mutate(count_ma = ma(count_gr,3), 
+                        pop_ma = ma(pop_gr,3), 
+                        gdp_ma = ma(gdp_gr,3)) %>% 
+  drop_na() %>% 
+  filter(year > 1994)
+
+energy %>% filter(!complete.cases(.))
+
+energy1 <- make.pbalanced(energy)
+
+is.pbalanced(energy1)
+
+################# model w IIS
+
+cl <- makeCluster(6) 
+registerDoParallel(cl)
+
+models <- foreach(f = base_forms, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:% # specify functional form 
+  #foreach(smpl = techs, .combine = rbind) %:% # specify samples
+  foreach(a = c(0,1), .combine = rbind) %:%
+  foreach(p.value = c(0.01, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
+    dat <- energy1
+      is <- isatpanel( # main function
+            data = dat,
+            formula = as.formula(f),
+            index = c("ISO", "year"), # id and time
+            effect = "twoways", # twoway fixed effects chosen as estimator
+            iis = TRUE, # enable impulse indicator saturation
+            fesis = TRUE, # enable fixed effects indicator saturation
+            ar = a, # specify auto-regressive terms
+            t.pval = p.value,  # false positive rate
+            max.block.size = 20 # size for block search 
+            )
+          models = tibble(source = f, 
+                          #state_sample = smpl,    # which sample 
+                          year_range = paste0(min(energy1$year),":",max(energy1$year)), # time series
+                          p_val = p.value, # false positive rates 
+                          is = list(is), # model
+                          iis = TRUE, # IIS
+                          b_size = 20,
+                          ar = a)
+  }
+
+stopCluster(cl)
+
+saveRDS(models, ".\\energy_IIS.RDS")  # save model output 
+
+################################ NO IIS
+
+cl <- makeCluster(6)
+registerDoParallel(cl)
+
+models <- foreach(f = base_forms, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:% # specify functional form 
+  #foreach(smpl = techs, .combine = rbind) %:% # specify samples
+  foreach(a = c(0,1), .combine = rbind) %:%
+  foreach(p.value = c(0.01, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
+    dat <- energy1
+      is <- isatpanel( # main function
+            data = dat,
+            formula = as.formula(f),
+            index = c("ISO", "year"), # id and time
+            effect = "twoways", # twoway fixed effects chosen as estimator
+            iis = FALSE, # enable impulse indicator saturation
+            fesis = TRUE, # enable fixed effects indicator saturation
+            ar = a, # specify auto-regressive terms
+            t.pval = p.value,  # false positive rate
+            max.block.size = 20 # size for block search 
+            )
+          models = tibble(source = f, 
+                          #state_sample = smpl,    # which sample 
+                          year_range = paste0(min(energy1$year),":",max(energy1$year)), # time series
+                          p_val = p.value, # false positive rates 
+                          is = list(is), # model
+                          iis = FALSE, # IIS
+                          b_size = 20,
+                          ar = a)
+  }
+
+stopCluster(cl) # stop parallelizing 
+
+saveRDS(models, ".\\energy_noIIS.RDS")
+```
+
+
+## Wind 
+
+```{r}
+wind <- df_mod %>% filter(tech == "Wind energy")  %>% 
+  filter(year > 1994)
+
+#pgr <- pdata.frame(wind, index = c("ISO","year")) 
+#
+#wind$count_gr <- G(pgr$count, n = 1) 
+#wind$pop_gr <- G(pgr$pop, n = 1) 
+#wind$gdp_gr <- G(pgr$gdp, n = 1) 
+#
+#wind <- wind %>% mutate(count_ma = ma(count_gr,3), 
+#                        pop_ma = ma(pop_gr,3), 
+#                        gdp_ma = ma(gdp_gr,3)) %>% 
+#  drop_na()
+
+wind %>% filter(!complete.cases(.))
+
+#wind1 <- make.pbalanced(wind)
+
+is.pbalanced(wind)
+
+################# new controls
+
+controls <- c("~ gdp + pop", "~ lgdp + lpop") # specify controls 
+
+dep_var <- c("count", "log_count") # specify dependent var  
+
+base_forms <- paste0(dep_var, controls) # paste together
+
+################# model w IIS
+
+cl <- makeCluster(6) 
+registerDoParallel(cl)
+
+models <- foreach(f = base_forms, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:% # specify functional form 
+  #foreach(smpl = techs, .combine = rbind) %:% # specify samples
+  foreach(a = c(0,1), .combine = rbind) %:%
+  foreach(p.value = c(0.01, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
+    dat <- wind
+      is <- isatpanel( # main function
+            data = dat,
+            formula = as.formula(f),
+            index = c("ISO", "year"), # id and time
+            effect = "twoways", # twoway fixed effects chosen as estimator
+            iis = TRUE, # enable impulse indicator saturation
+            fesis = TRUE, # enable fixed effects indicator saturation
+            ar = a, # specify auto-regressive terms
+            t.pval = p.value,  # false positive rate
+            max.block.size = 20 # size for block search 
+            )
+          models = tibble(source = f, 
+                          #state_sample = smpl,    # which sample 
+                          year_range = paste0(min(wind$year),":",max(wind$year)), # time series
+                          p_val = p.value, # false positive rates 
+                          is = list(is), # model
+                          iis = TRUE, # IIS
+                          b_size = 20,
+                          ar = a)
+  }
+
+stopCluster(cl)
+
+saveRDS(models, ".\\wind_IIS.RDS")  # save model output 
+
+################################ NO IIS
+
+cl <- makeCluster(6)
+registerDoParallel(cl)
+
+models <- foreach(f = base_forms, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:% # specify functional form 
+  #foreach(smpl = techs, .combine = rbind) %:% # specify samples
+  foreach(a = c(0,1), .combine = rbind) %:%
+  foreach(p.value = c(0.01, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
+    dat <- wind
+      is <- isatpanel( # main function
+            data = dat,
+            formula = as.formula(f),
+            index = c("ISO", "year"), # id and time
+            effect = "twoways", # twoway fixed effects chosen as estimator
+            iis = FALSE, # enable impulse indicator saturation
+            fesis = TRUE, # enable fixed effects indicator saturation
+            ar = a, # specify auto-regressive terms
+            t.pval = p.value,  # false positive rate
+            max.block.size = 20 # size for block search 
+            )
+          models = tibble(source = f, 
+                          #state_sample = smpl,    # which sample 
+                          year_range = paste0(min(wind$year),":",max(wind$year)), 
+                          p_val = p.value, # false positive rates 
+                          is = list(is), # model
+                          iis = FALSE, # IIS
+                          b_size = 20,
+                          ar = a)
+  }
+
+stopCluster(cl) # stop parallelizing 
+
+saveRDS(models, ".\\wind_noIIS.RDS")
+
+```
+
+
+## Solar 
+
+```{r}
+solar <- df_mod %>% filter(tech == "Solar energy")
+
+pgr <- pdata.frame(solar, index = c("ISO","year")) 
+
+solar$count_gr <- G(pgr$count, n = 1) 
+solar$pop_gr <- G(pgr$pop, n = 1) 
+solar$gdp_gr <- G(pgr$gdp, n = 1) 
+
+solar <- solar %>% mutate(count_ma = ma(count_gr,3), 
+                        pop_ma = ma(pop_gr,3), 
+                        gdp_ma = ma(gdp_gr,3)) %>% 
+  drop_na() %>% 
+  filter(year > 1994)
+
+solar %>% filter(!complete.cases(.))
+
+solar1 <- make.pbalanced(solar)
+
+is.pbalanced(solar1)
+
+################# model w IIS
+
+cl <- makeCluster(6) 
+registerDoParallel(cl)
+
+models <- foreach(f = base_forms, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:% # specify functional form 
+  #foreach(smpl = techs, .combine = rbind) %:% # specify samples
+  foreach(a = c(0,1), .combine = rbind) %:%
+  foreach(p.value = c(0.01, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
+    dat <- solar1
+      is <- isatpanel( # main function
+            data = dat,
+            formula = as.formula(f),
+            index = c("ISO", "year"), # id and time
+            effect = "twoways", # twoway fixed effects chosen as estimator
+            iis = TRUE, # enable impulse indicator saturation
+            fesis = TRUE, # enable fixed effects indicator saturation
+            ar = a, # specify auto-regressive terms
+            t.pval = p.value,  # false positive rate
+            max.block.size = 20 # size for block search 
+            )
+          models = tibble(source = f, 
+                          #state_sample = smpl,    # which sample 
+                          year_range = paste0(min(solar1$year),":",max(solar1$year)), # time series
+                          p_val = p.value, # false positive rates 
+                          is = list(is), # model
+                          iis = TRUE, # IIS
+                          b_size = 20,
+                          ar = a)
+  }
+
+stopCluster(cl)
+
+saveRDS(models, ".\\solar_IIS.RDS")  # save model output 
+
+################################ NO IIS
+
+cl <- makeCluster(6)
+registerDoParallel(cl)
+
+models <- foreach(f = base_forms, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:% # specify functional form 
+  #foreach(smpl = techs, .combine = rbind) %:% # specify samples
+  foreach(a = c(0,1), .combine = rbind) %:%
+  foreach(p.value = c(0.01, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
+    dat <- solar1
+      is <- isatpanel( # main function
+            data = dat,
+            formula = as.formula(f),
+            index = c("ISO", "year"), # id and time
+            effect = "twoways", # twoway fixed effects chosen as estimator
+            iis = FALSE, # enable impulse indicator saturation
+            fesis = TRUE, # enable fixed effects indicator saturation
+            ar = a, # specify auto-regressive terms
+            t.pval = p.value,  # false positive rate
+            max.block.size = 20 # size for block search 
+            )
+          models = tibble(source = f, 
+                          #state_sample = smpl,    # which sample 
+                          year_range = paste0(min(solar1$year),":",max(solar1$year)), 
+                          p_val = p.value, # false positive rates 
+                          is = list(is), # model
+                          iis = FALSE, # IIS
+                          b_size = 20,
+                          ar = a)
+  }
+
+stopCluster(cl) # stop parallelizing 
+
+saveRDS(models, ".\\solar_noIIS.RDS")
+
+```
+
+
+## Batteries
+
+```{r}
+
+batteries <- df_mod %>% filter(tech == "Batteries") %>% 
+  filter(year > 1994)
+
+#pgr <- pdata.frame(batteries, index = c("ISO","year")) 
+#
+#batteries$count_gr <- G(pgr$count, n = 1) 
+#batteries$pop_gr <- G(pgr$pop, n = 1) 
+#batteries$gdp_gr <- G(pgr$gdp, n = 1) 
+#
+#batteries <- batteries %>% mutate(count_ma = ma(count_gr,3), 
+#                        pop_ma = ma(pop_gr,3), 
+#                        gdp_ma = ma(gdp_gr,3)) %>% 
+#  drop_na()
+
+batteries %>% filter(!complete.cases(.))
+
+#batteries1 <- make.pbalanced(batteries)
+
+is.pbalanced(batteries)
+
+################# new controls
+
+controls <- c("~ gdp + pop", "~ lgdp + lpop") # specify controls 
+
+dep_var <- c("count", "log_count") # specify dependent var  
+
+base_forms <- paste0(dep_var, controls) # paste together
+
+################# model w IIS
+
+cl <- makeCluster(6) 
+registerDoParallel(cl)
+
+models <- foreach(f = base_forms, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:% # specify functional form 
+  #foreach(smpl = techs, .combine = rbind) %:% # specify samples
+  foreach(a = c(0,1), .combine = rbind) %:%
+  foreach(p.value = c(0.01, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
+    dat <- batteries
+      is <- isatpanel( # main function
+            data = dat,
+            formula = as.formula(f),
+            index = c("ISO", "year"), # id and time
+            effect = "twoways", # twoway fixed effects chosen as estimator
+            iis = TRUE, # enable impulse indicator saturation
+            fesis = TRUE, # enable fixed effects indicator saturation
+            ar = a, # specify auto-regressive terms
+            t.pval = p.value,  # false positive rate
+            max.block.size = 20 # size for block search 
+            )
+          models = tibble(source = f, 
+                          #state_sample = smpl,    # which sample 
+                          year_range = paste0(min(batteries$year),":",max(batteries$year)), # time series
+                          p_val = p.value, # false positive rates 
+                          is = list(is), # model
+                          iis = TRUE, # IIS
+                          b_size = 20,
+                          ar = a)
+  }
+
+stopCluster(cl)
+
+saveRDS(models, ".\\batteries_IIS.RDS")  # save model output 
+
+################################ NO IIS
+
+cl <- makeCluster(6)
+registerDoParallel(cl)
+
+models <- foreach(f = base_forms, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:% # specify functional form 
+  #foreach(smpl = techs, .combine = rbind) %:% # specify samples
+  foreach(a = c(0,1), .combine = rbind) %:%
+  foreach(p.value = c(0.01, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
+    dat <- batteries
+      is <- isatpanel( # main function
+            data = dat,
+            formula = as.formula(f),
+            index = c("ISO", "year"), # id and time
+            effect = "twoways", # twoway fixed effects chosen as estimator
+            iis = FALSE, # enable impulse indicator saturation
+            fesis = TRUE, # enable fixed effects indicator saturation
+            ar = a, # specify auto-regressive terms
+            t.pval = p.value,  # false positive rate
+            max.block.size = 20 # size for block search 
+            )
+          models = tibble(source = f, 
+                          #state_sample = smpl,    # which sample 
+                          year_range = paste0(min(batteries$year),":",max(batteries$year)), 
+                          p_val = p.value, # false positive rates 
+                          is = list(is), # model
+                          iis = FALSE, # IIS
+                          b_size = 20,
+                          ar = a)
+  }
+
+stopCluster(cl) # stop parallelizing 
+
+saveRDS(models, ".\\batteries_noIIS.RDS")
+
+```
+
+
+
