@@ -1,0 +1,49 @@
+---
+title: "Untitled"
+author: "Laura Menicacci"
+date: "2024-01-10"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+## CCMT {.tabset}
+
+```{r ciao, echo=FALSE, results = 'asis', warning=TRUE}
+#knitr::opts_chunk$set(echo = TRUE)
+
+#suppressWarnings(suppressMessages(library("dplyr")))
+
+library(knitr)
+library(tidyverse)
+library(kableExtra)
+
+# Load plotting functions
+source(".\\plotting_functions.R")
+#
+#ccmt <- readRDS(".\\ccmt_09_01_24_sample_exp.RDS") %>% 
+#  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+#  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+#         formula = trimws(formula))
+#
+#ccmt %>%
+#       dplyr::group_split(id_sample) %>%
+#       purrr::iwalk(.,~{
+#         name <- unique(.x$id_sample)
+#         cat('### ', name, '{.tabset}   \n')
+#              for(p in unique(.x$dep)){
+#                   cat('#### ', p, '{.tabset}   \n')
+#                for(sm in unique(.x$p_val)){
+#                   cat('##### ', sm, '{.tabset}   \n')
+#                   filter(.x, p_val == sm & dep == p) %>% gen_p(., auto = TRUE)
+#                cat('\n')
+#                cat('\n')
+#                }
+#           cat('\n')
+#           cat('\n')
+#           }
+#         cat('\n')
+#         cat('\n')
+#       })
+```
+

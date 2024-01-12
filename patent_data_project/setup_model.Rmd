@@ -9,7 +9,7 @@ output: html_document
 
 -   Controls: GDP and population
 -   Data samples: Y02(all ccmts), Y02E (energy), solar, wind, batteries
--   Country sample:
+-   Country sample: ?
 
 Specifications:
 
@@ -23,7 +23,6 @@ Specifications:
 -   p-values (0.05, 0.01)
 
 ```{r}
-
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
@@ -40,7 +39,8 @@ library(forecast)
 library(tseries)
 library(patchwork)
 
-# carica dataset
+df <- read_csv(".\\data\\patents_panel_5techs.csv", show_col_types = F)
+
 ```
 
 ## Histogram & boxplot
@@ -82,21 +82,6 @@ box / hist
 ```
 
 ## Restrict country sample
-
-1. Group by country and technology class 
-
-2. Create statistical info: median, q25, mean, q75, max sd
-
-3. Selection criteria: if q25 of country&tech is less than q30 of entire distribution: drop 
-
-4. Total sample: 21 countries 
-
-Reasons:
-
-* I wanted to make sure that all countries in the sample had a decent distribution for all the technologies for the first run of the model
-* For a first run: keep sample small to make it run faster
-* Double-checked with *top 25 patenting countries*: they are the same, I only excluded Brazil, India, Taiwan, Singapore (reason for this: they have less patents in one of the narrow technologies), which then were added for the second run 
-
 
 ```{r}
 #q30 <- quantile(df2$count, 0.30)
@@ -174,76 +159,6 @@ line <- df3 %>%
 box / hist / line
 
 ```
-
-## Add here time series analysis
-
--   check for stationarity by technology
--   take in case differenced mean ?
-
-```{r, echo=TRUE}
-
-adf_data_ccmt <- df3 %>% filter(tech == "Climate change mitigation")
-
-adf_data_energy <- df3 %>% filter(tech == "Climate change mitigation technologies related to energy generation, transmission or distribution")
-
-adf_data_batteries <- df3 %>% filter(tech == "Batteries")
-
-adf_data_solar <- df3 %>% filter(tech == "Solar energy")
-
-adf_data_wind <- df3 %>% filter(tech == "Wind energy")
-
-
-library(urca)
-
-############################# CCMT
-
-summary(ur.df(y=adf_data_ccmt$count, type = "none",lags=1))
-
-summary(ur.df(y=adf_data_ccmt$count, type = "drift",lags=1))
-
-summary(ur.df(y=adf_data_ccmt$count, type = "trend",lags=1))
-```
-
-```{r}
-############################# ENERGY
-
-summary(ur.df(y=adf_data_energy$count, type = "none",lags=1))
-
-summary(ur.df(y=adf_data_energy$count, type = "drift",lags=1))
-
-summary(ur.df(y=adf_data_energy$count, type = "trend",lags=1))
-```
-
-```{r}
-########################### SOLAR
-
-summary(ur.df(y=adf_data_solar$count, type = "none",lags=1))
-
-summary(ur.df(y=adf_data_solar$count, type = "drift",lags=1))
-
-summary(ur.df(y=adf_data_solar$count, type = "trend",lags=1))
-```
-
-```{r}
-########################## WIND
-
-summary(ur.df(y=adf_data_wind$count, type = "none",lags=1))
-
-summary(ur.df(y=adf_data_wind$count, type = "drift",lags=1))
-
-summary(ur.df(y=adf_data_wind$count, type = "trend",lags=1))
-```
-
-```{r}
-######################### BATTERIES
-
-summary(ur.df(y=adf_data_batteries$count, type = "none",lags=1))
-
-summary(ur.df(y=adf_data_batteries$count, type = "drift",lags=1))
-
-summary(ur.df(y=adf_data_batteries$count, type = "trend",lags=1))
-```
-
 
 ## Create logs
 

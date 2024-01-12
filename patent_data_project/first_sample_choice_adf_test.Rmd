@@ -1,0 +1,450 @@
+---
+title: "time series analysis"
+author: "Laura Menicacci"
+date: "2023-12-05"
+output: html_document
+---
+
+# Exploration Break detection
+
+-   Controls: GDP and population
+-   Data samples: Y02 (all ccmts), Y02E (energy), solar, wind, batteries
+-   Total countries covered: 196
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(gets)
+library(getspanel)
+library(here)
+library(doParallel)
+library(readxl)
+library(gdata)
+library(ggthemes)
+library(collapse)
+library(plm)
+library(forecast)
+library(tseries)
+library(patchwork)
+library(urca)
+library(kableExtra)
+
+df <- read_csv(".\\data\\PAT_DEV_MOD_SPEC.csv", show_col_types = F) 
+
+df1 <- df %>% select(COU, `Inventor country`, `Technology domain`, Year, Value) %>% rename("ISO" = "COU", "country" = "Inventor country", "tech" = "Technology domain", "count" = "Value", "year" = "Year")
+
+################# aggregate the solar technology counts together 
+
+solar_list <- c("Solar thermal-PV hybrids", "Solar photovoltaic (PV) energy", "Solar thermal energy")
+
+df1 <- df1 %>% 
+  mutate(tech = case_when(tech %in% solar_list ~ "Solar energy",
+    TRUE ~ as.character(tech))) %>%
+  group_by(ISO, year, tech) %>%
+  summarise(count = sum(count)) %>%
+  ungroup()
+
+
+```
+
+## Prepare data
+
+-   Aggregate 3 types of solar techs into 1
+-   Add 0 values for missing years
+
+```{r, echo=FALSE}
+years <- 1990:2020
+
+# Create a data frame with all combinations of countries, years, and tech types
+expand_df <- expand.grid(ISO = unique(df1$ISO), year = years, tech = unique(df1$tech))
+expand_df$count <- 0  # Initialize count column with 0
+
+# Merge with the original data
+merged_df <- merge(expand_df, df1, by = c("ISO", "year", "tech"), all.x = TRUE)
+
+# Replace NA values in the count column with 0
+merged_df$count.y[is.na(merged_df$count.y)] <- 0
+
+df2 <- merged_df %>% select(ISO, year, tech, count.y) %>% rename("count" = "count.y")
+
+```
+
+## Restrict country sample
+
+1. Group by country and technology class 
+
+2. Create statistical info: median, q25, mean, q75, max sd
+
+Example of how the dataset looks like:
+
+- a lot of zeros!
+```{r, echo=FALSE}
+stats_pat <- df2 %>% 
+  group_by(ISO, tech) %>% 
+  summarise(median = median(count, na.rm=TRUE),
+            q25 = quantile(count, 0.25),
+            mean = mean(count, na.rm=TRUE), 
+            q75 = quantile(count, 0.75), 
+            max = max(count, na.rm=TRUE), 
+            sd = sd(count, na.rm=TRUE), .groups = "keep")
+
+stats_pat %>% 
+  head(25) %>% 
+  kable(format = "html") %>% 
+  kable_styling(bootstrap_options = c("hover", "responsive"), full_width = F, fixed_thead = T, position = "left") %>% 
+  scroll_box(width = "600px", height = "300px")
+
+```
+
+Whole distribution of country means faceted by technology: 
+```{r, echo=FALSE, fig.height=10, fig.width=15}
+
+box <- stats_pat %>% 
+  ggplot(aes(x = mean))+ 
+  geom_boxplot(colour = "black", outlier.colour = "red", size = 0.5) +
+  facet_wrap(~tech, scales = "free") + 
+  xlab("")+
+  ylab("Mean counts by country") +
+  theme_clean() +
+  theme(plot.background = element_blank(), 
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+hist <- stats_pat %>% 
+  ggplot(aes(x = mean)) +
+  geom_histogram(binwidth = 1, fill = "navy", colour = "black", alpha = 0.7) +
+  facet_wrap(~tech, scales = "free") + 
+  ylab("") +
+  xlab("Mean counts by country (binwidth = 1)") +
+  theme_clean() +
+  theme(plot.background = element_blank())
+
+box / hist
+
+```
+
+Divide distribution in quantiles and plot country 25th quantile faceted by technology: 
+
+- where to cut the distribution?
+- vertical red line on the 30th quantile
+
+```{r, echo=FALSE, fig.height=12, fig.width=15}
+
+box <- stats_pat %>% 
+  ggplot(aes(x = q25))+ 
+  geom_boxplot(colour = "black", outlier.colour = "red", size = 0.5) +
+  geom_vline(xintercept = quantile(stats_pat$q25, 0.3), color = "red")+
+  facet_wrap(~tech, scales = "free") + 
+  ylab("")+
+  xlab("Q25 counts by country") +
+  theme_clean() +
+  theme(plot.background = element_blank(), 
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+hist <- stats_pat %>% 
+  ggplot(aes(x = q25)) +
+  geom_histogram(binwidth = 1, fill = "navy", colour = "black", alpha = 0.7) +
+  geom_vline(xintercept = quantile(stats_pat$q25, 0.3), color = "red")+
+  facet_wrap(~tech, scales = "free") + 
+  ylab("") +
+  xlab("Q25 of counts by country (binwidth = 1)") +
+  theme_clean() +
+  theme(plot.background = element_blank())
+
+box / hist
+
+```
+
+3. **Selection criteria**: for each q25 of country&tech, if it is less than 30th quantile of entire distribution of patent counts, drop 
+
+```{r, echo=FALSE, include=FALSE}
+q30 <- quantile(df2$count, 0.30)
+
+nonpat_q30 <- c() # 175
+
+
+for (i in 1:nrow(stats_pat)){
+  if (stats_pat[i, 4] <= q30[[1]]){ # if q25 of country&tech is less than q30 of entire distribution: drop
+    nonpat_q30 <- append(nonpat_q30, stats_pat[[i, 1]]) 
+                       }
+}
+
+df_strict <- df2 %>% filter(!(ISO %in% nonpat_q30))
+
+```
+
+4. Total sample: 21 countries 
+
+Time series:
+```{r, echo=FALSE, fig.height=17, fig.width=17}
+df_strict %>% 
+  #group_by(ISO, year, tech) %>%
+  #summarise(tot = sum(count), .groups = "keep") %>% 
+  ggplot(aes(y = count, x = year, colour = tech)) +
+  geom_line(alpha = 0.7) +
+  facet_wrap(~ISO, scales = "free") + 
+  ylab("patent counts") +
+  xlab("year") +
+  ggtitle("Time series for restricted country sample") +
+  theme_minimal() + theme(legend.position = "bottom")
+
+```
+
+
+Reasons:
+
+* I wanted to make sure that all countries in the sample had a decent distribution for all the technologies for the first run of the model
+* Keep sample small to make it run faster
+* Double-checked with **top 25 patenting countries**: they are almost the same except for *Brazil, India, Taiwan, Singapore*, which then were added for the second run 
+
+Check change in distribution:
+```{r, fig.height=20, fig.width=15, echo=FALSE}
+stats_pat_top <- df_strict %>% 
+  group_by(ISO, tech) %>% 
+  summarise(median = median(count, na.rm=TRUE),
+            q25 = quantile(count, 0.25),
+            mean = mean(count, na.rm=TRUE), 
+            q75 = quantile(count, 0.75), 
+            max = max(count, na.rm=TRUE), 
+            sd = sd(count, na.rm=TRUE), 
+            tot = sum(count, na.rm = TRUE), .groups = "keep")
+
+box <- stats_pat_top %>% 
+  ggplot(aes(x = mean))+ 
+  geom_boxplot(colour = "black", outlier.colour = "red", size = 0.5) +
+  #geom_vline(xintercept = quantile(stats_pat_top$mean, 0.3), color = "red")+
+  facet_wrap(~tech, scales = "free") + 
+  xlab("")+
+  ylab("mean patent counts by country") +
+  theme_clean() +
+  theme(plot.background = element_blank(), 
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+hist <- stats_pat_top %>% 
+  ggplot(aes(x = mean)) +
+  geom_histogram(binwidth = 1, fill = "navy", colour = "black", alpha = 0.7) +
+  #geom_vline(xintercept = quantile(stats_pat_top$mean, 0.3), color = "red") +
+  facet_wrap(~tech, scales = "free") + 
+  ylab("") +
+  xlab("mean patent counts by country (binwidth = 1)") +
+  theme_clean() +
+  theme(plot.background = element_blank())
+
+#line <- df3 %>% 
+#  group_by(tech, year) %>%
+#  summarise(tot = sum(count), .groups = "keep") %>% 
+#  ggplot(aes(y = tot, x = year)) +
+#  geom_line(colour = "black", alpha = 0.7) +
+#  facet_wrap(~tech, scales = "free") + 
+#  ylab("aggregated patent counts by tech") +
+#  xlab("year") +
+#  theme_clean() +
+#  theme(plot.background = element_blank())
+
+box / hist 
+```
+
+
+**Alternative: Select 25 top patenting countries by mean**
+- Check distribution of country means:
+```{r, echo=FALSE, fig.height=20, fig.width=15}
+
+stats_pat2 <- stats_pat[order(stats_pat$mean, decreasing = TRUE),]
+
+top_pat_countries <- unique(stats_pat2[1:70, 1]) # top 25 patenting countries 
+
+df3_25 <- df2 %>% filter(ISO %in% top_pat_countries$ISO)
+
+#df3_25 %>% 
+#  #group_by(ISO, year, tech) %>%
+#  #summarise(tot = sum(count), .groups = "keep") %>% 
+#  ggplot(aes(y = count, x = year, colour = tech)) +
+#  geom_line(alpha = 0.7) +
+#  facet_wrap(~ISO, scales = "free") + 
+#  ylab("patent counts") +
+#  xlab("year") +
+#  theme_minimal() + theme(legend.position = "bottom")
+
+stats_pat_top <- df3_25 %>% 
+  group_by(ISO, tech) %>% 
+  summarise(median = median(count, na.rm=TRUE),
+            q25 = quantile(count, 0.25),
+            mean = mean(count, na.rm=TRUE), 
+            q75 = quantile(count, 0.75), 
+            max = max(count, na.rm=TRUE), 
+            sd = sd(count, na.rm=TRUE), 
+            tot = sum(count, na.rm = TRUE), .groups = "keep")
+
+box <- stats_pat_top %>% 
+  ggplot(aes(x = mean))+ 
+  geom_boxplot(colour = "black", outlier.colour = "red", size = 0.5) +
+  #geom_vline(xintercept = quantile(stats_pat_top$mean, 0.3), color = "red")+
+  facet_wrap(~tech, scales = "free") + 
+  xlab("")+
+  ylab("mean patent counts by country") +
+  theme_clean() +
+  theme(plot.background = element_blank(), 
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+hist <- stats_pat_top %>% 
+  ggplot(aes(x = mean)) +
+  geom_histogram(binwidth = 1, fill = "navy", colour = "black", alpha = 0.7) +
+  #geom_vline(xintercept = quantile(stats_pat_top$mean, 0.3), color = "red") +
+  facet_wrap(~tech, scales = "free") + 
+  ylab("") +
+  xlab("mean patent counts by country (binwidth = 1)") +
+  theme_clean() +
+  theme(plot.background = element_blank())
+
+
+box / hist
+```
+
+**Another alternative**: Select 50 top patenting countries (by mean) and check again distribution of country means:
+```{r, echo=FALSE, fig.height=20, fig.width=15}
+
+#stats_pat %>% 
+#  group_by(tech) %>% 
+#  arrange(desc(mean))
+
+stats_pat2 <- stats_pat[order(stats_pat$mean, decreasing = TRUE),]
+
+top_pat_countries <- unique(stats_pat2[1:156, 1]) # top 50 patenting countries 
+
+df3 <- df2 %>% filter(ISO %in% top_pat_countries$ISO)
+
+stats_pat_top <- df3 %>% 
+  group_by(ISO, tech) %>% 
+  summarise(median = median(count, na.rm=TRUE),
+            q25 = quantile(count, 0.25),
+            mean = mean(count, na.rm=TRUE), 
+            q75 = quantile(count, 0.75), 
+            max = max(count, na.rm=TRUE), 
+            sd = sd(count, na.rm=TRUE), 
+            tot = sum(count, na.rm = TRUE), .groups = "keep")
+
+box <- stats_pat_top %>% 
+  ggplot(aes(x = mean))+ 
+  geom_boxplot(colour = "black", outlier.colour = "red", size = 0.5) +
+  #geom_vline(xintercept = quantile(stats_pat_top$mean, 0.3), color = "red")+
+  facet_wrap(~tech, scales = "free") + 
+  xlab("")+
+  ylab("mean patent counts by country") +
+  theme_clean() +
+  theme(plot.background = element_blank(), 
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+hist <- stats_pat_top %>% 
+  ggplot(aes(x = mean)) +
+  geom_histogram(binwidth = 1, fill = "navy", colour = "black", alpha = 0.7) +
+  #geom_vline(xintercept = quantile(stats_pat_top$mean, 0.3), color = "red") +
+  facet_wrap(~tech, scales = "free") + 
+  ylab("") +
+  xlab("mean patent counts by country (binwidth = 1)") +
+  theme_clean() +
+  theme(plot.background = element_blank())
+
+#line <- df3 %>% 
+#  group_by(tech, year) %>%
+#  summarise(tot = sum(count), .groups = "keep") %>% 
+#  ggplot(aes(y = tot, x = year)) +
+#  geom_line(colour = "black", alpha = 0.7) +
+#  facet_wrap(~tech, scales = "free") + 
+#  ylab("aggregated patent counts by tech") +
+#  xlab("year") +
+#  theme_clean() +
+#  theme(plot.background = element_blank())
+
+box / hist
+
+```
+
+
+## Time series analysis
+
+**Augmented Dickey-Fuller Test** 
+
+- Check for stationarity by technology
+- Three types of tests
+
+```{r}
+adf_data_ccmt <- df3 %>% filter(tech == "Climate change mitigation")
+
+adf_data_energy <- df3 %>% filter(tech == "Climate change mitigation technologies related to energy generation, transmission or distribution")
+
+adf_data_batteries <- df3 %>% filter(tech == "Batteries")
+
+adf_data_solar <- df3 %>% filter(tech == "Solar energy")
+
+adf_data_wind <- df3 %>% filter(tech == "Wind energy")
+```
+
+
+### CCMT
+
+```{r, echo=TRUE}
+
+summary(ur.df(y=adf_data_ccmt$count, type = "none",lags=1))
+
+summary(ur.df(y=adf_data_ccmt$count, type = "drift",lags=1))
+
+summary(ur.df(y=adf_data_ccmt$count, type = "trend",lags=1))
+
+```
+
+
+### ENERGY 
+
+```{r}
+
+summary(ur.df(y=adf_data_energy$count, type = "none",lags=1))
+
+summary(ur.df(y=adf_data_energy$count, type = "drift",lags=1))
+
+summary(ur.df(y=adf_data_energy$count, type = "trend",lags=1))
+```
+
+
+### SOLAR
+```{r}
+
+
+summary(ur.df(y=adf_data_solar$count, type = "none",lags=1))
+
+summary(ur.df(y=adf_data_solar$count, type = "drift",lags=1))
+
+summary(ur.df(y=adf_data_solar$count, type = "trend",lags=1))
+```
+
+### WIND
+```{r}
+
+
+summary(ur.df(y=adf_data_wind$count, type = "none",lags=1))
+
+summary(ur.df(y=adf_data_wind$count, type = "drift",lags=1))
+
+summary(ur.df(y=adf_data_wind$count, type = "trend",lags=1))
+```
+
+### BATTERIES
+
+```{r}
+
+
+summary(ur.df(y=adf_data_batteries$count, type = "none",lags=1))
+
+summary(ur.df(y=adf_data_batteries$count, type = "drift",lags=1))
+
+summary(ur.df(y=adf_data_batteries$count, type = "trend",lags=1))
+```
