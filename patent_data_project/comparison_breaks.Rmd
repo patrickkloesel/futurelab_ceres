@@ -12,45 +12,35 @@ output: html_document
 library(tidyverse)
 library(gets)
 library(getspanel)
-library(here)
-library(doParallel)
-library(readxl)
-library(gdata)
-library(devtools)
-library(cowplot)
 
+## Put all results together (THESE ARE THE OLD RESULTS)
 
-```
-
-
-
-## Put all results together
-
-```{r}
-
-ccmt_IIS <- readRDS(".\\results\\ccmt_IIS.RDS")
-ccmt_noIIS <- readRDS(".\\results\\ccmt_noIIS.RDS")
-ccmt <- rbind(ccmt_IIS, ccmt_noIIS)
-
-energy_IIS <- readRDS(".\\results\\energy_IIS.RDS")
-energy_noIIS <- readRDS(".\\results\\energy_noIIS.RDS")
-energy <- rbind(energy_IIS, energy_noIIS)
-
-solar_IIS <- readRDS(".\\results\\solar_IIS.RDS")
-solar_noIIS <- readRDS(".\\results\\solar_noIIS.RDS")
-solar <- rbind(solar_IIS, solar_noIIS)
-
-wind_IIS <- readRDS(".\\results\\wind_IIS.RDS")
-wind_noIIS <- readRDS(".\\results\\wind_noIIS.RDS")
-wind <- rbind(wind_IIS, wind_noIIS)
-
-batteries_IIS <- readRDS(".\\results\\batteries_IIS.RDS")
-batteries_noIIS <- readRDS(".\\results\\batteries_noIIS.RDS")
-batteries <- rbind(batteries_IIS, batteries_noIIS)
+#ccmt_IIS <- readRDS(".\\results\\ccmt_IIS.RDS")
+#ccmt_noIIS <- readRDS(".\\results\\ccmt_noIIS.RDS")
+#ccmt <- rbind(ccmt_IIS, ccmt_noIIS)
+#
+#energy_IIS <- readRDS(".\\results\\energy_IIS.RDS")
+#energy_noIIS <- readRDS(".\\results\\energy_noIIS.RDS")
+#energy <- rbind(energy_IIS, energy_noIIS)
+#
+#solar_IIS <- readRDS(".\\results\\solar_IIS.RDS")
+#solar_noIIS <- readRDS(".\\results\\solar_noIIS.RDS")
+#solar <- rbind(solar_IIS, solar_noIIS)
+#
+#wind_IIS <- readRDS(".\\results\\wind_IIS.RDS")
+#wind_noIIS <- readRDS(".\\results\\wind_noIIS.RDS")
+#wind <- rbind(wind_IIS, wind_noIIS)
+#
+#batteries_IIS <- readRDS(".\\results\\batteries_IIS.RDS")
+#batteries_noIIS <- readRDS(".\\results\\batteries_noIIS.RDS")
+#batteries <- rbind(batteries_IIS, batteries_noIIS)
+#
+#results <- rbind(ccmt, energy, solar, wind, batteries)
 
 ```
 
 ## This function assigns a list of all the detected breaks for each model specification
+
 ```{r}
 
 find_breaks <- function(results_df) {
@@ -77,9 +67,10 @@ find_breaks <- function(results_df) {
 
 ```
 
-## more efficient function (non funge)
+## try a more efficient one (doesn't work)
 
 ```{r}
+
 find_breaks2 <- function(results_df) {
   results_df$breaks <- lapply(results_df$is, function(j) {
     lapply(j$isatpanel.result$ISnames, function(k) {
@@ -89,27 +80,21 @@ find_breaks2 <- function(results_df) {
   return(results_df)
 }
 
+## Add breaks
 
-```
-
-
-
-## add breaks
-
-```{r}
-ccmt <- find_breaks(ccmt) %>% mutate(tech = "ccmt")
- 
-energy <- find_breaks(energy) %>% mutate(tech = "energy")
-
-solar <- find_breaks(solar) %>% mutate(tech = "solar")
-
-wind <- find_breaks(wind) %>% mutate(tech = "wind")
-
-batteries <- find_breaks(batteries) %>% mutate(tech = "batteries")
-
-all_res <- rbind(ccmt, energy, solar, wind, batteries) 
-
-saveRDS(all_res, ".\\all_res_break_comp.RDS")
+#ccmt <- find_breaks(ccmt) %>% mutate(tech = "ccmt")
+# 
+#energy <- find_breaks(energy) %>% mutate(tech = "energy")
+#
+#solar <- find_breaks(solar) %>% mutate(tech = "solar")
+#
+#wind <- find_breaks(wind) %>% mutate(tech = "wind")
+#
+#batteries <- find_breaks(batteries) %>% mutate(tech = "batteries")
+#
+#all_res <- rbind(ccmt, energy, solar, wind, batteries) 
+#
+#saveRDS(all_res, ".\\all_res_break_comp.RDS")
 
 ```
 
@@ -118,23 +103,67 @@ saveRDS(all_res, ".\\all_res_break_comp.RDS")
 
 ```{r}
 
-df_long <- all_res %>%
-  select(source, year_range, p_val, iis, ar, breaks) %>% 
-  pivot_longer(cols = starts_with("breaks"), names_to = "index", values_to = "breaks")
+res_prova <- res_w_breaks %>% select(!is)
 
-# Find common elements across all lists
-common_elements <- df_long %>%
-  group_by(breaks) %>%
-  filter(n() == nrow(df_long)) %>%
-  ungroup()
+res_prova <- res_prova %>% 
+  unnest(cols = breaks) %>% # Extract list and make the df longer
+  # Transform list in 2 columns: break_year and break_iso
+  mutate(break_year = str_sub(breaks, 10, 13), 
+         break_ISO = str_sub(breaks, 6, 8)) %>% 
+  select(!(breaks)) # remove old columns
 
+res_prova$break_year <- as.numeric(res_prova$break_year)
+  
+common_breaks <- data.frame() 
 
-element_counts <- count(common_elements, breaks)
-
+for (i in 1:(nrow(res_prova)-1)){
+  for (j in (i + 1):nrow(res_prova)){
+    # Select only breaks that are of the same country and with a conf int of +-3y 
+    if(res_prova$break_ISO[i] == res_prova$break_ISO[j] && abs(res_prova$break_year[i] - res_prova$break_year[j]) <= 3){
+      common_breaks <- rbind(common_breaks, res_prova[i, ], res_prova[j, ])
+      common_breaks <- common_breaks %>% distinct()
+    } 
+  }
+}
 
 
 ```
 
+## Function that extracts breaks and filters for common breaks across specifications and technologies
 
-## To answer: ccmt/energy vs specific techs, how many breaks in common?
+```{r}
+filter_for_common_breaks <- function(res_with_breaks_list) {
+
+res_with_breaks_list <- res_with_breaks_list %>% 
+  unnest(cols = breaks) %>% # Extract list and make the df longer
+  # Transform list in 2 columns: break_year and break_iso
+  mutate(break_year = str_sub(breaks, 10, 13), 
+         break_ISO = str_sub(breaks, 6, 8)) %>% 
+  select(!(breaks)) # remove old columns
+
+res_with_breaks_list$break_year <- as.numeric(res_with_breaks_list$break_year)
+  
+common_breaks <- data.frame() 
+
+for (i in 1:(nrow(res_with_breaks_list)-1)){
+  for (j in (i + 1):nrow(res_with_breaks_list)){
+    # Select only breaks that are of the same country and with a conf int of +-3y 
+    if(res_with_breaks_list$break_ISO[i] == res_with_breaks_list$break_ISO[j] && abs(res_with_breaks_list$break_year[i] - res_with_breaks_list$break_year[j]) <= 3){
+      common_breaks <- rbind(common_breaks, res_with_breaks_list[i, ], res_with_breaks_list[j, ])
+      common_breaks <- common_breaks %>% distinct()
+    } 
+  }
+}
+ return(common_breaks)
+  } 
+
+```
+
+
+# Try if it works
+```{r}
+
+prova_comm_br <- filter_for_common_breaks(res_w_breaks)
+
+```
 
