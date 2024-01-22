@@ -30,7 +30,7 @@ gen_p <- function(df, results = TRUE, auto = FALSE){
       res <- df %>% slice(i) %>% pull(is) %>% first
       
       pl <- res %>% 
-        plot_counterfactual(zero_line = FALSE) +
+        plot(zero_line = FALSE) +
         ggtitle(label = mt, subtitle = st) +
         scale_x_continuous(breaks = f(10))
       

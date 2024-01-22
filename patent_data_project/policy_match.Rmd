@@ -1,0 +1,22 @@
+---
+title: "policy_match"
+author: "Laura Menicacci"
+date: "2024-01-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+suppressWarnings(suppressMessages(library(knitr)))
+suppressWarnings(suppressMessages(library(tidyverse)))
+suppressWarnings(suppressMessages(library(kableExtra)))
+suppressWarnings(suppressMessages(library(gridExtra)))
+library(readxl)
+
+pol <- read_excel("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\CAPMF_Comp_Sub_10022023.xlsx")
+
+pol %>% 
+  filter(ISO %in% "IND" & year >= 2000)
+```
+

@@ -12,10 +12,12 @@ SUMMARY:
 Initial preliminary experiment with a sample of 21 countries, chosen using a bit of a cumbersome criteria: for each distribution of the combination country and technology, if its 25th quantile falls below the 30th quantile of the overall distribution of patent counts, then that country is excluded from the analysis.
 
 In the meantime, we understood many things:
+
  * We don't want to differentiate sample by technology
  * If our sample is small, but it covers the majority (at least 90%) of our whole sample, then we're good
 
 Here I present 3 much simpler alternatives: 
+
  1. Top 25 patenting countries by mean: aggregate all technologies, take mean of patents for each country, sort in descending order and select only the top 25. **These 25 countries already cover roughly 97% of total patenting**. It is a similar sample than the old one, meaning it leads to similar fit. It includes most European countries, US, Japan, China & Taiwan, + a couple of BRICS countries: Brasil, Russia, Singapore, India. 
  
  2. Top 50 patenting countries by mean: aggregate all technologies, take mean patent count for each country, sort in descending order and select the top 50. These 50 countries **cover basically the whole dataset: more than 99% of total patents**. This is a larger and more generous choice, which includes also the least patenting countries (e.g. 50th country has a mean patent count of 2.0032846). 
@@ -67,7 +69,7 @@ mean_pat %>%
 
 # Difference in coverage of total patents
 
-```{r, echo=FALSE, fig.width=15, fig.height=15}
+```{r, echo=FALSE, fig.width=10, fig.height=10}
 
 top_25 <- mean_pat %>% # select top 25 patenting countries
   head(25) %>%  
@@ -76,10 +78,11 @@ top_25 <- mean_pat %>% # select top 25 patenting countries
   
 dat_filt <- df %>% filter(ISO %in% top_25)  # filter main df by the top 25 patenting countries and aggregate counts by year (I have total counts by year)
 
-plot_25 <-df %>% # plot difference between whole dataset and top 25 patenting countries
+plot_25 <- df %>% # plot difference between whole dataset and top 25 patenting countries
   ggplot(aes(x = count, fill = "all (binwidth = 1000)")) +
   geom_histogram(binwidth = 1000) +
   geom_histogram(data = dat_filt, aes(x = count, fill = "top_25 (binwidth = 1000)"), binwidth = 1000) +
+  #scale_y_continuous(limits = c(0,3000)) +
   theme_bw() +
   xlab("patents") +
   ggtitle("Top 25 countries by mean count")
@@ -97,6 +100,7 @@ plot_50 <- df %>% # plot difference between whole dataset and top 50 patenting c
   ggplot(aes(x = count, fill = "all (binwidth = 1000)")) +
   geom_histogram(binwidth = 1000) +
   geom_histogram(data = dat_filt, aes(x = count, fill = "top_50 (binwidth = 1000)"), binwidth = 1000) +
+  #scale_y_continuous(limits = c(0,3000)) +
   theme_bw() +
   xlab("patents") +
   ggtitle("Top 50 countries by mean count")
@@ -111,6 +115,8 @@ oecd_plot <- df %>% # plot difference between whole dataset and oecd patenting c
   ggplot(aes(x = count, fill = "all (binwidth = 1000)")) +
   geom_histogram(binwidth = 1000) +
   geom_histogram(data = dat_filt, aes(x = count, fill = "oecd (binwidth = 1000)"), binwidth = 1000) +
+  #scale_y_continuous(limits = c(0,3000)) +
+  #scale_x_continuous(limits = c(0,5000)) +
   theme_bw() +
   xlab("patents") +
   ggtitle("OECD countries + CHINA & TAIWAN")
@@ -181,7 +187,7 @@ base_forms <- paste0(dep_var, controls) # paste together
 
 ## CCMT {.tabset}
 
-```{r ccmt, echo=FALSE, results = 'asis', fig.height=30, fig.width=55}
+```{r ccmt, echo=FALSE, results = 'asis', fig.height=30, fig.width=55, cache = TRUE}
 
 #cl <- makeCluster(3) 
 #registerDoParallel(cl)
@@ -247,7 +253,7 @@ ccmt %>%
 
 ## ENERGY {.tabset}
 
-```{r energy, echo=FALSE, results = 'asis', fig.height=30, fig.width=55}
+```{r energy, echo=FALSE, results = 'asis', fig.height=30, fig.width=55, cache = TRUE}
 
 #cl <- makeCluster(4) 
 #registerDoParallel(cl)
@@ -313,7 +319,7 @@ energy %>%
 
 ## SOLAR {.tabset}
 
-```{r solar, echo=FALSE, results = 'asis', fig.height=30, fig.width=55}
+```{r solar, echo=FALSE, results = 'asis', fig.height=30, fig.width=55, cache = TRUE}
 
 #cl <- makeCluster(6) 
 #registerDoParallel(cl)
@@ -379,7 +385,7 @@ solar %>%
 
 ## WIND {.tabset}
 
-```{r wind, echo=FALSE, results = 'asis', fig.height=30, fig.width=55}
+```{r wind, echo=FALSE, results = 'asis', fig.height=30, fig.width=55, cache = TRUE}
 
 #cl <- makeCluster(3) 
 #registerDoParallel(cl)
@@ -445,7 +451,7 @@ wind %>%
 
 ## BATTERIES {.tabset}
 
-```{r batteries, echo=FALSE, results = 'asis', fig.height=30, fig.width=55}
+```{r batteries, echo=FALSE, results = 'asis', fig.height=30, fig.width=55, cache = TRUE}
 
 #cl <- makeCluster(4) 
 #registerDoParallel(cl)
