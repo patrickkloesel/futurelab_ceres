@@ -1,0 +1,358 @@
+---
+title: "sc_replication_more_specs"
+author: "Laura Menicacci"
+date: "2024-01-24"
+output: html_document
+---
+
+# Generalised synthetic controls replication {.tabset}
+
+Results refer to the following specification: 
+
+ * Y: Log count +1
+ * Controls: lgdp + lpop
+ * Sample: top 25 patenting countries by mean - CCMT technologies
+ * AR(1)
+ * IIS = ON
+ * p-value = 0.01 
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load Libraries
+suppressWarnings(suppressMessages(library(knitr)))
+suppressWarnings(suppressMessages(library(tidyverse)))
+suppressWarnings(suppressMessages(library(gsynth)))
+suppressWarnings(suppressMessages(library(panelView)))
+suppressWarnings(suppressMessages(library(patchwork)))
+suppressWarnings(suppressMessages(library(gets)))
+suppressWarnings(suppressMessages(library(getspanel)))
+suppressWarnings(suppressMessages(library(kableExtra)))
+
+top_25 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "TWN", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR", "SGP", "BRA")
+
+# Load Data
+#data <- read_csv(".\\data\\patents_panel_5techs.csv", show_col_types = #F) %>% filter(ISO %in% top_25 & year > 1994 & year < 2020) %>% #mutate(lcount = log(count+1), lgdp = log(gdp), lpop = log(pop))
+#
+
+## for preferred spec: top_25 and log transformation 
+res_w_breaks <- readRDS(".\\prefe_results_w_breaks_list_09_01.RDS")
+
+#1) the pre-treatment fit: it should be flat, ideally (remember that for all pre-treatment periods, scm #essentially works as some kind of, in the gsynth case very complicated, matching-type procedure. the #pre-treatment counterfactual should be very close to the pre-treatment factual. for all post-treatment #periods, scm essentially works as some out-of sample prediction method, nothing causal to look at here #really, in a strict sense)
+#2) whether i actually see some (persistent) effect in the right direction (this is not always the case, see #e.g. oecd buildings
+#3) then at the confidence interval
+
+```
+
+# CCMT
+
+0) Original "baseline" model
+1) EM = TRUE in the argument 
+2) inference = "jackknife" 
+3) estimator = "mc" 
+
+Countries with treatment before 2000 cannot be estimated (India). 
+
+List of breaks:
+
+```{r, echo=FALSE}
+data <- read_csv(".\\data\\patents_panel_5techs.csv", show_col_types = F, col_names = T) %>% filter(ISO %in% top_25 & year > 1994 & year < 2020) %>% mutate(lcount = log(count+1), lgdp = log(gdp), lpop = log(pop)) %>% filter(tech == "Climate change mitigation")
+# list of breaks for ccmt
+
+res_w_breaks %>% 
+  filter(tech == "ccmt" & p_val == 0.01) %>% 
+  pull(breaks)
+
+# Create Staggered SCM Treatments with list of breaks
+
+data$treated <- 0
+
+# pval 0.01
+data$treated <- ifelse(data$ISO == "AUS" & data$year >= 2005, 1, data$treated)
+data$treated <- ifelse(data$ISO == "DNK" & data$year >= 2005, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "IND" & data$year >= 1998, 1, data$treated)
+data$treated <- ifelse(data$ISO == "IND" & data$year >= 2000, 1, data$treated)
+data$treated <- ifelse(data$ISO == "SGP" & data$year >= 2003, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "SGP" & data$year >= 2005, 1, data$treated)
+
+# pval 0.05
+#data$treated <- ifelse(data$ISO == "AUS" & data$year >= 2005, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "CAN" & data$year >= 1997, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "CHN" & data$year >= 2001, 1, data$treated)
+##data$treated <- ifelse(data$ISO == "CHN" & data$year >= 2015, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "DNK" & data$year >= 2005, 1, data$treated)
+##data$treated <- ifelse(data$ISO == "DNK" & data$year >= 2006, 1, data$treated)
+##data$treated <- ifelse(data$ISO == "DNK" & data$year >= 2007, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "IND" & data$year >= 1998, 1, data$treated)
+##data$treated <- ifelse(data$ISO == "IND" & data$year >= 2000, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "ISR" & data$year >= 2009, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "RUS" & data$year >= 1998, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "SGP" & data$year >= 2003, 1, data$treated)
+##data$treated <- ifelse(data$ISO == "SGP" & data$year >= 2005, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "TWN" & data$year >= 2001, 1, data$treated)
+
+
+# Check Treatments
+v1 <- panelview(count ~ treated, data = data,  
+          index = c("ISO","year"), 
+          pre.post = TRUE,
+          axis.adjust = TRUE,
+          cex.axis.y = 8, 
+          cex.legend = 8, 
+          background = "white") 
+
+# Run Gsynth with Staggered Treatments (IFE)
+#system.time(
+#  out <- gsynth(lcount ~ treated 
+#                 + lgdp + lpop,
+#                data = data, 
+#                index = c("ISO","year"), force = "two-way", 
+#                CV = TRUE, r = c(0, 3), se = TRUE, 
+#                inference = "parametric", nboots = 1000, 
+#                parallel = FALSE, estimator = "ife")
+#)
+
+#saveRDS(out, file = ".\\gsynth_ccmt.RDS")
+
+```
+
+## Basic specification {.tabset}
+
+
+### Positive {.tabset}
+
+
+```{r ccmt-plot-pos, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_ccmt.RDS")
+
+plot(out, type = "gap", id = "DNK", main = "Denmark 2005 (Climate change mitigation)")
+plot(out, type = "ct", id = "DNK", main = "Denmark 2005 (Climate change mitigation)")
+
+plot(out, type = "gap", id = "IND", main = "India 2000 (Climate change mitigation)")
+plot(out, type = "ct", id = "IND", main = "India 2000 (Climate change mitigation)")
+
+plot(out, type = "gap", id = "SGP", main = "Singapore 2003 (Climate change mitigation)")
+plot(out, type = "ct", id = "SGP", main = "Singapore 2003 (Climate change mitigation)")
+
+```
+
+
+### Negative {.tabset}
+
+
+```{r ccmt-plot-neg, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_ccmt.RDS")
+
+plot(out, type = "gap", id = "AUS", main = "Australia 2005 (Climate change mitigation)")
+plot(out, type = "ct", id = "AUS", main = "Australia 2005 (Climate change mitigation)")
+
+```
+
+
+## EM method {.tabset}
+
+```{r, echo=FALSE}
+# Run Gsynth with Staggered Treatments (IFE)
+#system.time(
+#  out <- gsynth(lcount ~ treated 
+#                 + lgdp + lpop,
+#                data = data, 
+#                index = c("ISO","year"), EM = TRUE, force = "two-way", 
+#                CV = TRUE, r = c(0, 3), se = TRUE, 
+#                inference = "parametric", nboots = 1000, 
+#                parallel = FALSE, estimator = "ife")
+#)
+
+#saveRDS(out, file = ".\\gsynth_ccmt_EM_true.RDS")
+
+```
+
+
+
+
+### Positive {.tabset}
+
+
+```{r ccmt-plot-pos-em, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_ccmt_EM_true.RDS")
+
+plot(out, type = "gap", id = "DNK", main = "Denmark 2005 (EM Method)")
+plot(out, type = "ct", id = "DNK", main = "Denmark 2005 (EM Method)")
+
+plot(out, type = "gap", id = "IND", main = "India 2000 (EM Method)")
+plot(out, type = "ct", id = "IND", main = "India 2000 (EM Method)")
+
+plot(out, type = "gap", id = "SGP", main = "Singapore 2003 (EM Method)")
+plot(out, type = "ct", id = "SGP", main = "Singapore 2003 (EM Method)")
+
+```
+
+
+### Negative {.tabset}
+
+
+```{r ccmt-plot-neg-em, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_ccmt_EM_true.RDS")
+
+plot(out, type = "gap", id = "AUS", main = "Australia 2005 (EM Method)")
+plot(out, type = "ct", id = "AUS", main = "Australia 2005 (EM Method)")
+
+```
+
+
+## Jackknife method {.tabset}
+
+```{r, echo=FALSE}
+# Run Gsynth with Staggered Treatments (IFE)
+#system.time(
+#  out <- gsynth(lcount ~ treated 
+#                 + lgdp + lpop,
+#                data = data, 
+#                index = c("ISO","year"), force = "two-way", 
+#                CV = TRUE, r = c(0, 3), se = TRUE, 
+#                inference = "jackknife", nboots = 1000, 
+#                parallel = FALSE, estimator = "ife")
+#)
+
+#saveRDS(out, file = ".\\gsynth_ccmt_jackknife.RDS")
+
+```
+
+
+
+
+### Positive {.tabset}
+
+
+```{r ccmt-plot-pos-jackknife, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_ccmt_jackknife.RDS")
+
+plot(out, type = "gap", id = "DNK", main = "Denmark 2005 (jaccknife method)")
+plot(out, type = "ct", id = "DNK", main = "Denmark 2005 (jaccknife method)")
+
+plot(out, type = "gap", id = "IND", main = "India 2000 (jaccknife method)")
+plot(out, type = "ct", id = "IND", main = "India 2000 (jaccknife method)")
+
+plot(out, type = "gap", id = "SGP", main = "Singapore 2003 (jaccknife method)")
+plot(out, type = "ct", id = "SGP", main = "Singapore 2003 (jaccknife method)")
+
+```
+
+
+### Negative {.tabset}
+
+
+```{r ccmt-plot-neg-jackknife, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_ccmt_jackknife.RDS")
+
+plot(out, type = "gap", id = "AUS", main = "Australia 2005 (jaccknife method)")
+plot(out, type = "ct", id = "AUS", main = "Australia 2005 (jaccknife method)")
+
+```
+
+
+## MC (matrix completion) method {.tabset}
+
+Change boostrap to nonparametric to run this specification. 
+
+```{r, echo=FALSE}
+# Run Gsynth with Staggered Treatments (IFE)
+#system.time(
+#  out <- gsynth(lcount ~ treated 
+#                 + lgdp + lpop,
+#                data = data, estimator = "mc",
+#                index = c("ISO","year"), force = "two-way", 
+#                CV = TRUE, r = c(0, 3), se = TRUE, 
+#                inference = "nonparametric", nboots = 1000, 
+#                parallel = FALSE)
+#)
+#
+#saveRDS(out, file = ".\\gsynth_ccmt_estimator_mc.RDS")
+
+```
+
+
+### Positive {.tabset}
+
+
+```{r ccmt-plot-pos-mc, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_ccmt_estimator_mc.RDS")
+
+plot(out, type = "gap", id = "DNK", main = "Denmark 2005 (mc estimator)")
+plot(out, type = "ct", id = "DNK", main = "Denmark 2005 (mc estimator)")
+
+plot(out, type = "gap", id = "IND", main = "India 2000 (mc estimator)")
+plot(out, type = "ct", id = "IND", main = "India 2000 (mc estimator)")
+
+plot(out, type = "gap", id = "SGP", main = "Singapore 2003 (mc estimator)")
+plot(out, type = "ct", id = "SGP", main = "Singapore 2003 (mc estimator)")
+
+```
+
+
+### Negative {.tabset}
+
+
+```{r ccmt-plot-neg-mc, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_ccmt_estimator_mc.RDS")
+
+plot(out, type = "gap", id = "AUS", main = "Australia 2005 (mc estimator)")
+plot(out, type = "ct", id = "AUS", main = "Australia 2005 (mc estimator)")
+
+```
+
+## EM & jackknife {.tabset}
+
+```{r em-jack, echo=F}
+
+# Run Gsynth with Staggered Treatments (IFE)
+#system.time(
+#  out <- gsynth(lcount ~ treated 
+#                 + lgdp + lpop,
+#                data = data, 
+#                index = c("ISO","year"),  EM = TRUE, force = "two-way", 
+#                CV = TRUE, r = c(0, 3), se = TRUE, 
+#                inference = "jackknife", nboots = 1000, 
+#                parallel = FALSE, estimator = "ife")
+#)
+#saveRDS(out, file = ".\\gsynth_ccmt_jackknife_em.RDS")
+
+```
+
+### Positive {.tabset}
+
+
+```{r ccmt-plot-pos-jackknife-em, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_ccmt_jackknife_em.RDS")
+
+plot(out, type = "gap", id = "DNK", main = "Denmark 2005 (jaccknife & EM method)")
+plot(out, type = "ct", id = "DNK", main = "Denmark 2005 (jaccknife & EM method)")
+
+plot(out, type = "gap", id = "IND", main = "India 2000 (jaccknife & EM method)")
+plot(out, type = "ct", id = "IND", main = "India 2000 (jaccknife & EM method)")
+
+plot(out, type = "gap", id = "SGP", main = "Singapore 2003 (jaccknife & EM method)")
+plot(out, type = "ct", id = "SGP", main = "Singapore 2003 (jaccknife & EM method)")
+
+```
+
+### Negative {.tabset}
+
+
+```{r ccmt-plot-neg-jackknife-em, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_ccmt_jackknife_em.RDS")
+
+plot(out, type = "gap", id = "AUS", main = "Australia 2005 (jaccknife & EM method)")
+plot(out, type = "ct", id = "AUS", main = "Australia 2005 (jaccknife & EM method)")
+
+```

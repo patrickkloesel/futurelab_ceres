@@ -1,0 +1,514 @@
+---
+title: "sc_replication_with_em"
+author: "Laura Menicacci"
+date: "2024-01-09"
+output: html_document
+---
+
+# Generalised synthetic controls replication with EM {.tabset}
+
+Results refer to the following specification: 
+
+ * Y: Log count +1
+ * Controls: lgdp + lpop
+ * Sample: top 25 patenting countries by mean
+ * AR(1)
+ * IIS = ON
+ * p-value = 0.01 (very strict)
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load Libraries
+suppressWarnings(suppressMessages(library(knitr)))
+suppressWarnings(suppressMessages(library(tidyverse)))
+suppressWarnings(suppressMessages(library(gsynth)))
+suppressWarnings(suppressMessages(library(panelView)))
+suppressWarnings(suppressMessages(library(patchwork)))
+suppressWarnings(suppressMessages(library(gets)))
+suppressWarnings(suppressMessages(library(getspanel)))
+suppressWarnings(suppressMessages(library(kableExtra)))
+
+# Load plotting functions
+source(".\\breaks_comparison_functions.R")
+
+top_25 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "TWN", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR", "SGP", "BRA")
+
+# Load Data
+#data <- read_csv(".\\data\\patents_panel_5techs.csv", show_col_types = #F) %>% filter(ISO %in% top_25 & year > 1994 & year < 2020) %>% #mutate(lcount = log(count+1), lgdp = log(gdp), lpop = log(pop))
+#
+# Load results 
+ccmt <- readRDS(".\\ccmt_09_01_24_sample_exp.RDS") %>% mutate(tech = "ccmt")
+energy <- readRDS(".\\energy_09_01_24_sample_exp.RDS") %>% mutate(tech = "energy")
+solar <- readRDS(".\\solar_09_01_24_sample_exp.RDS") %>% mutate(tech = "solar")
+wind <- readRDS(".\\wind_09_01_24_sample_exp.RDS") %>% mutate(tech = "wind")
+batteries <- readRDS(".\\batteries_09_01_24_sample_exp.RDS") %>% mutate(tech = "batteries")
+
+results <- rbind(ccmt, energy, solar, wind, batteries)
+
+# Extract breaks list
+
+## for preferred spec: top_25 and log transformation 
+res_w_breaks <- readRDS(".\\prefe_results_w_breaks_list_09_01.RDS")
+
+#all_res_w_breaks <- find_breaks(results) NON HA FUNZIONATO
+#saveRDS(all_res_w_breaks, ".\\all_res_breaks_09_01.RDS")
+
+
+# Find common breaks
+#common_breaks_prefe <- filter_for_common_breaks(res_w_breaks)
+
+#common_breaks_prefe <- readRDS(".\\prefe_spec_common_breaks.RDS")
+#saveRDS(common_breaks_prefe, ".\\prefe_spec_common_breaks.RDS")
+
+```
+
+## CCMT {.tabset}
+
+Countries with treatment before 2000 cannot be estimated (India). 
+
+List of breaks:
+
+```{r, echo=FALSE}
+data <- read_csv(".\\data\\patents_panel_5techs.csv", show_col_types = F, col_names = T) %>% filter(ISO %in% top_25 & year > 1994 & year < 2020) %>% mutate(lcount = log(count+1), lgdp = log(gdp), lpop = log(pop)) %>% filter(tech == "Climate change mitigation")
+# list of breaks for ccmt
+
+res_w_breaks %>% 
+  filter(tech == "ccmt" & p_val == 0.01) %>% 
+  pull(breaks)
+
+# Create Staggered SCM Treatments with list of breaks
+
+data$treated <- 0
+
+# pval 0.01
+data$treated <- ifelse(data$ISO == "AUS" & data$year >= 2005, 1, data$treated)
+data$treated <- ifelse(data$ISO == "DNK" & data$year >= 2005, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "IND" & data$year >= 1998, 1, data$treated)
+data$treated <- ifelse(data$ISO == "IND" & data$year >= 2000, 1, data$treated)
+data$treated <- ifelse(data$ISO == "SGP" & data$year >= 2003, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "SGP" & data$year >= 2005, 1, data$treated)
+
+# pval 0.05
+#data$treated <- ifelse(data$ISO == "AUS" & data$year >= 2005, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "CAN" & data$year >= 1997, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "CHN" & data$year >= 2001, 1, data$treated)
+##data$treated <- ifelse(data$ISO == "CHN" & data$year >= 2015, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "DNK" & data$year >= 2005, 1, data$treated)
+##data$treated <- ifelse(data$ISO == "DNK" & data$year >= 2006, 1, data$treated)
+##data$treated <- ifelse(data$ISO == "DNK" & data$year >= 2007, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "IND" & data$year >= 1998, 1, data$treated)
+##data$treated <- ifelse(data$ISO == "IND" & data$year >= 2000, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "ISR" & data$year >= 2009, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "RUS" & data$year >= 1998, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "SGP" & data$year >= 2003, 1, data$treated)
+##data$treated <- ifelse(data$ISO == "SGP" & data$year >= 2005, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "TWN" & data$year >= 2001, 1, data$treated)
+
+
+```
+
+
+```{r ccmt, echo=FALSE}
+
+# Check Treatments
+v1 <- panelview(count ~ treated, data = data,  
+          index = c("ISO","year"), 
+          pre.post = TRUE,
+          axis.adjust = TRUE,
+          cex.axis.y = 8, 
+          cex.legend = 8, 
+          background = "white") 
+
+# Run Gsynth with Staggered Treatments (IFE)
+#system.time(
+#  out <- gsynth(lcount ~ treated 
+#                 + lgdp + lpop,
+#                data = data, 
+#                index = c("ISO","year"), force = "two-way", 
+#                CV = TRUE, r = c(0, 3), se = TRUE, 
+#                inference = "parametric", nboots = 1000, 
+#                parallel = FALSE, estimator = "ife")
+#)
+
+#saveRDS(out, file = ".\\gsynth_ccmt.RDS")
+
+```
+
+
+### Positive {.tabset}
+
+
+```{r ccmt-plot-pos, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_ccmt_EM_true.RDS")
+
+plot(out, type = "gap", id = "DNK", main = "Denmark 2005 (Climate change mitigation)")
+plot(out, type = "ct", id = "DNK", main = "Denmark 2005 (Climate change mitigation)")
+
+plot(out, type = "gap", id = "IND", main = "India 2000 (Climate change mitigation)")
+plot(out, type = "ct", id = "IND", main = "India 2000 (Climate change mitigation)")
+
+plot(out, type = "gap", id = "SGP", main = "Singapore 2003 (Climate change mitigation)")
+plot(out, type = "ct", id = "SGP", main = "Singapore 2003 (Climate change mitigation)")
+
+```
+
+
+### Negative {.tabset}
+
+
+```{r ccmt-plot-neg, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_ccmt_EM_true.RDS")
+
+plot(out, type = "gap", id = "AUS", main = "Australia 2005 (Climate change mitigation)")
+plot(out, type = "ct", id = "AUS", main = "Australia 2005 (Climate change mitigation)")
+
+```
+
+
+
+## ENERGY {.tabset}
+
+Countries with treatment before 2000 cannot be estimated (India, Belgium, Sweden)
+
+```{r energy, echo=FALSE}
+
+data <- read_csv(".\\data\\patents_panel_5techs.csv", show_col_types = F) %>% filter(ISO %in% top_25 & year > 1994 & year < 2020) %>% mutate(lcount = log(count+1), lgdp = log(gdp), lpop = log(pop)) %>% filter(tech == "Climate change mitigation technologies related to energy generation, transmission or distribution")
+# list of breaks for ccmt
+
+res_w_breaks %>% 
+  filter(tech == "energy" & p_val == 0.01) %>% 
+  pull(breaks)
+
+# Create Staggered SCM Treatments
+data$treated <- 0
+
+#data$treated <- ifelse(data$ISO == "BEL" & data$year >= 1997, 1, data$treated)
+data$treated <- ifelse(data$ISO == "BRA" & data$year >= 2014, 1, data$treated)
+data$treated <- ifelse(data$ISO == "DNK" & data$year >= 2005, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "IND" & data$year >= 1998, 1, data$treated)
+data$treated <- ifelse(data$ISO == "IND" & data$year >= 2001, 1, data$treated)
+data$treated <- ifelse(data$ISO == "RUS" & data$year >= 2007, 1, data$treated)
+data$treated <- ifelse(data$ISO == "SGP" & data$year >= 2001, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "SGP" & data$year >= 2003, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "SGP" & data$year >= 2010, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "SWE" & data$year >= 1998, 1, data$treated)
+
+# Check Treatments
+v1 <- panelview(count ~ treated, data = data,  
+          index = c("ISO","year"), 
+          pre.post = TRUE,
+          axis.adjust = TRUE,
+          cex.axis.y = 8, 
+          cex.legend = 8, 
+          background = "white") 
+
+# Run Gsynth with Staggered Treatments (IFE)
+#system.time(
+#  out <- gsynth(lcount ~ treated 
+#                 + lgdp + lpop,
+#                data = data, EM = TRUE,
+#                index = c("ISO","year"), force = "two-way", 
+#                CV = TRUE, r = c(0, 3), se = TRUE, 
+#                inference = "parametric", nboots = 1000, 
+#                parallel = FALSE, estimator = "ife")
+#)
+#saveRDS(out, file = ".\\gsynth_energy_em.RDS")
+
+```
+
+
+
+### Positive {.tabset}
+
+
+```{r energy-plot-pos, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_energy_em.RDS")
+
+#plot(out, type = "gap", id = "BEL", main = "Belgium 1997 (energy)")
+#plot(out, type = "ct", id = "BEL", main = "Belgium 1997 (energy)")
+
+plot(out, type = "gap", id = "BRA", main = "Brasil 2014 (energy)")
+plot(out, type = "ct", id = "BRA", main = "Brasil 2014 (energy)")
+
+plot(out, type = "gap", id = "DNK", main = "Denmark 2005 (energy)")
+plot(out, type = "ct", id = "DNK", main = "Denmark 2005 (energy)")
+
+plot(out, type = "gap", id = "IND", main = "India 2001 (energy)")
+plot(out, type = "ct", id = "IND", main = "India 2001 (energy)")
+
+```
+
+### Negative {.tabset}
+
+```{r energy-plot-neg, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_energy_em.RDS")
+
+plot(out, type = "gap", id = "RUS", main = "Russia 2007 (energy)")
+plot(out, type = "ct", id = "RUS", main = "Russia 2007 (energy)")
+
+plot(out, type = "gap", id = "SGP", main = "Singapore 2001 (energy)")
+plot(out, type = "ct", id = "SGP", main = "Singapore 2001 (energy)")
+
+
+```
+
+
+## SOLAR {.tabset}
+
+Countries with treatment before 2000 cannot be estimated (The Netherlands)
+
+```{r solar, echo=FALSE}
+
+data <- read_csv(".\\data\\patents_panel_5techs.csv", show_col_types = F) %>% filter(ISO %in% top_25 & year > 1994 & year < 2020) %>% mutate(lcount = log(count+1), lgdp = log(gdp), lpop = log(pop)) %>% filter(tech == "Solar energy")
+
+# list of breaks for ccmt
+
+res_w_breaks %>% 
+  filter(tech == "solar" & p_val == 0.01) %>% 
+  pull(breaks)
+
+# Create Staggered SCM Treatments
+data$treated <- 0
+data$treated <- ifelse(data$ISO == "AUS" & data$year >= 2005, 1, data$treated)
+data$treated <- ifelse(data$ISO == "BRA" & data$year >= 2014, 1, data$treated)
+data$treated <- ifelse(data$ISO == "DNK" & data$year >= 2001, 1, data$treated)
+data$treated <- ifelse(data$ISO == "KOR" & data$year >= 2003, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "NLD" & data$year >= 1997, 1, data$treated)
+data$treated <- ifelse(data$ISO == "RUS" & data$year >= 2004, 1, data$treated)
+data$treated <- ifelse(data$ISO == "SWE" & data$year >= 2001, 1, data$treated)
+data$treated <- ifelse(data$ISO == "TWN" & data$year >= 2005, 1, data$treated)
+
+
+# Check Treatments
+v1 <- panelview(count ~ treated, data = data,  
+          index = c("ISO","year"), 
+          pre.post = TRUE,
+          axis.adjust = TRUE,
+          cex.axis.y = 8, 
+          cex.legend = 8, 
+          background = "white") 
+
+# Run Gsynth with Staggered Treatments (IFE)
+#system.time(
+#  out <- gsynth(lcount ~ treated 
+#                 + lgdp + lpop,
+#                data = data, EM = TRUE,
+#                index = c("ISO","year"), force = "two-way", 
+#                CV = TRUE, r = c(0, 3), se = TRUE, 
+#                inference = "parametric", nboots = 1000, 
+#                parallel = FALSE, estimator = "ife")
+#)
+#
+#saveRDS(out, file = ".\\gsynth_solar_em.RDS")
+
+```
+
+
+### Positive {.tabset}
+
+
+```{r solar-plot-pos, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_solar_em.RDS")
+
+plot(out, type = "gap", id = "BRA", main = "Brasil 2014 (solar)")
+plot(out, type = "ct", id = "BRA", main = "Brasil 2014 (solar)")
+
+plot(out, type = "gap", id = "DNK", main = "Denmark 2001 (solar)")
+plot(out, type = "ct", id = "DNK", main = "Denmark 2001 (solar)")
+
+plot(out, type = "gap", id = "KOR", main = "Korea 2003 (solar)")
+plot(out, type = "ct", id = "KOR", main = "Korea 2003 (solar)")
+
+plot(out, type = "gap", id = "TWN", main = "Taiwan 2005 (solar)")
+plot(out, type = "ct", id = "TWN", main = "Taiwan 2005 (solar)")
+
+```
+
+
+### Negative {.tabset}
+
+```{r solar-plot-neg, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_solar_em.RDS")
+
+plot(out, type = "gap", id = "AUS", main = "Australia 2005 (solar)")
+plot(out, type = "ct", id = "AUS", main = "Australia 2005 (solar)")
+
+plot(out, type = "gap", id = "RUS", main = "Russia 2004 (solar)")
+plot(out, type = "ct", id = "RUS", main = "Russia 2004 (solar)")
+
+plot(out, type = "gap", id = "SWE", main = "Sweden 2001 (solar)")
+plot(out, type = "ct", id = "SWE", main = "Sweden 2001 (solar)")
+
+```
+
+## WIND {.tabset}
+
+Countries with treatment before 2000 cannot be estimated (Japan)
+
+```{r wind, echo=FALSE}
+
+data <- read_csv(".\\data\\patents_panel_5techs.csv", show_col_types = F) %>% filter(ISO %in% top_25 & year > 1994 & year < 2020) %>% mutate(lcount = log(count+1), lgdp = log(gdp), lpop = log(pop)) %>% filter(tech == "Wind energy")
+
+# list of breaks for wind
+
+res_w_breaks %>% 
+  filter(tech == "wind" & p_val == 0.01) %>% 
+  pull(breaks)
+
+# Create Staggered SCM Treatments
+data$treated <- 0
+data$treated <- ifelse(data$ISO == "DNK" & data$year >= 2006, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "JPN" & data$year >= 1999, 1, data$treated)
+data$treated <- ifelse(data$ISO == "RUS" & data$year >= 2003, 1, data$treated)
+data$treated <- ifelse(data$ISO == "SGP" & data$year >= 2007, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "SGP" & data$year >= 2012, 1, data$treated)
+data$treated <- ifelse(data$ISO == "SWE" & data$year >= 2002, 1, data$treated)
+
+# Check Treatments
+v1 <- panelview(count ~ treated, data = data,  
+          index = c("ISO","year"), 
+          pre.post = TRUE,
+          axis.adjust = TRUE,
+          cex.axis.y = 8, 
+          cex.legend = 8, 
+          background = "white") 
+
+# Run Gsynth with Staggered Treatments (IFE)
+#system.time(
+#  out <- gsynth(lcount ~ treated 
+#                 + lgdp + lpop,
+#                data = data, EM = TRUE,
+#                index = c("ISO","year"), force = "two-way", 
+#                CV = TRUE, r = c(0, 3), se = TRUE, 
+#                inference = "parametric", nboots = 1000, 
+#                parallel = FALSE, estimator = "ife")
+#)
+#
+#saveRDS(out, file = ".\\gsynth_wind_em.RDS")
+
+```
+
+
+
+### Positive {.tabset}
+
+```{r wind-plot-pos, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_wind_em.RDS")
+
+plot(out, type = "gap", id = "DNK", main = "Denmark 2006 (wind)")
+plot(out, type = "ct", id = "DNK", main = "Denmark 2006 (wind)")
+
+plot(out, type = "gap", id = "SGP", main = "Singapore 2007 (wind)")
+plot(out, type = "ct", id = "SGP", main = "Singapore 2007 (wind)")
+
+
+```
+
+### Negative {.tabset}
+
+```{r wind-plot-neg, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_wind_em.RDS")
+
+
+plot(out, type = "gap", id = "RUS", main = "Russia 2003 (wind)")
+plot(out, type = "ct", id = "RUS", main = "Russia 2003 (wind)")
+
+plot(out, type = "gap", id = "SWE", main = "Sweden 2002 (wind)")
+plot(out, type = "ct", id = "SWE", main = "Sweden 2002 (wind)")
+
+
+
+```
+
+
+## BATTERIES {.tabset}
+
+```{r batteries, echo=FALSE}
+
+data <- read_csv(".\\data\\patents_panel_5techs.csv", show_col_types = F) %>% filter(ISO %in% top_25 & year > 1994 & year < 2020) %>% mutate(lcount = log(count+1), lgdp = log(gdp), lpop = log(pop)) %>% filter(tech == "Batteries")
+
+# list of breaks for batteries
+
+res_w_breaks %>% 
+  filter(tech == "batteries" & p_val == 0.01) %>% 
+  pull(breaks)
+
+# Create Staggered SCM Treatments
+data$treated <- 0
+data$treated <- ifelse(data$ISO == "AUT" & data$year >= 2009, 1, data$treated)
+data$treated <- ifelse(data$ISO == "BRA" & data$year >= 2010, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "BRA" & data$year >= 2015, 1, data$treated)
+data$treated <- ifelse(data$ISO == "DNK" & data$year >= 2001, 1, data$treated)
+data$treated <- ifelse(data$ISO == "NLD" & data$year >= 2007, 1, data$treated)
+data$treated <- ifelse(data$ISO == "RUS" & data$year >= 2007, 1, data$treated)
+#data$treated <- ifelse(data$ISO == "RUS" & data$year >= 2015, 1, data$treated)
+data$treated <- ifelse(data$ISO == "TWN" & data$year >= 2001, 1, data$treated)
+
+# Check Treatments
+v1 <- panelview(count ~ treated, data = data,  
+          index = c("ISO","year"), 
+          pre.post = TRUE,
+          axis.adjust = TRUE,
+          cex.axis.y = 8, 
+          cex.legend = 8, 
+          background = "white") 
+
+# Run Gsynth with Staggered Treatments (IFE)
+#system.time(
+#  out <- gsynth(count ~ treated 
+#                 + lgdp + lpop,
+#                data = data, EM = TRUE,
+#                index = c("ISO","year"), force = "two-way", 
+#                CV = TRUE, r = c(0, 3), se = TRUE, 
+#                inference = "parametric", nboots = 1000, 
+#                parallel = FALSE, estimator = "ife")
+#)
+#
+#saveRDS(out, file = ".\\gsynth_batteries_em.RDS")
+
+```
+
+### Positive {.tabset}
+
+```{r batteries-plot-pos, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_batteries_em.RDS")
+
+plot(out, type = "gap", id = "AUT", main = "Austria 2009 (batteries)")
+plot(out, type = "ct", id = "AUT", main = "Austria 2009 (batteries)")
+
+plot(out, type = "gap", id = "TWN", main = "Taiwan 2001 (batteries)")
+plot(out, type = "ct", id = "TWN", main = "Taiwan 2001 (batteries)")
+
+```
+
+### Negative {.tabset}
+
+```{r batteries-plot-neg, echo=FALSE, fig.show="hold", out.width="50%"}
+
+out <- readRDS(".\\gsynth_batteries_em.RDS")
+
+plot(out, type = "gap", id = "BRA", main = "Brasil 2010 (batteries)")
+plot(out, type = "ct", id = "BRA", main = "Brasil 2010 (batteries)")
+
+plot(out, type = "gap", id = "DNK", main = "Denmark 2001 (batteries)")
+plot(out, type = "ct", id = "DNK", main = "Denmark 2001 (batteries)")
+
+plot(out, type = "gap", id = "NLD", main = "The Netherlands 2007 (batteries)")
+plot(out, type = "ct", id = "NLD", main = "The Netherlands 2007 (batteries)")
+
+plot(out, type = "gap", id = "RUS", main = "Russia 2007 (batteries)")
+plot(out, type = "ct", id = "RUS", main = "Russia 2007 (batteries)")
+
+```
+
+
