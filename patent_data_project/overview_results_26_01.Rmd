@@ -5,8 +5,6 @@ date: "2024-01-26"
 output: html_document
 ---
 
-Thoughts: why not the first 30 or first 31 or first 32 or first 33?? I think the choice of the top 25 is a bit arbitrary --> because they cover more than 90% --> but we can arrive to 90 percent using a range of different countries... are these the more important? YES BECAUSE THEY ARE THE MOST PATENTING?
-
 # Count very carefully where we even have zeros and how many they are
  
 ```{r, fig.height = 15, fig.width = 15, echo=FALSE}
@@ -22,6 +20,7 @@ suppressWarnings(suppressMessages(library(here)))
 suppressWarnings(suppressMessages(library(doParallel)))
 suppressWarnings(suppressMessages(library(gdata)))
 suppressWarnings(suppressMessages(library(gridExtra)))
+suppressWarnings(suppressMessages(library(ggridges)))
 
 # Load plotting functions
 source(".\\plotting_functions.R")
@@ -38,7 +37,7 @@ df %>%
   ggplot(aes(x = year, y = n, fill = tech)) +
   geom_col() +
   facet_wrap(~ISO, scales = "fixed") +
-  scale_x_continuous(breaks = c(1995, 1997, 1999, 2001, 2003, 2005, 2007, 2009, 2011, 2013,2015, 2017, 2019))+
+  scale_x_continuous(breaks = c(1995, 1997, 1999, 2001, 2003, 2005, 2007, 2009, 2011, 2013, 2015, 2017, 2019))+
   theme_bw()+
   theme(legend.position = "bottom") + 
   ggtitle("Count of zeros by country and technology", subtitle = "Australia and Japan have no zeros.")
@@ -47,15 +46,30 @@ df %>%
 
 ```
 
-qua aggiungi tabella con i count degli zero by country 
+## Table format 
 
-# Plot the distributions before and after logging -> do they look more normal? (also by country in the relevant country sample) {.tabset}
+Number of zero counts by country, in descending order. 
+
+```{r, echo=FALSE}
+
+df %>% 
+  group_by(ISO) %>% 
+  filter(count == 0) %>% 
+  count(count) %>% 
+  select(ISO, n) %>% 
+  arrange(desc(n)) %>% 
+  kable(format = "html") #%>% 
+  #kable_styling(bootstrap_options = c("hover", "responsive"), full_width = F, fixed_thead = T, position = "left") %>% 
+  #scroll_box(width = "300px", height = "300px")
+
+```
+
+
+# Plot the distributions before and after logging -> do they look more normal? {.tabset}
 
 ## Count {.tabset}
 
 ```{r, echo=FALSE, fig.width=15, fig.height=15}
-
-suppressWarnings(suppressMessages(library(ggridges)))
 
 count <- df %>% 
   mutate(tech = ifelse(tech == "Climate change mitigation technologies related to energy generation, transmission or distribution", "Energy", tech),
@@ -94,14 +108,68 @@ suppressMessages(print(log))
 
 ## Normalization with the max {.tabset} 
 
-```{r}
+```{r, echo=FALSE, fig.width=15, fig.height=15}
 
 # Try to instead of logging normalize the patent count with the patent max (not convinced of this but worth a try for comparison)
+
+max_norm <- df %>% 
+  mutate(max_norm_count = count / max(count)) %>% 
+  mutate(tech = ifelse(tech == "Climate change mitigation technologies related to energy generation, transmission or distribution", "Energy", tech),
+         tech = ifelse(tech == "Climate change mitigation", "Green tech", tech)) %>% 
+  ggplot(aes(x = max_norm_count, y = tech, fill = tech)) +
+  geom_density_ridges() +
+  facet_wrap(~ISO, scales = "free_x") +  
+  theme_ridges() +
+  ylab("") + xlab("") +
+  theme(legend.position = "none") 
+
+suppressMessages(print(max_norm))
 
 ```
 
 
-# What is the relation from 1 patent to the max patents per country?
+## Normalization with the max by technology {.tabset} 
+
+Normalise by max but with respect to the max of each technology.
+
+```{r, echo=FALSE, fig.width=15, fig.height=15}
+
+max_norm_tech <- df %>% 
+  group_by(tech) %>% # what if we   
+  mutate(max_norm_count = count / max(count)) %>% 
+  mutate(tech = ifelse(tech == "Climate change mitigation technologies related to energy generation, transmission or distribution", "Energy", tech),
+         tech = ifelse(tech == "Climate change mitigation", "Green tech", tech)) %>% 
+  ggplot(aes(x = max_norm_count, y = tech, fill = tech)) +
+  geom_density_ridges() +
+  facet_wrap(~ISO, scales = "free_x") +  
+  theme_ridges() +
+  ylab("") + xlab("") +
+  theme(legend.position = "none") 
+
+suppressMessages(print(max_norm_tech))
+
+```
+
+# What is the relation from 1 patent to the max patents per country? 
+
+```{r, echo=TRUE, fig.width=15, fig.height=15}
+
+# Calculate max Y per country
+df %>% 
+  group_by(ISO, tech) %>% 
+  mutate(max = max(count)) %>% 
+  ggplot(aes(x = count, y = max, colour = tech)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", colour = "darkgrey") +  # 45-degree line for reference
+  facet_wrap(~ISO) +  
+  labs(title = "Relationship between Y and max Y per country",
+       x = "Y",
+       y = "Max Y per country") +
+  theme_bw()+
+  theme(legend.position = "bottom")
+
+```
+
 
 # Models comparison {.tabset}
 
@@ -151,7 +219,7 @@ ccmt %>%
 
 
 
-## ENERGY {.tabset}
+## Energy {.tabset}
 
 ```{r energy, echo=FALSE, results = 'asis', fig.height=30, fig.width=55, cache = TRUE}
 
