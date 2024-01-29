@@ -154,14 +154,13 @@ suppressMessages(print(max_norm_tech))
 
 ```{r, echo=TRUE, fig.width=15, fig.height=15}
 
-# Calculate max Y per country
 df %>% 
   group_by(ISO, tech) %>% 
   mutate(max = max(count)) %>% 
   ggplot(aes(x = count, y = max, colour = tech)) +
   geom_point() +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", colour = "darkgrey") +  # 45-degree line for reference
-  facet_wrap(~ISO) +  
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", colour = "darkgrey") + 
+  facet_wrap(~ISO, scales = "free") +  
   labs(title = "Relationship between Y and max Y per country",
        x = "Y",
        y = "Max Y per country") +
