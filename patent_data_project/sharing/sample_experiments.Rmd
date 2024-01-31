@@ -255,39 +255,6 @@ ccmt %>%
 
 ```{r energy, echo=FALSE, results = 'asis', fig.height=30, fig.width=55, cache = TRUE}
 
-#cl <- makeCluster(4) 
-#registerDoParallel(cl)
-#
-#models <- foreach(f = base_forms, .combine = rbind, .packages = c('tidyverse', #'getspanel')) %:% # specify functional form 
-#  foreach(smpl = c("top_25", "top_50", "oecd"), .combine = rbind) %:% # specify #samples
-#  foreach(a = c(1), .combine = rbind) %:%
-#  foreach(p.value = c(0.01, 0.05), .combine = rbind, .errorhandling = "remove") #%dopar% {
-#    dat <- df_mod %>% filter(tech == "Climate change mitigation technologies related #to energy generation, transmission or distribution") %>% filter(ISO %in% #samples[[smpl]])
-#      is <- isatpanel( # main function
-#            data = dat,
-#            formula = as.formula(f),
-#            index = c("ISO", "year"), # id and time
-#            effect = "twoways", # twoway fixed effects chosen as estimator
-#            iis = TRUE, # enable impulse indicator saturation
-#            fesis = TRUE, # enable fixed effects indicator saturation
-#            ar = a, # specify auto-regressive terms
-#            t.pval = p.value,  # false positive rate
-#            max.block.size = 20 # size for block search 
-#            )
-#          models = tibble(source = f, 
-#                          id_sample = smpl,    # which sample 
-#                          year_range = paste0(min(dat$year),":",max(dat$year)), # #time series
-#                          p_val = p.value, # false positive rates 
-#                          is = list(is), # model
-#                          iis = TRUE, # IIS
-#                          b_size = 20,
-#                          ar = a)
-#  }
-#
-#stopCluster(cl) # stop parallelizing 
-#
-#saveRDS(models, ".\\energy_09_01_24_sample_exp.RDS")  # save model output 
-
 # plot 
 
 energy <- readRDS(".\\energy_09_01_24_sample_exp.RDS") %>% 
@@ -321,39 +288,6 @@ energy %>%
 
 ```{r solar, echo=FALSE, results = 'asis', fig.height=30, fig.width=55, cache = TRUE}
 
-#cl <- makeCluster(6) 
-#registerDoParallel(cl)
-#
-#models <- foreach(f = base_forms, .combine = rbind, .packages = c('tidyverse', #'getspanel')) %:% # specify functional form 
-#  foreach(smpl = samples, .combine = rbind) %:% # specify samples
-#  foreach(a = c(1), .combine = rbind) %:%
-#  foreach(p.value = c(0.01, 0.05), .combine = rbind, .errorhandling = "remove") #%dopar% {
-#    dat <- df_mod %>% filter(tech == "Solar energy")
-#      is <- isatpanel( # main function
-#            data = dat,
-#            formula = as.formula(f),
-#            index = c("ISO", "year"), # id and time
-#            effect = "twoways", # twoway fixed effects chosen as estimator
-#            iis = TRUE, # enable impulse indicator saturation
-#            fesis = TRUE, # enable fixed effects indicator saturation
-#            ar = a, # specify auto-regressive terms
-#            t.pval = p.value,  # false positive rate
-#            max.block.size = 20 # size for block search 
-#            )
-#          models = tibble(source = f, 
-#                          id_sample = smpl,    # which sample 
-#                          year_range = paste0(min(dat$year),":",max(dat$year)), # #time series
-#                          p_val = p.value, # false positive rates 
-#                          is = list(is), # model
-#                          iis = TRUE, # IIS
-#                          b_size = 20,
-#                          ar = a)
-#  }
-#
-#stopCluster(cl) # stop parallelizing 
-#
-#saveRDS(models, ".\\solar_09_01_24_sample_exp.RDS")  # save model output 
-#
 # plot 
 
 solar <- readRDS(".\\solar_09_01_24_sample_exp.RDS") %>% 
@@ -386,39 +320,6 @@ solar %>%
 ## WIND {.tabset}
 
 ```{r wind, echo=FALSE, results = 'asis', fig.height=30, fig.width=55, cache = TRUE}
-
-#cl <- makeCluster(3) 
-#registerDoParallel(cl)
-#
-#models <- foreach(f = base_forms, .combine = rbind, .packages = c('tidyverse', #'getspanel')) %:% # specify functional form 
-#  foreach(smpl = c("top_25", "top_50", "oecd"), .combine = rbind) %:% # specify #samples
-#  foreach(a = c(1), .combine = rbind) %:%
-#  foreach(p.value = c(0.01, 0.05), .combine = rbind, .errorhandling = "remove") #%dopar% {
-#    dat <- df_mod %>% filter(tech == "Wind energy") %>% filter(ISO %in% #samples[[smpl]])
-#      is <- isatpanel( # main function
-#            data = dat,
-#            formula = as.formula(f),
-#            index = c("ISO", "year"), # id and time
-#            effect = "twoways", # twoway fixed effects chosen as estimator
-#            iis = TRUE, # enable impulse indicator saturation
-#            fesis = TRUE, # enable fixed effects indicator saturation
-#            ar = a, # specify auto-regressive terms
-#            t.pval = p.value,  # false positive rate
-#            max.block.size = 20 # size for block search 
-#            )
-#          models = tibble(source = f, 
-#                          id_sample = smpl,    # which sample 
-#                          year_range = paste0(min(dat$year),":",max(dat$year)), # #time series
-#                          p_val = p.value, # false positive rates 
-#                          is = list(is), # model
-#                          iis = TRUE, # IIS
-#                          b_size = 20,
-#                          ar = a)
-#  }
-#
-#stopCluster(cl) # stop parallelizing 
-#
-#saveRDS(models, ".\\wind_09_01_24_sample_exp.RDS")  # save model output 
 
 # plot 
 
@@ -453,39 +354,6 @@ wind %>%
 
 ```{r batteries, echo=FALSE, results = 'asis', fig.height=30, fig.width=55, cache = TRUE}
 
-#cl <- makeCluster(4) 
-#registerDoParallel(cl)
-#
-#models <- foreach(f = base_forms, .combine = rbind, .packages = c('tidyverse', #'getspanel')) %:% # specify functional form 
-#  foreach(smpl = c("top_25", "top_50", "oecd"), .combine = rbind) %:% # specify #samples
-#  foreach(a = c(1), .combine = rbind) %:%
-#  foreach(p.value = c(0.01, 0.05), .combine = rbind, .errorhandling = "remove") #%dopar% {
-#    dat <- df_mod %>% filter(tech == "Batteries") %>% filter(ISO %in% #samples[[smpl]])
-#      is <- isatpanel( # main function
-#            data = dat,
-#            formula = as.formula(f),
-#            index = c("ISO", "year"), # id and time
-#            effect = "twoways", # twoway fixed effects chosen as estimator
-#            iis = TRUE, # enable impulse indicator saturation
-#            fesis = TRUE, # enable fixed effects indicator saturation
-#            ar = a, # specify auto-regressive terms
-#            t.pval = p.value,  # false positive rate
-#            max.block.size = 20 # size for block search 
-#            )
-#          models = tibble(source = f, 
-#                          id_sample = smpl,    # which sample 
-#                          year_range = paste0(min(dat$year),":",max(dat$year)), # #time series
-#                          p_val = p.value, # false positive rates 
-#                          is = list(is), # model
-#                          iis = TRUE, # IIS
-#                          b_size = 20,
-#                          ar = a)
-#  }
-#
-#stopCluster(cl) # stop parallelizing 
-#
-#saveRDS(models, ".\\batteries_09_01_24_sample_exp.RDS")  # save model output 
-#
 # plot 
 
 batteries <- readRDS(".\\batteries_09_01_24_sample_exp.RDS") %>% 

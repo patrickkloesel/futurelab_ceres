@@ -152,7 +152,7 @@ suppressMessages(print(max_norm_tech))
 
 # What is the relation from 1 patent to the max patents per country? 
 
-```{r, echo=TRUE, fig.width=15, fig.height=15}
+```{r, echo=FALSE, fig.width=15, fig.height=15}
 
 df %>% 
   group_by(ISO, tech) %>% 
