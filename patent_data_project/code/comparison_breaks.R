@@ -1,19 +1,13 @@
----
-title: "comparison_results"
-author: "Laura Menicacci"
-date: "2023-12-13"
-output: html_document
----
 
-```{r setup, include=FALSE}
-#knitr::opts_chunk$set(echo = TRUE)
+setwd(".\\patent_data_project\code\comparison_breaks.R")
 
 # devtools::install_github("moritzpschwarz/getspanel")
 library(tidyverse)
 library(gets)
 library(getspanel)
 
-## Put all results together (THESE ARE THE OLD RESULTS)
+# Put all results together (THESE ARE THE OLD RESULTS FROM DECEMBER 7TH) 
+## PATH NEEDS TO BE CHANGED
 
 #ccmt_IIS <- readRDS(".\\results\\ccmt_IIS.RDS")
 #ccmt_noIIS <- readRDS(".\\results\\ccmt_noIIS.RDS")
@@ -37,39 +31,32 @@ library(getspanel)
 #
 #results <- rbind(ccmt, energy, solar, wind, batteries)
 
-```
 
 ## This function assigns a list of all the detected breaks for each model specification
 
-```{r}
-
 find_breaks <- function(results_df) {
-
-  results_df$breaks <- vector("list", length = nrow(results_df))
-
-  for (i  in 1:nrow(results_df)){
   
+  results_df$breaks <- vector("list", length = nrow(results_df))
+  
+  for (i  in 1:nrow(results_df)){
+    
     for (j in results_df$is[i]) {
       
       for (k in j$isatpanel.result$ISnames) {
-          breaks <- get_indicators(j)$fesis$name
-          results_df$breaks[i] <- list(breaks)
+        breaks <- get_indicators(j)$fesis$name
+        results_df$breaks[i] <- list(breaks)
+      }
     }
+    
   }
-  
-}
- return(results_df)
-  } 
+  return(results_df)
+} 
 
 
 # TO DO: MAKE MORE EFFICIENT (remove nested loops)
 
 
-```
-
 ## try a more efficient one (doesn't work)
-
-```{r}
 
 find_breaks2 <- function(results_df) {
   results_df$breaks <- lapply(results_df$is, function(j) {
@@ -94,14 +81,10 @@ find_breaks2 <- function(results_df) {
 #
 #all_res <- rbind(ccmt, energy, solar, wind, batteries) 
 #
-#saveRDS(all_res, ".\\all_res_break_comp.RDS")
-
-```
+#saveRDS(all_res, ".\\all_res_break_comp.RDS" 
 
 
 ## How to compare across models and samples the breaks? 
-
-```{r}
 
 res_prova <- res_w_breaks %>% select(!is)
 
@@ -113,7 +96,7 @@ res_prova <- res_prova %>%
   select(!(breaks)) # remove old columns
 
 res_prova$break_year <- as.numeric(res_prova$break_year)
-  
+
 common_breaks <- data.frame() 
 
 for (i in 1:(nrow(res_prova)-1)){
@@ -127,43 +110,36 @@ for (i in 1:(nrow(res_prova)-1)){
 }
 
 
-```
-
 ## Function that extracts breaks and filters for common breaks across specifications and technologies
 
-```{r}
 filter_for_common_breaks <- function(res_with_breaks_list) {
-
-res_with_breaks_list <- res_with_breaks_list %>% 
-  unnest(cols = breaks) %>% # Extract list and make the df longer
-  # Transform list in 2 columns: break_year and break_iso
-  mutate(break_year = str_sub(breaks, 10, 13), 
-         break_ISO = str_sub(breaks, 6, 8)) %>% 
-  select(!(breaks)) # remove old columns
-
-res_with_breaks_list$break_year <- as.numeric(res_with_breaks_list$break_year)
   
-common_breaks <- data.frame() 
-
-for (i in 1:(nrow(res_with_breaks_list)-1)){
-  for (j in (i + 1):nrow(res_with_breaks_list)){
-    # Select only breaks that are of the same country and with a conf int of +-3y 
-    if(res_with_breaks_list$break_ISO[i] == res_with_breaks_list$break_ISO[j] && abs(res_with_breaks_list$break_year[i] - res_with_breaks_list$break_year[j]) <= 3){
-      common_breaks <- rbind(common_breaks, res_with_breaks_list[i, ], res_with_breaks_list[j, ])
-      common_breaks <- common_breaks %>% distinct()
-    } 
+  res_with_breaks_list <- res_with_breaks_list %>% 
+    unnest(cols = breaks) %>% # Extract list and make the df longer
+    # Transform list in 2 columns: break_year and break_iso
+    mutate(break_year = str_sub(breaks, 10, 13), 
+           break_ISO = str_sub(breaks, 6, 8)) %>% 
+    select(!(breaks)) # remove old columns
+  
+  res_with_breaks_list$break_year <- as.numeric(res_with_breaks_list$break_year)
+  
+  common_breaks <- data.frame() 
+  
+  for (i in 1:(nrow(res_with_breaks_list)-1)){
+    for (j in (i + 1):nrow(res_with_breaks_list)){
+      # Select only breaks that are of the same country and with a conf int of +-3y 
+      if(res_with_breaks_list$break_ISO[i] == res_with_breaks_list$break_ISO[j] && abs(res_with_breaks_list$break_year[i] - res_with_breaks_list$break_year[j]) <= 3){
+        common_breaks <- rbind(common_breaks, res_with_breaks_list[i, ], res_with_breaks_list[j, ])
+        common_breaks <- common_breaks %>% distinct()
+      } 
+    }
   }
-}
- return(common_breaks)
-  } 
+  return(common_breaks)
+} 
 
-```
+
 
 
 # Try if it works
-```{r}
-
 prova_comm_br <- filter_for_common_breaks(res_w_breaks)
-
-```
 

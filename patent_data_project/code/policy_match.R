@@ -1,12 +1,5 @@
----
-title: "policy_match"
-author: "Laura Menicacci"
-date: "2024-01-17"
-output: html_document
----
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+setwd(".\\patent_data_project\code")
 
 suppressWarnings(suppressMessages(library(knitr)))
 suppressWarnings(suppressMessages(library(tidyverse)))
@@ -18,5 +11,3 @@ pol <- read_excel("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\CAPMF_Comp
 
 pol %>% 
   filter(ISO %in% "IND" & year >= 2000)
-```
-
