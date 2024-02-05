@@ -19,7 +19,9 @@ df1 <- df1 %>%
   summarise(count = sum(count)) %>%
   ungroup()
 
-################### Add 0 values for missing years
+################### Assume that count = 0 when missing
+
+# add 0 values for missing years
 
 years <- 1990:2020
 
@@ -72,12 +74,24 @@ controls_taiwan <- left_join(taiwan_gdp, taiwan_pop, by = c("Entity", "Code", "Y
 
 df4 <- df3 %>% rows_update(controls_taiwan, by = c("ISO", "year"))
 
+##################### Create count variables for each technology 
+
+df5 <- df4 %>% 
+  tidyr::spread(key = tech, value = count) %>%  # transpose count column according to technology class
+  rename("count_ccmt" = "Climate change mitigation", # rename shorter
+         "count_energy" = "Climate change mitigation technologies related to energy generation, transmission or distribution", 
+         "count_solar" = "Solar energy", 
+         "count_wind" = "Wind energy", 
+         "count_batteries" = "Batteries")
+
 ##################### Sanity check
 
-df4 %>% filter(!complete.cases(.)) %>% count() # 25 countries have missing values (1700 obs in tot)
+df5 %>% filter(!complete.cases(.)) %>% count() # 25 countries have missing values (340 obs in tot)
 
 #df4 <- df4 %>% drop_na()
 
 ##################### Save csv
 
-write.csv(df4, ".\\data\\patents_panel_5techs.csv")
+#write.csv(df4, ".\\data\\patents_panel_5techs.csv")
+
+write.csv(df5, ".\\data\\patents_panel_5techs_spread.csv") 
