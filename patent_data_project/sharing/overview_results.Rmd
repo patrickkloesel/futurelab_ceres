@@ -1,0 +1,73 @@
+---
+title: "Overview results"
+author: "Laura Menicacci"
+date: "2024-02-05"
+output: html_document
+---
+
+```{r, fig.height = 15, fig.width = 15, echo=FALSE}
+
+## libraries
+suppressWarnings(suppressMessages(library(knitr)))
+suppressWarnings(suppressMessages(library(tidyverse)))
+suppressWarnings(suppressMessages(library(kableExtra)))
+suppressWarnings(suppressMessages(library(patchwork)))
+suppressWarnings(suppressMessages(library(gets)))
+suppressWarnings(suppressMessages(library(getspanel)))
+suppressWarnings(suppressMessages(library(here)))
+suppressWarnings(suppressMessages(library(doParallel)))
+suppressWarnings(suppressMessages(library(gdata)))
+suppressWarnings(suppressMessages(library(gridExtra)))
+suppressWarnings(suppressMessages(library(ggridges)))
+
+# Load plotting functions
+source("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\code\\plotting_functions.R")
+
+# Data
+top_25 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "TWN", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR", "SGP", "BRA")
+
+df <- read_csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\data\\patents_panel_5techs.csv", show_col_types = F)  %>% filter(ISO %in% top_25)
+
+# 05.02-24 Model results
+
+res <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\05_02_all.RDS") %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula), 
+         tech = word(dep, -1, sep = " ")) 
+
+```
+
+## Models comparison {.tabset}
+
+ * Y: Levels, Logs+1, IHS, **Normalization with the max by technology**
+ * Controls: gdp, pop
+ * Auto-regressive term = 1
+ * IIS=ON
+ * p-val = 0.01, 0.05
+ * Sample: top_25
+ * Time series: 2000-2019
+
+```{r models, echo=FALSE, results = 'asis', fig.height=30, fig.width=60, cache = TRUE}
+
+res %>%
+       dplyr::group_split(tech) %>%
+       purrr::iwalk(.,~{
+         name <- unique(.x$tech)
+         cat('### ', name, '{.tabset}   \n')
+              for(p in unique(.x$dep)){
+                   cat('#### ', p, '{.tabset}   \n')
+                for(sm in unique(.x$p_val)){
+                   cat('##### ', sm, '{.tabset}   \n')
+                   filter(.x, p_val == sm & dep == p) %>% gen_p(., auto = TRUE)
+                cat('\n')
+                cat('\n')
+                }
+           cat('\n')
+           cat('\n')
+           }
+         cat('\n')
+         cat('\n')
+       })
+       
+```
