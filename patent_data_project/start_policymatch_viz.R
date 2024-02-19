@@ -12,16 +12,13 @@ names(palette) <- sort(unique(oecd_grouped$Policy_name))
 
 color_dict = palette
 
-## ricorda che per usare le funzioni devi iterare su questo: countries = unique(out$id)
-## magari prova prima con count e un sector e poi a iterare
+## reminder you have to iterate over: countries = unique(out$id)
 
-########## Count
-
-## make panels for each sector (tech?) 
+## make panels for each sector (=tech) 
 tech_plots = list()
 ncol = c(5,5,3,6)  # n of col for each panel
 box_size = c(3,3,3,3) # size of policy boxes 
-ylims = list(c(0,9),c(0,9),c(0,9),c(0,9))
+ylims = list(c(0,9),c(0,9),c(0,9),c(0,9)) # max n of policy boxes that can be stacked on top of each other
 prop = c(0.7,0.7,0.7,0.7)
 #icon_links = c("Logos\\Buildings.png","Logos\\Electricity.png","Logos\\Industry.png","Logos\\Transport.png")
 i=1
@@ -63,7 +60,7 @@ for(s in unique(policy_out$tech)){
           legend.position = 'bottom')
   legend <- ggpubr::get_legend(p_legend)
   
-  #legend_1 <- create_fig_2_3_legend()
+  #legend_1 <- create_fig_2_3_legend() removed general legend for now to make things simpler
   
   #if(i<3){
   #  myplots[[counter]]<-legend_1
