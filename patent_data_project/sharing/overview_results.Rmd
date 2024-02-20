@@ -40,12 +40,13 @@ res <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_cer
 
 ## Models comparison {.tabset}
 
- * Y: Levels, Logs+1, IHS, **Normalization with the max by technology**
+ * Technology classes: climate change mitigation technologies, energy, solar, wind, (batteries)
+ * Y: Levels, Logs+1, IHS, Max normalization by technology
  * Controls: gdp, pop
  * Auto-regressive term = 1
  * IIS=ON
  * p-val = 0.01, 0.05
- * Sample: top_25
+ * Sample: top 25 patenting countries (by mean)
  * Time series: 2000-2019
 
 ```{r models, echo=FALSE, results = 'asis', fig.height=40, fig.width=60, cache = TRUE}
@@ -75,20 +76,22 @@ res %>%
 
 ## Policy matching results {.tabset}
 
+OECD policy data filtered for **Electricity** sector only. 
+
 ### Count {.tabset}
 
 #### Ccmt {.tabset}
 
 ```{r, echo=FALSE, out.width = '100%'}
 
-knitr::include_graphics("Fig_ccmt_lowres.png")
+knitr::include_graphics("Fig_ccmt_elec.png")
 ```
 
 #### Energy {.tabset}
 
 ```{r, echo=FALSE, out.width = '100%'}
 
-knitr::include_graphics("Fig_energy.png")
+knitr::include_graphics("Fig_energy_elec.png")
 ```
 
 
@@ -96,14 +99,14 @@ knitr::include_graphics("Fig_energy.png")
 
 ```{r, echo=FALSE, out.width = '100%'}
 
-knitr::include_graphics("Fig_solar.png")
+knitr::include_graphics("Fig_solar_elec.png")
 ```
 
 #### Wind {.tabset}
 
 ```{r, echo=FALSE, out.width = '100%'}
 
-knitr::include_graphics("Fig_wind.png")
+knitr::include_graphics("Fig_wind_elec.png")
 ```
 
 ### Logs {.tabset}
@@ -112,14 +115,14 @@ knitr::include_graphics("Fig_wind.png")
 
 ```{r, echo=FALSE, out.width = '100%'}
 
-knitr::include_graphics("Fig_ccmt_logs.png")
+knitr::include_graphics("Fig_ccmt_logs_elec.png")
 ```
 
 #### Energy {.tabset}
 
 ```{r, echo=FALSE, out.width = '100%'}
 
-knitr::include_graphics("Fig_energy_logs.png")
+knitr::include_graphics("Fig_energy_logs_elec.png")
 ```
 
 
@@ -127,14 +130,14 @@ knitr::include_graphics("Fig_energy_logs.png")
 
 ```{r, echo=FALSE, out.width = '100%'}
 
-knitr::include_graphics("Fig_solar_logs.png")
+knitr::include_graphics("Fig_solar_logs_elec.png")
 ```
 
 #### Wind {.tabset}
 
 ```{r, echo=FALSE, out.width = '100%'}
 
-knitr::include_graphics("Fig_wind_logs.png")
+knitr::include_graphics("Fig_wind_logs_elec.png")
 ```
 
 
@@ -142,7 +145,7 @@ knitr::include_graphics("Fig_wind_logs.png")
 
  * Common countries across specifications (count vs log): China, South Korea, Denmark
 
-### Country comparison across techs and specifications: 
+### Country comparison across techs and specifications: {.tabset}
 
 #### Count (6 countries in tot): {.tabset}
 
@@ -180,7 +183,7 @@ country_comp_log %>%
 
 
 
-### Sign comparison across techs and specifications: 
+### Sign comparison across techs and specifications: {.tabset}
 
 #### Count: {.tabset}
 
@@ -235,7 +238,7 @@ formatted_table %>%
 ```
 
 
-### Year comparison:
+### Year comparison: {.tabset}
 
 #### Count: {.tabset}
 

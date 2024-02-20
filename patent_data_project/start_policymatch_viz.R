@@ -1,10 +1,12 @@
 ######################### create figure with counterfactual + plot + legend for four technologies
 
-source('C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\00_oecd_project_functions.R')
+source('C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\00_oecd_project_functions.R')
 conflicts_prefer(ggpubr::get_legend)
 
 policy_out = readRDS("Policy_out_first_try_patents_logs.RDS")
 oecd_grouped = read.csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\OECD_data_preprocessed_august_23.csv")
+
+oecd_grouped <- oecd_grouped %>% filter(Module %in% c("Electricity"))
 
 #set the color palette for the policies 
 palette <- c("#e6194b","#f58231","#f032e6","#991eb4","#ffe119","#bfef45","#3cb44b","#4363d8","#fabed4","#42d4f4","#ffd8b1","#fffac8","#aaffc3","#dcbeff","#800000","#9a6324","#808000","#000075","#469990","#000000","#a9a9a9","tan","aquamarine")
@@ -18,8 +20,8 @@ color_dict = palette
 tech_plots = list()
 ncol = c(5,5,3,6)  # n of col for each panel
 box_size = c(3,3,3,3) # size of policy boxes 
-ylims = list(c(0,9),c(0,9),c(0,9),c(0,9)) # max n of policy boxes that can be stacked on top of each other
-prop = c(0.7,0.7,0.7,0.7)
+ylims = list(c(0,5),c(0,5),c(0,5),c(0,5)) # max n of policy boxes that can be stacked on top of each other
+prop = c(0.3,0.3,0.3,0.3)
 #icon_links = c("Logos\\Buildings.png","Logos\\Electricity.png","Logos\\Industry.png","Logos\\Transport.png")
 i=1
 for(s in unique(policy_out$tech)){
@@ -67,7 +69,7 @@ for(s in unique(policy_out$tech)){
   #}
   
   p <- cowplot::plot_grid(plotlist=myplots,ncol=ncol[i])
-  p_final <- cowplot::plot_grid(plotlist = list(p,legend), nrow=2, rel_heights = c(1,0.10))
+  p_final <- cowplot::plot_grid(plotlist = list(p,legend), nrow=2, rel_heights = c(1,0.15))
   tech_plots[[i]] <- p_final
   i=i+1
 }
@@ -75,22 +77,22 @@ for(s in unique(policy_out$tech)){
 
 #save 4 different figures by technology
 
-path = paste("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\",'Fig_solar_logs',".png",sep='')
+path = paste("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\",'Fig_ccmt_logs_elec',".png",sep='')
 
-png(path, width     =30,height    = 13,units     = "in",res= 200)
+png(path, width     =50,height    = 17,units     = "in",res= 200)
 
-p <- cowplot::plot_grid(plotlist = list(tech_plots[[4]]),nrow=1)+theme(plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm"))
+p <- cowplot::plot_grid(plotlist = list(tech_plots[[1]]),nrow=1)+theme(plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm"))
 y.grob <- textGrob("log(patent count)",
                    gp=gpar(fontface="bold", fontsize=25), rot=90)
 
 x.grob <- textGrob("years",
                    gp=gpar(fontface="bold", fontsize=25))
 
-top.grob <- textGrob("Solar energy",
+top.grob <- textGrob("Climate change mitigation technologies",
                        gp=gpar(fontface="bold", fontsize=25))
 
 grid.arrange(arrangeGrob(p, top  = top.grob, left = y.grob, bottom = x.grob))
 
-dev.off() # what the output should be?
+dev.off() 
 
 #a <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\break_detection_global\\results\\Policy_out.RDS")
