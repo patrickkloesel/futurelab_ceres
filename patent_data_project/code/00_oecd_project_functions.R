@@ -42,6 +42,9 @@ conflicts_prefer(ggpubr::get_legend)
 conflicts_prefer(dplyr::summarize)
 conflicts_prefer(lubridate::year)
 
+## the following policy matching functions are commented because they have been adapted to the patent proj needs and 
+## they are run in the policy_match.R script
+
 ## takes an isatpanel object, uses break_uncertainty() in getspanel to format output and get uncertainty range
 
 #get_breaks_list <- function(res){
@@ -284,12 +287,13 @@ plot_counterfactual <- function(x, country, out, plus_t = 5, facet.scales = "fre
 
 # Policy_name was originally Policy_name_fig_2_3
 #produces Fig. 2+3
-plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5,symbol_size=3, ylim=c(0,5),policy_plot_prop=1, sector = "x",int_size=2,legend=TRUE){  # levato label_df, dopo policy_match
-  # changed ylim from 3 to 7 
+plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5,symbol_size=3, ylim=c(0,5),policy_plot_prop=1, sector = "x",int_size=2,legend=TRUE){  
+  # removed label_df, after policy_match
+  # changed ylim (number of policy boxes per year) from 3 to 5
   p <- plot_counterfactual(res,country,out,int_size=int_size)
   
-  iso = country ## qui levato countrycode function
-  # commentato io 
+  iso = country ## here removed countrycode function
+  # commented: patent proj doesnt need this 
   #if(country == 'SouthAfrica'){
   #  iso = 'ZAF'
   #}
@@ -297,7 +301,7 @@ plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5
   #  country = 'South Korea'
   #}
   policy_match_country <- policy_match[policy_match$ISO==iso,]
-  # commentato io
+  # commented: patent proj doesnt need this
   #if(sector != "x"){
   #  policy_match_country = policy_match_country[policy_match_country$Module==sector,]
   #}
@@ -308,7 +312,7 @@ plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5
   
   policy_match_plot <- policy_match_country[c('year','Policy_name',"enumeration")] # remove ,'Module' after year
   
-  # qua ho commentato io 
+  # commented: patent proj doesnt need this 
   #label_df_sub = label_df[label_df$country == country & label_df$Module==sector,]
   #label_df_sub = select(label_df_sub,-c('country'))
   #
@@ -362,7 +366,7 @@ plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5
       geom_rect(data = out_sub, aes(xmin = time-int_size, xmax = time+int_size, ymin = -Inf, ymax = Inf),fill = "grey",alpha = 0.3, na.rm = TRUE, show.legend=FALSE) +
       geom_point(data = policy_match_country, aes(x=year, y=enumeration, fill=Policy_name),shape=22,size=cube_size)
       }
-    # commentato io 
+    # commented: patent proj doesnt need this 
     #if(nrow(label_df_sub)>0){
     #  p_policy <- p_policy+geom_text(data = label_df_sub, aes(x = year, y = enumeration, label = icon),
     #            hjust = 0, size = symbol_size)+

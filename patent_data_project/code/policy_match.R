@@ -44,7 +44,7 @@ conflicts_prefer(lubridate::year)
 
 #match policy to breaks based on different confidence intervals
 
-source("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\00_oecd_project_functions.R")
+source("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\code\\00_oecd_project_functions.R")
 
 ## Read preprocessed oecd policy data
 oecd_grouped = read.csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\OECD_data_preprocessed_august_23.csv")

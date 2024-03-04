@@ -1,10 +1,10 @@
 ######################### create figure with counterfactual + plot + legend for four technologies
 
-source('C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\00_oecd_project_functions.R')
+source('C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\code\\00_oecd_project_functions.R')
 conflicts_prefer(ggpubr::get_legend)
 
-policy_out = readRDS("Policy_out_first_try_patents_logs.RDS")
-oecd_grouped = read.csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\OECD_data_preprocessed_august_23.csv")
+policy_out = readRDS("Policy_out_first_try_patents_logs.RDS") # load policy matching results 
+oecd_grouped = read.csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\OECD_data_preprocessed_august_23.csv") # change path to yours for the OECD-CAMPF data
 
 oecd_grouped <- oecd_grouped %>% filter(Module %in% c("Electricity"))
 
@@ -19,7 +19,7 @@ color_dict = palette
 ## make panels for each sector (=tech) 
 tech_plots = list()
 ncol = c(5,5,3,6)  # n of col for each panel
-box_size = c(3,3,3,3) # size of policy boxes 
+box_size = c(5,5,5,5) # size of policy boxes 
 ylims = list(c(0,5),c(0,5),c(0,5),c(0,5)) # max n of policy boxes that can be stacked on top of each other
 prop = c(0.3,0.3,0.3,0.3)
 #icon_links = c("Logos\\Buildings.png","Logos\\Electricity.png","Logos\\Industry.png","Logos\\Transport.png")
@@ -77,7 +77,7 @@ for(s in unique(policy_out$tech)){
 
 #save 4 different figures by technology
 
-path = paste("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\",'Fig_ccmt_logs_elec',".png",sep='')
+path = paste("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\figs\\",'Fig_ccmt_logs_elec',".png",sep='')
 
 png(path, width     =50,height    = 17,units     = "in",res= 200)
 
