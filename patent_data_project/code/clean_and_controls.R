@@ -98,10 +98,20 @@ df6 <- left_join(df5, iea_brown_patents, by = c("ISO" = "countryISO", "year")) %
 
 ##################### Sanity check
 
-df6 %>% filter(!complete.cases(.)) %>% group_by(ISO) %>% count() %>% print(n = 196) # check NAs per country
+top_25 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "TWN", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR", "SGP", "BRA")
+
+df6 %>% 
+  filter(year < 2020 & year > 1999) %>% # check whether there are any NAs in our time and country sample of interest 
+  filter(ISO %in% top_25) %>% 
+  filter(!complete.cases(.)) # 3 NAs from brown patents in the sample (Israel 2010, Israel 2015 and Singapore 2001)
+
+# change them to 0 assuming there was no fossil fuel patent in that year&country (doublechecked with disaggregated data provided by IEA )  
+df6[df6$year == 2001 & df6$ISO == "SGP", "brown_patents"] <- 0
+df6[df6$year == 2010 & df6$ISO == "ISR", "brown_patents"] <- 0
+df6[df6$year == 2015 & df6$ISO == "ISR", "brown_patents"] <- 0
 
 ##################### Save csv
 
 #write.csv(df4, ".\\data\\patents_panel_5techs.csv")
 
-write.csv(df5, ".\\data\\patents_panel_5techs_spread.csv") 
+write.csv(df6, ".\\data\\patents_panel_5techs_spread.csv") 
