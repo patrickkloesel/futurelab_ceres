@@ -84,11 +84,21 @@ df5 <- df4 %>%
          "count_wind" = "Wind energy", 
          "count_batteries" = "Batteries")
 
+##################### Add brown patents data
+
+iea_brown_patents <- read.csv(".\\data\\IEA-h2020-data-topic=Patents-allYears=true.csv") %>% 
+  filter(indicator %in% c("Detail")) %>%  # remove total counts
+  filter(!countryISO %in% c("WORLD")) %>% # remove world counts
+  filter(!category %in% c("Clean Energy")) %>%  # remove clean energy counts
+  select(countryISO, category, year, value) %>% 
+  group_by(countryISO, year) %>% 
+  summarise(value = sum(value), .groups = "keep") # aggregate counts by country and year
+
+df6 <- left_join(df5, iea_brown_patents, by = c("ISO" = "countryISO", "year")) %>% rename("brown_patents" = "value")
+
 ##################### Sanity check
 
-df5 %>% filter(!complete.cases(.)) %>% count() # 25 countries have missing values (340 obs in tot)
-
-#df4 <- df4 %>% drop_na()
+df6 %>% filter(!complete.cases(.)) %>% group_by(ISO) %>% count() %>% print(n = 196) # check NAs per country
 
 ##################### Save csv
 
