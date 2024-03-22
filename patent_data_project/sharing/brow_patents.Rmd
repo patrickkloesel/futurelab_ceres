@@ -1,0 +1,113 @@
+---
+title: "Brown patents brief data analysis"
+author: "Laura Menicacci"
+date: "2024-03-22"
+output: html_document
+---
+
+Source of the data: [IEA](https://www.iea.org/data-and-statistics/data-tools/energy-technology-patents-data-explorer). Double-checked via email with IEA people that these counts are comparable: fractional counts according to inventor’s countries of priority applications and of family size greater than two (PF2). Same as OECD ones!
+
+```{r setup, echo=FALSE}
+
+## libraries
+suppressWarnings(suppressMessages(library(knitr)))
+suppressWarnings(suppressMessages(library(tidyverse)))
+suppressWarnings(suppressMessages(library(here)))
+
+#here::i_am("sharing/brown_patents.R")
+
+top_25 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "TWN", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR", "SGP", "BRA")
+
+df <- read.csv(here::here("data/patents_panel_5techs_spread.csv")) %>% 
+  filter(ISO %in% top_25) %>% 
+  filter(year < 2020 & year > 1999) %>% # cut time series 
+  select(!count_batteries)
+
+df %>% filter(!complete.cases(.))
+
+```
+
+# Plot TOTAL distribution (without filtering for our country sample)
+
+33 countries. 
+
+NOTE: here SAUDI ARABIA (SAU) plays a role that we don't see in the clean patents (obviously)
+
+```{r, fig.height=10, fig.width=10, echo=FALSE}
+df1 <- read.csv(here::here("data/patents_panel_5techs_spread.csv")) %>% 
+  #filter(ISO %in% top_25) %>% 
+  filter(year < 2020 & year > 1999) %>% # cut time series 
+  select(!count_batteries) %>% 
+  drop_na() 
+
+df1 %>% 
+  ggplot(aes(x = brown_patents)) +
+  geom_boxplot() +
+  facet_wrap(~ISO, scales = "free") +
+  theme_bw() #+
+  #scale_x_continuous(limits = c(0, 1000))
+```
+
+
+# Plot time series for top 25 countries against the ccmt faceted by country
+
+In general CCMT patenting seems to be more than brown in all the countries in our sample, energy is more aligned with the trend of the brown.  
+```{r, fig.width=10, fig.height=10, echo=FALSE}
+df %>%
+  #filter(ISO == "SAU") %>%
+  ggplot(aes(y = brown_patents, x = year)) +
+  geom_line(aes(colour = "brown patents")) +
+  geom_line(aes(y = count_ccmt, colour = "green patents")) +
+  geom_line(aes(y = count_energy, colour = "energy patents")) +
+  facet_wrap(~ISO, scales = "free") +
+  scale_colour_manual(values = c("brown patents" = "brown", 
+                                  "green patents" = "green",
+                                  "energy patents" = "yellow")) +
+  theme_bw()
+
+```
+
+# comparison brown vs solar and wind 
+
+USA super interesting: after 2010s brown takes over and the solar and wind diminishes! supports hydrofracking hypothesis (moreover numbers dominate the whole sample)
+```{r, fig.width=10, fig.height=10, echo=FALSE}
+df %>%
+  #filter(ISO == "SAU") %>%
+  ggplot(aes(y = brown_patents, x = year)) +
+  geom_line(aes(colour = "brown patents")) +
+  geom_line(aes(y = count_wind, colour = "wind patents")) +
+  geom_line(aes(y = count_solar, colour = "solar patents")) +
+  facet_wrap(~ISO, scales = "free") +
+  scale_colour_manual(values = c("brown patents" = "brown", 
+                                  "solar patents" = "orange",
+                                  "wind patents" = "lightblue")) +
+  theme_bw()
+
+```
+
+# Plot ccmt against brown
+
+interesting: CANADA and USA the relationship seems logarithmic? what does it mean? 
+Australia? negative association
+```{r, fig.height=10, fig.width=10, echo=FALSE}
+df %>% 
+  ggplot(aes(x = brown_patents, y = count_ccmt)) +
+  geom_point()+
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.3, colour = 'red', fill = 'lightgrey') +
+  facet_wrap(~ISO, scales = "free")+
+  theme_bw()
+```
+
+# Plot energy against brown
+
+```{r, fig.height=10, fig.width=10, echo=FALSE}
+df %>% 
+  ggplot(aes(x = brown_patents, y = count_energy)) +
+  geom_point()+
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.3, colour = 'red', fill = 'lightgrey') +
+  facet_wrap(~ISO, scales = "free")+
+  theme_bw()
+
+```
+ 
+ 
