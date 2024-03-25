@@ -23,7 +23,7 @@ df <- read.csv(here::here("data/patents_panel_5techs_spread.csv")) %>%
   filter(year < 2020 & year > 1999) %>% # cut time series 
   select(!count_batteries)
 
-df %>% filter(!complete.cases(.))
+#df %>% filter(!complete.cases(.))
 
 ```
 
