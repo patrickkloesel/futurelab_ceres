@@ -1,7 +1,7 @@
 ---
 title: "new_results_tis"
 author: "Laura Menicacci"
-date: "2024-03-22"
+date: "2024-03-26"
 output: html_document
 ---
 
@@ -62,7 +62,7 @@ res <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_cer
  * Sample: top 25 patenting countries (by mean)
  * Time series: 2000-2019
 
-```{r models, echo=FALSE, results = 'asis', fig.height=40, fig.width=60, cache = TRUE}
+```{r model, echo=FALSE, results = 'asis', fig.height=40, fig.width=60, cache = FALSE}
 
 res %>%
        dplyr::group_split(tech) %>%
