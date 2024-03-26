@@ -42,7 +42,7 @@ source("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\pate
 #
 
 
-res <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\06_03_TIS_iis_nobrown.RDS") %>% 
+res <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\26_03_TIS_tighter_pval.RDS") %>% 
   separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
   mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
          formula = trimws(formula), 
@@ -50,7 +50,7 @@ res <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_cer
 
 ```
 
-## Models comparison 06.03 version {.tabset}
+## Models comparison {.tabset}
 
  * Technology classes: climate change mitigation technologies, energy, solar, wind
  * Y: Levels, Logs+1, IHS, Max normalization by technology
@@ -58,7 +58,7 @@ res <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_cer
  * Auto-regressive term = 1
  * IIS=ON
  * **TREND BREAK (TIS) =ON**
- * p-val = 0.01, 0.05
+ * p-val = 0.001, 0.01
  * Sample: top 25 patenting countries (by mean)
  * Time series: 2000-2019
 
@@ -84,40 +84,5 @@ res %>%
          cat('\n')
        })
        
-```
-
-## 22.03 version {.tabset}
-
- * IIS=OFF
-
-```{r models22, echo=FALSE, results = 'asis', fig.height=40, fig.width=60, cache = TRUE}
-
-res22 <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\22_03_TIS_nobrown_notrends.RDS") %>% 
-  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
-  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
-         formula = trimws(formula), 
-         tech = word(dep, -1, sep = " "), 
-         iis = FALSE) # here change to FALSE because of wrong tibble specification in run_model.R
-
-res22 %>%
-       dplyr::group_split(tech) %>%
-       purrr::iwalk(.,~{
-         name <- unique(.x$tech)
-         cat('### ', name, '{.tabset}   \n')
-              for(p in unique(.x$dep)){
-                   cat('#### ', p, '{.tabset}   \n')
-                for(sm in unique(.x$p_val)){
-                   cat('##### ', sm, '{.tabset}   \n')
-                   filter(.x, p_val == sm & dep == p) %>% gen_p(., auto = TRUE)
-                cat('\n')
-                cat('\n')
-                }
-           cat('\n')
-           cat('\n')
-           }
-         cat('\n')
-         cat('\n')
-       })
-
 ```
 

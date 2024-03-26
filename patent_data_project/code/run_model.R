@@ -88,14 +88,14 @@ saveRDS(models, ".\\results\\22_03_brown.RDS")  # save model output
 
 # IMPLEMENT TREND BREAKS 
 
-cl <- makeCluster(10) 
+cl <- makeCluster(5) 
 registerDoParallel(cl)
 
 models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:%  
   #foreach(smpl = #####, .combine = rbind) %:% # specify samples
   foreach(a = c(1), .combine = rbind) %:%
-  foreach(ii = c(TRUE, FALSE), .combine = rbind) %:%
-  foreach(p.value = c(0.001, 0.01, 0.025, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
+  foreach(ii = c(TRUE), .combine = rbind) %:%
+  foreach(p.value = c(0.001, 0.01), .combine = rbind, .errorhandling = "remove") %dopar% {
     dat <- df_mod
       is <- isatpanel( # main function
             data = dat,
@@ -104,7 +104,7 @@ models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel
             effect = "twoways", # two-way fixed effects chosen as estimator
             iis = ii, # enable impulse indicator saturation
             fesis = TRUE, # enable fixed effects indicator saturation
-            tis = TRUE, # enable trend indicator saturation (NEW!!!!) 
+            tis = TRUE, # enable trend indicator saturation 
             ar = a, # auto-regressive terms
             t.pval = p.value,  # false positive rate
             max.block.size = 20 # size for block search 
@@ -115,15 +115,16 @@ models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel
                           p_val = p.value, # false positive rates 
                           is = list(is), # model
                           iis = ii, # IIS
+                          tis = TRUE, 
+                          fesis = TRUE,
                           b_size = 20,
                           ar = a)
   }
 
 print(nrow(models))
-# should be 128
 stopCluster(cl) # stop parallelizing 
 
-saveRDS(models, "06_03_TIS_nobrown_notrends.RDS")  # save model output
+saveRDS(models, ".//results//26_03_TIS_tighter_pval.RDS")  # save model output
 
 
 ## ADD LINEAR COUNTRY TRENDS
@@ -168,7 +169,7 @@ models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel
                     ar = a)
   }
 
-print(nrow(models))
+print(nrow(models)) #32
 stopCluster(cl) # stop parallelizing 
 
 saveRDS(models, ".\\results\\06_03_TIS_nobrown_trends.RDS")  # save model output
