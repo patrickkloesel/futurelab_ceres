@@ -5,6 +5,19 @@ date: "2024-02-05"
 output: html_document
 ---
 
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width = 3000)
+```
+
+```{css, echo=FALSE}
+pre {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+```
+
+
 ```{r, fig.height = 15, fig.width = 15, echo=FALSE}
 
 ## libraries
@@ -181,7 +194,41 @@ country_comp_log %>%
   kable_styling(fixed_thead = T)
 ```
 
+#### Brown count: {.tabset}
 
+Same countries as old spec! 
+
+```{r, echo=FALSE}
+country_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
+                           ccmt = c("","x","","x","x", ""),
+                           energy = c("x","x","x","x","x", ""), 
+                           solar = c("x","x","x","x","x", ""),
+                           wind = c("x","x", "", "", "x", "x")
+                           )
+
+country_comp_count %>% 
+  kbl() %>%
+  kable_material(c("striped", "hover"))
+
+```
+
+#### Brown log: {.tabset}
+
+Here we have 3 new countries: Finland, Israel, India.
+
+```{r, echo=FALSE}
+country_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria","Finland", "Israel","India"), 
+                           ccmt = c("x","","x","x","x", "", "", "","","", "x", "x", ""),
+                           energy = c("","x","x","","x", "x", "x", "","","", "", "", ""), 
+                           solar = c("","x","x","","", "x", "", "x","x","", "", "", ""),
+                           wind =c("x","","","x","x", "", "", "","","x", "", "", "x")
+                           )
+
+country_comp_log %>% 
+  kbl() %>%
+  kable_material(c("striped", "hover"))
+
+```
 
 ### Sign comparison across techs and specifications: {.tabset}
 
@@ -237,6 +284,60 @@ formatted_table %>%
   kable_styling(fixed_thead = T)
 ```
 
+#### Brown count: {.tabset}
+
+```{r, echo=FALSE}
+sign_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
+                           ccmt = c("","+-","","+","+-", ""),
+                           energy = c("+","+-","+","-","+-", ""), 
+                           solar = c("+-","-","-","+","-", ""),
+                           wind = c("+","+-+", "", "", "+-", "+-")
+                           )
+
+# Function to format cells with "+" and "-"
+format_sign_cells <- function(x) {
+  cell_spec(x, "html", color = "black", bold = TRUE)
+}
+
+# Apply the formatting function to the entire data frame
+formatted_table <- sign_comp_count %>%
+  mutate_all(format_sign_cells)
+
+formatted_table %>% 
+  kable(escape = FALSE) %>%
+  kable_material(c("striped", "hover")) %>% 
+  kable_styling(fixed_thead = T)
+
+```
+
+
+#### Brown log: {.tabset}
+
+```{r, echo=FALSE}
+sign_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria","Finland", "Israel","India"), 
+                           ccmt = c("-","","+","+-+","++-", "", "", "","","", "-", "-", ""),
+                           energy = c("","+-","+","","+-+", "+", "-", "","","", "", "", ""), 
+                           solar = c("","+","+","","", "+", "", "+","+","", "", "", ""),
+                           wind =c("+-","","","+","+-", "", "", "","","-", "", "", "+")
+                           )
+
+# Function to format cells with "+" and "-"
+format_sign_cells <- function(x) {
+  cell_spec(x, "html", color = "black", bold = TRUE)
+}
+
+# Apply the formatting function to the entire data frame
+formatted_table <- sign_comp_log %>%
+  mutate_all(format_sign_cells)
+
+formatted_table %>% 
+  kable(escape = FALSE) %>%
+  kable_material(c("striped", "hover")) %>% 
+  kable_styling(fixed_thead = T)
+
+```
+
+
 
 ### Year comparison: {.tabset}
 
@@ -274,4 +375,39 @@ sign_comp_log %>%
   kbl() %>%
   kable_material(c("striped", "hover"))%>% 
   kable_styling(fixed_thead = T)
+```
+
+
+#### Brown count: {.tabset}
+
+```{r, echo=FALSE}
+year_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
+                           ccmt = c("","2006, 2012","","2009","2005, 2013", ""),
+                           energy = c("2016","2007, 2012","2009","2014","2006, 2011", ""), 
+                           solar = c("2015, 2019","2012","2012","2007","2006", ""),
+                           wind = c("2016","2006, 2013, 2016", "", "", "2007, 2014", "2007, 2012")
+                           )
+
+year_comp_count %>% 
+  kbl() %>%
+  kable_material(c("striped", "hover"))%>% 
+  kable_styling(fixed_thead = T)
+```
+
+
+#### Brown log: {.tabset}
+
+```{r, echo=FALSE}
+year_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria","Finland", "Israel","India"), 
+                           ccmt = c("2005","","2015","2005, 2006, 2007","2003, 2008, 2010", "", "", "","","", "2003", "2018", ""),
+                           energy = c("","2005, 2007","2015","","2003, 2006, 2007", "2003", "2007", "","","", "", "", ""), 
+                           solar = c("","2014","2015","","", "2003", "", "2007","2007","", "", "", ""),
+                           wind =c("2002, 2005","","","2006","2007, 2012", "", "", "","","2002", "", "", "2008")
+                           )
+
+year_comp_log %>% 
+  kbl() %>%
+  kable_material(c("striped", "hover"))%>% 
+  kable_styling(fixed_thead = T)
+
 ```
