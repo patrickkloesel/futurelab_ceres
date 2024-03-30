@@ -131,21 +131,21 @@ saveRDS(models, ".//results//26_03_TIS_tighter_pval.RDS")  # save model output
 
 df_mod_trends <- df_mod %>% 
   mutate(ISO = as.factor(ISO), 
-         trend = year - 1999)  
+         linear_trend = year - 1999)  
 
-f_levels_trends <- paste0(f_levels, " + ISO:trend")
-f_others_trends <- paste0(f_others, " + ISO:trend") 
+f_levels_trends <- paste0(f_levels, " + ISO:linear_trend")
+f_others_trends <- paste0(f_others, " + ISO:linear_trend") 
 f <- c(f_levels_trends, f_others_trends)
 
 
-cl <- makeCluster(10) 
+cl <- makeCluster(5) 
 registerDoParallel(cl)
 
 models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:%  
   #foreach(smpl = #####, .combine = rbind) %:% # specify samples
   foreach(a = c(1), .combine = rbind) %:%
-  foreach(ii = c(TRUE, FALSE), .combine = rbind) %:%
-  foreach(p.value = c(0.001, 0.01, 0.025, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
+  foreach(ii = c(TRUE), .combine = rbind) %:%
+  foreach(p.value = c(0.001, 0.01, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
     dat <- df_mod_trends
     is <- isatpanel( # main function
       data = dat,
@@ -154,7 +154,7 @@ models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel
       effect = "twoways", # two-way fixed effects chosen as estimator
       iis = ii, # enable impulse indicator saturation
       fesis = TRUE, # enable fixed effects indicator saturation
-      tis = TRUE, # enable trend indicator saturation (NEW!!!!) 
+      tis = FALSE, # enable trend indicator saturation 
       ar = a, # auto-regressive terms
       t.pval = p.value,  # false positive rate
       max.block.size = 20 # size for block search 
@@ -165,33 +165,36 @@ models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel
                     p_val = p.value, # false positive rates 
                     is = list(is), # model
                     iis = ii, # IIS
+                    tis = FALSE, 
+                    fesis = TRUE,
                     b_size = 20,
                     ar = a)
   }
 
-print(nrow(models)) #32
+print(nrow(models)) #48
 stopCluster(cl) # stop parallelizing 
 
-saveRDS(models, ".\\results\\06_03_TIS_nobrown_trends.RDS")  # save model output
+saveRDS(models, ".\\results\\28_03_trends.RDS")  # save model output
 
 
 
-## BROWN PATENTS BUT NO TRENDS
+## BROWN PATENTS AND TRENDS
 
-f_levels_brown <- paste0(f_levels, " + brown_patents")
-f_others_brown <- paste0(f_others, " + brown_patents") 
-f <- c(f_levels_brown, f_others_brown)
+f_levels_trends_brown <- paste0(f_levels_trends, " + brown_patents")
+f_others_trends_brown <- paste0(f_others_trends, " + lbrown") 
+f <- c(f_levels_trends_brown, f_others_trends_brown)
 
 
-cl <- makeCluster(10) 
+cl <- makeCluster(5) 
 registerDoParallel(cl)
 
 models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:%  
   #foreach(smpl = #####, .combine = rbind) %:% # specify samples
   foreach(a = c(1), .combine = rbind) %:%
-  foreach(ii = c(TRUE, FALSE), .combine = rbind) %:%
-  foreach(p.value = c(0.001, 0.01, 0.025, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
-    dat <- df_mod
+  foreach(ii = c(TRUE), .combine = rbind) %:%
+  foreach(trend_break = c(FALSE), .combine = rbind) %:%
+  foreach(p.value = c(0.01, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
+    dat <- df_mod_trends
     is <- isatpanel( # main function
       data = dat,
       formula = as.formula(f),
@@ -199,7 +202,7 @@ models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel
       effect = "twoways", # two-way fixed effects chosen as estimator
       iis = ii, # enable impulse indicator saturation
       fesis = TRUE, # enable fixed effects indicator saturation
-      tis = TRUE, # enable trend indicator saturation (NEW!!!!) 
+      tis = trend_break, # enable trend indicator saturation (NEW!!!!) 
       ar = a, # auto-regressive terms
       t.pval = p.value,  # false positive rate
       max.block.size = 20 # size for block search 
@@ -210,11 +213,13 @@ models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel
                     p_val = p.value, # false positive rates 
                     is = list(is), # model
                     iis = ii, # IIS
+                    fesis = TRUE, 
+                    tis = trend_break, 
                     b_size = 20,
                     ar = a)
   }
 
-print(nrow(models))
+print(nrow(models)) # 32
 stopCluster(cl) # stop parallelizing 
 
-saveRDS(models, ".\\results\\06_03_TIS_brown_notrends.RDS")  # save model output
+saveRDS(models, ".\\results\\28_03_trends_brown.RDS")  # save model output
