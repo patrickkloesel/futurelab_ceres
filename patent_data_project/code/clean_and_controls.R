@@ -4,6 +4,11 @@ library(tidyverse)
 
 df <- read_csv(".\\data\\PAT_DEV_MOD_SPEC.csv", show_col_types = F) 
 
+## Add energy storage
+e_storage <- read_csv(".\\data\\PAT_DEV_03042024202801223_energy_storage.csv", show_col_types = F)
+
+df <- rbind(df, e_storage)
+
 df1 <- df %>% select(COU, `Inventor country`, `Technology domain`, Year, Value) %>% rename("ISO" = "COU", "country" = "Inventor country", "tech" = "Technology domain", "count" = "Value", "year" = "Year")
 
 ## Prepare dataset
@@ -82,7 +87,8 @@ df5 <- df4 %>%
          "count_energy" = "Climate change mitigation technologies related to energy generation, transmission or distribution", 
          "count_solar" = "Solar energy", 
          "count_wind" = "Wind energy", 
-         "count_batteries" = "Batteries")
+         "count_batteries" = "Batteries", 
+         "count_storage" = "Energy storage")
 
 ##################### Add brown patents data
 
