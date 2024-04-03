@@ -33,11 +33,9 @@ df_mod %>% filter(!complete.cases(.))
 controls_levels <- c("~ gdp + pop")
 controls_logs <- c("~ lgdp + lpop")
 
-dep_levels <- c("count_ccmt", "count_energy", "count_wind", "count_solar")
+dep_levels <- c("count_storage") # , "count_energy", "count_wind", "count_solar"
 
-dep_others <- c("log_count_ccmt", "log_count_energy", "log_count_wind", "log_count_solar", 
-             "ihs_count_ccmt", "ihs_count_energy", "ihs_count_wind", "ihs_count_solar", 
-             "max_count_ccmt", "max_count_energy", "max_count_wind", "max_count_solar")   
+dep_others <- c("log_count_storage", "ihs_count_storage", "max_count_storage")   
 
 # Basic formula
 f_levels <- paste0(dep_levels, controls_levels)
@@ -66,7 +64,7 @@ models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel
       effect = "twoways", # two-way fixed effects chosen as estimator
       iis = TRUE, # enable impulse indicator saturation
       fesis = TRUE, # enable fixed effects indicator saturation
-      #tis = TRUE, # enable trend indicator saturation (NEW!!!!) 
+      tis = FALSE, # enable trend indicator saturation (NEW!!!!) 
       ar = a, # auto-regressive terms
       t.pval = p.value,  # false positive rate
       max.block.size = 20 # size for block search 
@@ -77,6 +75,8 @@ models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel
                     p_val = p.value, # false positive rates 
                     is = list(is), # model
                     iis = TRUE, # IIS
+                    fesis = TRUE, 
+                    tis = FALSE, 
                     b_size = 20,
                     ar = a)
   }
@@ -84,7 +84,7 @@ models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel
 print(nrow(models))
 stopCluster(cl) # stop parallelizing 
 
-saveRDS(models, ".\\results\\22_03_brown.RDS")  # save model output
+saveRDS(models, ".\\results\\03_04_storage_base_brown.RDS")  # save model output
 
 # IMPLEMENT TREND BREAKS 
 
@@ -145,7 +145,7 @@ models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel
   #foreach(smpl = #####, .combine = rbind) %:% # specify samples
   foreach(a = c(1), .combine = rbind) %:%
   foreach(ii = c(TRUE), .combine = rbind) %:%
-  foreach(p.value = c(0.001, 0.01, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
+  foreach(p.value = c(0.01, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
     dat <- df_mod_trends
     is <- isatpanel( # main function
       data = dat,
@@ -174,7 +174,7 @@ models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel
 print(nrow(models)) #48
 stopCluster(cl) # stop parallelizing 
 
-saveRDS(models, ".\\results\\28_03_trends.RDS")  # save model output
+saveRDS(models, ".\\results\\03_04_storage_linear_trends.RDS")  # save model output
 
 
 
@@ -222,4 +222,4 @@ models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel
 print(nrow(models)) # 32
 stopCluster(cl) # stop parallelizing 
 
-saveRDS(models, ".\\results\\28_03_trends_brown.RDS")  # save model output
+saveRDS(models, ".\\results\\03_04_storage_trends_brown.RDS")  # save model output
