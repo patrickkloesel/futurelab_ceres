@@ -1,7 +1,7 @@
 ---
-title: "Update latest model and policy matching results"
+title: "Latest updates: brown patents controls, trend breaks, and more"
 author: "Laura Menicacci"
-date: "2024-02-05"
+date: "2024-04-04"
 output: html_document
 ---
 
@@ -18,7 +18,7 @@ pre {
 ```
 
 
-```{r, fig.height = 15, fig.width = 15, echo=FALSE}
+```{r setup, fig.height = 15, fig.width = 15, echo=FALSE}
 
 ## libraries
 suppressWarnings(suppressMessages(library(knitr)))
@@ -35,28 +35,76 @@ suppressWarnings(suppressMessages(library(ggridges)))
 
 # Load plotting functions
 source("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\code\\plotting_functions.R")
+```
 
-# Data
-top_25 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "TWN", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR", "SGP", "BRA")
 
-df <- read_csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\data\\patents_panel_5techs.csv", show_col_types = F)  %>% filter(ISO %in% top_25)
+```{r resu, echo=FALSE, cache = TRUE}
 
-# 05.02-24 Model results
-
-res <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\05_02_all.RDS") %>% 
+# Base specification + brown patent control
+res_base <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\05_02_all.RDS") %>% 
+  rbind(readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\22_03_brown.RDS")) %>% 
   separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
   mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
          formula = trimws(formula), 
-         tech = word(dep, -1, sep = " ")) 
+         tech = word(dep, -1, sep = " "), 
+         fesis = TRUE, 
+         tis = FALSE, 
+         model = case_when(grepl("brown_patents", formula) | grepl("lbrown", formula) ~ "Brown", TRUE ~ "Base")) %>% 
+  filter(!(tech %in% "Batteries"))
+
+#gc()
+
+# Linear country trend, linear c. trends + brown pat control results
+res_linear_trend <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\28_03_trends.RDS") %>% 
+  rbind(readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\28_03_trends_brown.RDS")) %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula), 
+         tech = word(dep, -1, sep = " "), 
+         model = case_when(grepl("brown_patents", formula) | grepl("lbrown", formula) ~ "Linear trend + brown", TRUE ~ "Linear trend" )) %>% 
+  filter(p_val %in% c(0.01, 0.05))
+  
+#gc()
+
+# Base
+res_storage_base <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\03_04_storage_base.RDS") %>% 
+  rbind(readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\03_04_storage_base_brown.RDS")) %>%
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula), 
+         tech = word(dep, -1, sep = " "), 
+         model = case_when(grepl("brown_patents", formula) | grepl("lbrown", formula) ~ "Brown", TRUE ~ "Base")) 
+
+#gc()
+
+# Linear
+res_storage_linear <- rbind(readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\03_04_storage_linear_trends.RDS")) %>%
+  rbind(readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\03_04_storage_trends_brown.RDS")) %>%
+separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula), 
+         tech = word(dep, -1, sep = " "), 
+         model = case_when(grepl("brown_patents", formula) | grepl("lbrown", formula) ~ "Linear trend + brown", TRUE ~ "Linear trend" ))
+
+#gc()
+
+res <- rbind(res_base, res_linear_trend, res_storage_base, res_storage_linear)
 
 ```
 
+**Some news & observations**
+ 
+ * There seem to be two pairs of specifications/results: *IHS and Log* vs *Count and Max norm*. These two yield to very similar results between each other;
+ * **Proposal: energy storage**: when doing policy attribution, it might be difficult to make sense of breaks happening in such a broad class of technologies as CCMT (which includes green technologies for many sectors like buildings, waste, transport, CCS). It might be more reasonable to focus on key technologies related to renewables, such as wind (Y02E10/70-76) and solar (Y02E10/40-60), and use Y02E as the 'umbrella' class. Since we dropped batteries, which was a subclass of a subclass, my opinion is that it is still appropriate to include green technologies related to energy storage (Y02E60/10-16), as this is often cited as a key technology related to renewables.The full green tech classification done by OECD for our data is ([here](https://stats.oecd.org/wbos/fileview2.aspx?IDFile=c5c477c0-d300-42fe-af1f-d4a450c79a39)), as an indicator of *technology development*.
+ * **New brown patents control** is only strongly significant for ccmt and energy technologies, and only in the count and log specifications. Find [here](https://lauramenicacci.github.io/futurelab_ceres/patent_data_project/sharing/brow_patents) a small analysis of the time series compared to the green patents. Short answer: brown patenting is strongly positively correlated with green patenting for all countries in our sample, except for USA and Canada. The methodology for the classification of brown patents can be found [here](https://iea.blob.core.windows.net/assets/bb70e652-6862-4f15-9ba7-f3249d1551ea/Methodologicalnotesforpatentcounts.pdf)
+ * **Added linear country trends**
+ 
 ## Models comparison {.tabset}
 
- * Technology classes: climate change mitigation technologies, energy, solar, wind, (batteries)
+ * Technology classes: climate change mitigation technologies, energy, solar, wind, **energy storage**
  * Y: Levels, Logs+1, IHS, Max normalization by technology
- * Controls: gdp, pop
- * Auto-regressive term = 1
+ * Controls: gdp, pop, **brown patents, linear country trends**
+ * AR term = 1
  * IIS=ON
  * p-val = 0.01, 0.05
  * Sample: top 25 patenting countries (by mean)
@@ -65,6 +113,45 @@ res <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_cer
 ```{r models, echo=FALSE, results = 'asis', fig.height=40, fig.width=60, cache = TRUE}
 
 res %>%
+       dplyr::group_split(tech) %>%
+       purrr::iwalk(.,~{
+         name <- unique(.x$tech)
+         cat('### ', name, '{.tabset}   \n')
+              for(m in unique(.x$model)){
+                   cat('#### ', m, '{.tabset}   \n')
+                for(d in unique(.x$dep)){
+                   cat('##### ', d, '{.tabset}   \n')
+                  for(p in unique(.x$p_val)){
+                    cat('###### ', p, '{.tabset}   \n')
+                    filter(.x, p_val == p & dep == d & model == m) %>% gen_p(., auto = TRUE)
+                  cat('\n')
+                  cat('\n')
+                    }
+              cat('\n')
+              cat('\n')
+                }
+          cat('\n')
+          cat('\n')
+           }
+      cat('\n')
+      cat('\n')
+       })
+       
+```
+
+
+## Latest experiment with trend breaks {.tabset}
+
+Here only experimented with the base model and stricter p-values. 
+
+```{r models tis, echo=FALSE, results = 'asis', fig.height=40, fig.width=60, cache = TRUE}
+res_tis <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\26_03_TIS_tighter_pval.RDS") %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula), 
+         tech = word(dep, -1, sep = " ")) 
+
+res_tis %>%
        dplyr::group_split(tech) %>%
        purrr::iwalk(.,~{
          name <- unique(.x$tech)
@@ -87,250 +174,105 @@ res %>%
 ```
 
 
-## Policy matching results {.tabset}
+## Country, sign and year comparison of breaks {.tabset}
 
-OECD policy data filtered for **Electricity** sector only. 
+ * Selected only p-value = 0.01
+ * **Common countries across y transformations**: China, South Korea, Denmark
+ * **Base model**
+    * Count: China, Germany, Japan, South Korea, USA, Denmark (6)
+    * Log: Australia, Brasil, China, Denmark, Singapore,Spain, Russia, South Korea, Taiwan, Austria (10)
+ * **+ Brown patents**
+    * Count w. brown patents : same set of countries, different breaks
+    * Log w. brown patents: +3 countries (Finland, *Israel*, India)
+ * **+ Linear country trends (& no brown)**
+    * Count: same set of countries, less breaks and more consistent across techs
+    * Log: +3 countries (*Israel*, Norway, The Netherlands), other countries disappear! (Australia, China, South Korea)
 
-### Count {.tabset}
+### Base {.tabset}
 
-#### Ccmt {.tabset}
-
-```{r, echo=FALSE, out.width = '100%'}
-
-knitr::include_graphics("Fig_ccmt_elec.png")
-```
-
-#### Energy {.tabset}
-
-```{r, echo=FALSE, out.width = '100%'}
-
-knitr::include_graphics("Fig_energy_elec.png")
-```
-
-
-#### Solar {.tabset}
-
-```{r, echo=FALSE, out.width = '100%'}
-
-knitr::include_graphics("Fig_solar_elec.png")
-```
-
-#### Wind {.tabset}
-
-```{r, echo=FALSE, out.width = '100%'}
-
-knitr::include_graphics("Fig_wind_elec.png")
-```
-
-### Logs {.tabset}
-
-#### Ccmt {.tabset}
-
-```{r, echo=FALSE, out.width = '100%'}
-
-knitr::include_graphics("Fig_ccmt_logs_elec.png")
-```
-
-#### Energy {.tabset}
-
-```{r, echo=FALSE, out.width = '100%'}
-
-knitr::include_graphics("Fig_energy_logs_elec.png")
-```
-
-
-#### Solar {.tabset}
-
-```{r, echo=FALSE, out.width = '100%'}
-
-knitr::include_graphics("Fig_solar_logs_elec.png")
-```
-
-#### Wind {.tabset}
-
-```{r, echo=FALSE, out.width = '100%'}
-
-knitr::include_graphics("Fig_wind_logs_elec.png")
-```
-
-
-## Breaks comparison {.tabset}
-
- * Common countries across specifications (count vs log): China, South Korea, Denmark
-
-### Country comparison across techs and specifications: {.tabset}
-
-#### Count (6 countries in tot): {.tabset}
-
-```{r, echo=FALSE}
-country_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
-                           ccmt = c("x","x","x","x","x", ""),
-                           energy = c("x","x","x","x","x", ""), 
-                           solar = c("x","x","x","x","x", ""),
-                           wind = c("","x", "", "", "x", "x")
-                           )
-
-country_comp_count %>% 
-  kbl() %>%
-  kable_material(c("striped", "hover"))
-
-```
-
-
-
-#### Log (10 countries in tot): {.tabset}
-
-```{r, echo=FALSE}
-country_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria"), 
-                           ccmt = c("x","x","x","x","x", "", "", "","",""),
-                           energy = c("", "", "x", "x", "x", "x", "x", "", "", ""), 
-                           solar = c("x", "x", "", "", "", "x", "x", "x", "x", ""),
-                           wind = c("x", "", "", "x", "x", "", "", "","","x")
-                           )
-
-country_comp_log %>% 
-  kbl() %>%
-  kable_material(c("striped", "hover")) %>% 
-  kable_styling(fixed_thead = T)
-```
-
-#### Brown count: {.tabset}
-
-Same countries as old spec! 
-
-```{r, echo=FALSE}
-country_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
-                           ccmt = c("","x","","x","x", ""),
-                           energy = c("x","x","x","x","x", ""), 
-                           solar = c("x","x","x","x","x", ""),
-                           wind = c("x","x", "", "", "x", "x")
-                           )
-
-country_comp_count %>% 
-  kbl() %>%
-  kable_material(c("striped", "hover"))
-
-```
-
-#### Brown log: {.tabset}
-
-Here we have 3 new countries: Finland, Israel, India.
-
-```{r, echo=FALSE}
-country_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria","Finland", "Israel","India"), 
-                           ccmt = c("x","","x","x","x", "", "", "","","", "x", "x", ""),
-                           energy = c("","x","x","","x", "x", "x", "","","", "", "", ""), 
-                           solar = c("","x","x","","", "x", "", "x","x","", "", "", ""),
-                           wind =c("x","","","x","x", "", "", "","","x", "", "", "x")
-                           )
-
-country_comp_log %>% 
-  kbl() %>%
-  kable_material(c("striped", "hover"))
-
-```
-
-### Sign comparison across techs and specifications: {.tabset}
-
-#### Count: {.tabset}
+#### Count {.tabset}
 
 ```{r, echo=FALSE, results='asis'}
-sign_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
-                           ccmt = c("+","+-","-+","+","++-", ""),
-                           energy = c("+","+-","+","-","+-", ""), 
-                           solar = c("+","-+","-","+","+-", ""),
-                           wind = c("","+", "", "", "-+-", "+--")
+base_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
+                           ccmt = c("+2013","+2006, -2012","-2008, +2009","+2009","+2005, +2012, -2014", ""),
+                           energy = c("+2013","+2007, -2012","+2009","-2014","+2006, -2014", ""), 
+                           solar = c("+2015","-2012, +2014","-2012","+2007","+2006, -2011", ""),
+                           wind = c("","+2006", "", "", "-2013, +2015, -2017", "+2007, -2012, -2018"), 
+                           storage = c("", "", "-2008, +2009, +2017", "-2006, +2009", "", "")
                            )
 
-# Function to format cells with "+" and "-"
-format_sign_cells <- function(x) {
-  cell_spec(x, "html", color = "black", bold = TRUE)
-}
-
-# Apply the formatting function to the entire data frame
-formatted_table <- sign_comp_count %>%
-  mutate_all(format_sign_cells)
-
-formatted_table %>% 
-  kable(escape = FALSE) %>%
+base_comp_count %>% 
+  kbl() %>%
   kable_material(c("striped", "hover"))
+
 
 ```
 
 
-#### Log: {.tabset}
-
+#### Log {.tabset}
 
 ```{r, echo=FALSE, results='asis'}
-sign_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria"), 
-                           ccmt = c("-","-+","+","+-+","+", "", "", "","",""),
-                           energy = c("", "", "+", "+", "+-+", "+", "-", "", "", ""), 
-                           solar = c("-", "+", "", "", "", "+", "-", "+", "+", ""),
-                           wind = c("+-", "", "", "+", "+-", "", "", "","","-")
+base_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria", "Belgium", "Norway"), 
+                           ccmt = c("-2005","-2008, +2010","+2015","+2005, -2006, +2007","+2003", "", "", "","","", "", ""),
+                           energy = c("", "", "+2015", "+2005", "+2003, -2006, +2007", "+2003", "-2007", "", "", "", "", ""), 
+                           solar = c("-2005", "+2014", "", "", "", "+2003", "-2019", "+2007", "+2006", "", "", ""),
+                           wind = c("+2002, -2005", "", "", "+2006", "+2007, -2012", "", "", "","","-2002", "", ""), 
+                           storage = c("", "-2010, +2014", "", "-2012, +2014", "+2004", "", "-2017","", "", "+2007", "-2003", "+2003, +2017")
                           )
 
-# Function to format cells with "+" and "-"
-format_sign_cells <- function(x) {
-  cell_spec(x, "html", color = "black", bold = TRUE)
-}
-
-# Apply the formatting function to the entire data frame
-formatted_table <- sign_comp_log %>%
-  mutate_all(format_sign_cells)
-
-formatted_table %>% 
-  kable(escape = FALSE) %>%
-  kable_material(c("striped", "hover")) %>% 
-  kable_styling(fixed_thead = T)
-```
-
-#### Brown count: {.tabset}
-
-```{r, echo=FALSE}
-sign_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
-                           ccmt = c("","+-","","+","+-", ""),
-                           energy = c("+","+-","+","-","+-", ""), 
-                           solar = c("+-","-","-","+","-", ""),
-                           wind = c("+","+-+", "", "", "+-", "+-")
-                           )
-
-# Function to format cells with "+" and "-"
-format_sign_cells <- function(x) {
-  cell_spec(x, "html", color = "black", bold = TRUE)
-}
-
-# Apply the formatting function to the entire data frame
-formatted_table <- sign_comp_count %>%
-  mutate_all(format_sign_cells)
-
-formatted_table %>% 
+base_comp_log %>% 
   kable(escape = FALSE) %>%
   kable_material(c("striped", "hover")) %>% 
   kable_styling(fixed_thead = T)
 
 ```
 
+#### Ihs {.tabset}
 
-#### Brown log: {.tabset}
+```{r, echo=FALSE, results='asis'}
+ihs_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria", "Finland", "India"), 
+                           ccmt = c("-2005","-2008, +2010","+2015","+2005, -2006, +2007","+2003", "", "", "","","", "", ""),
+                           energy = c("", "", "+2015", "+2007", "+2007", "+2003", "-2007", "", "", "", "", ""), 
+                           solar = c("-2005", "+2014", "", "", "+2003", "+2003", "-2019", "+2007", "+2006", "", "+2012", ""),
+                           wind = c("+2002, -2005", "", "", "", "+2007, -2012", "", "", "","","-2002", "", "+2008")
+                          )
 
-```{r, echo=FALSE}
-sign_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria","Finland", "Israel","India"), 
-                           ccmt = c("-","","+","+-+","++-", "", "", "","","", "-", "-", ""),
-                           energy = c("","+-","+","","+-+", "+", "-", "","","", "", "", ""), 
-                           solar = c("","+","+","","", "+", "", "+","+","", "", "", ""),
-                           wind =c("+-","","","+","+-", "", "", "","","-", "", "", "+")
+ihs_comp_log %>% 
+  kable(escape = FALSE) %>%
+  kable_material(c("striped", "hover")) %>% 
+  kable_styling(fixed_thead = T)
+```
+
+#### Max normalization {.tabset}
+
+```{r, echo=FALSE, results='asis'}
+max_comp_base <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
+                           ccmt = c("","+2006, -2012","-2008, +2009","+2009","+2005, -2012", ""),
+                           energy = c("+2016","+2007, -2012","+2009","+2009,-2014","+2006, -2014", ""), 
+                           solar = c("+2015","-2012, +2014","-2012","+2007, -2012","+2006, -2011", ""),
+                           wind = c("","+2006, -2013, +2016", "-2016", "", "-2013, +2015, -2017", "+2007, -2012, +2014, -2018")
                            )
 
-# Function to format cells with "+" and "-"
-format_sign_cells <- function(x) {
-  cell_spec(x, "html", color = "black", bold = TRUE)
-}
+max_comp_base %>% 
+  kable(escape = FALSE) %>%
+  kable_material(c("striped", "hover")) %>% 
+  kable_styling(fixed_thead = T)
+```
 
-# Apply the formatting function to the entire data frame
-formatted_table <- sign_comp_log %>%
-  mutate_all(format_sign_cells)
 
-formatted_table %>% 
+### Brown patents control: {.tabset}
+
+#### Count {.tabset}
+
+```{r, echo=FALSE, results='asis'}
+brown_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
+                           ccmt = c("","+2006, -2012","","+2009","+2005, -2013", ""),
+                           energy = c("+2016","+2007, -2012","+2009","-2014","+2006, -2011", ""), 
+                           solar = c("+2015, -2019","-2012","-2012","+2007","-2006", ""),
+                           wind = c("+2016","+2006, -2013, +2016", "", "", "+2007, -2014", "+2007, -2012")
+                           )
+
+brown_comp_count %>% 
   kable(escape = FALSE) %>%
   kable_material(c("striped", "hover")) %>% 
   kable_styling(fixed_thead = T)
@@ -338,76 +280,58 @@ formatted_table %>%
 ```
 
 
+#### Log {.tabset} 
 
-### Year comparison: {.tabset}
-
-#### Count: {.tabset}
-
-```{r, echo=FALSE}
-year_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
-                           ccmt = c("2013","2006, 2012","2008, 2009","2009","2005, 2012, 2014", ""),
-                           energy = c("2013","2007, 2012","2009","2014","2006, 2014", ""), 
-                           solar = c("2015","2012, 2014","2012","2007","2006, 2011", ""),
-                           wind = c("","2006", "", "", "2013, 2015, 2017", "2007, 2012, 2018")
+```{r, echo=FALSE, results='asis'}
+brown_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria","Finland", "Israel","India"), 
+                           ccmt = c("-2005","","+2015","+2005, -2006, +2007","+2003, +2008, -2010", "", "", "","","", "-2003", "-2018", ""),
+                           energy = c("","+2005, -2007","+2015","","+2003, -2006, +2007", "+2003", "-2007", "","","", "", "", ""), 
+                           solar = c("","+2014","+2015","","", "+2003", "", "+2007","+2007","", "", "", ""),
+                           wind =c("+2002, -2005","","","+2006","+2007, -2012", "", "", "","","-2002", "", "", "+2008")
                            )
 
-year_comp_count %>% 
-  kbl() %>%
-  kable_material(c("striped", "hover"))
-
-```
-
-
-
-
-#### Log: {.tabset}
-
-
-```{r, echo=FALSE}
-sign_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria"), 
-                           ccmt = c("2005","2008, 2010","2015","2005, 2006, 2007","2003", "", "", "","",""),
-                           energy = c("", "", "2015", "2005", "2003, 2006, 2007", "2003", "2007", "", "", ""), 
-                           solar = c("2005", "2014", "", "", "", "2003", "2019", "2007", "2006", ""),
-                           wind = c("2002, 2005", "", "", "2006", "2007, 2012", "", "", "","","2002")
-                           )
-
-sign_comp_log %>% 
-  kbl() %>%
-  kable_material(c("striped", "hover"))%>% 
-  kable_styling(fixed_thead = T)
-```
-
-
-#### Brown count: {.tabset}
-
-```{r, echo=FALSE}
-year_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
-                           ccmt = c("","2006, 2012","","2009","2005, 2013", ""),
-                           energy = c("2016","2007, 2012","2009","2014","2006, 2011", ""), 
-                           solar = c("2015, 2019","2012","2012","2007","2006", ""),
-                           wind = c("2016","2006, 2013, 2016", "", "", "2007, 2014", "2007, 2012")
-                           )
-
-year_comp_count %>% 
-  kbl() %>%
-  kable_material(c("striped", "hover"))%>% 
-  kable_styling(fixed_thead = T)
-```
-
-
-#### Brown log: {.tabset}
-
-```{r, echo=FALSE}
-year_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria","Finland", "Israel","India"), 
-                           ccmt = c("2005","","2015","2005, 2006, 2007","2003, 2008, 2010", "", "", "","","", "2003", "2018", ""),
-                           energy = c("","2005, 2007","2015","","2003, 2006, 2007", "2003", "2007", "","","", "", "", ""), 
-                           solar = c("","2014","2015","","", "2003", "", "2007","2007","", "", "", ""),
-                           wind =c("2002, 2005","","","2006","2007, 2012", "", "", "","","2002", "", "", "2008")
-                           )
-
-year_comp_log %>% 
-  kbl() %>%
-  kable_material(c("striped", "hover"))%>% 
+brown_comp_log %>% 
+  kable(escape = FALSE) %>%
+  kable_material(c("striped", "hover")) %>% 
   kable_styling(fixed_thead = T)
 
 ```
+
+### Linear country trends {.tabset}
+
+#### Count {.tabset}
+
+```{r, echo=FALSE, results='asis'}
+linear_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
+                           ccmt = c("+2016","-2012","","-2017","+2007", ""),
+                           energy = c("+2016","-2012","-2012","-2014","+2006, -2014", ""), 
+                           solar = c("+2016","-2012","-2012","+2007","+2006, -2011", ""),
+                           wind = c("","+2006", "", "", "-2007, -2013, -2018", "-2012"), 
+                           storage = c("", "-2013", "", "+2010", "", "")
+                           )
+
+linear_comp_count %>% 
+  kable(escape = FALSE) %>%
+  kable_material(c("striped", "hover")) %>% 
+  kable_styling(fixed_thead = T)
+
+```
+
+
+#### Log {.tabset} 
+
+```{r, echo=FALSE, results='asis'}
+linear_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria","Finland", "Israel","India", "Norway", "Japan", "The Netherlands"), 
+                           ccmt = c("","-2008","","+2007","+2003", "", "", "","","", "", "+2004", "", "-2010", "", ""),
+                           energy = c("","+2005, -2009","","","-2013, -2019", "", "", "","","", "", "+2006", "", "+2003, +2017", "-2005", ""), 
+                           solar = c("","-2005","","","+2003", "+2005", "", "","-2015","", "-2007", "", "", "", "", ""),
+                           wind =c("","+2015","","+2006","+2007, -2012", "", "", "","","", "", "", "", "+2018", "-2005", ""), 
+                           storage =c("","-2010, +2015, -2017","", "", "+2004, +2011, +2016", "","+2005, +2011", "", "", "", "", "", "", "+2005, +2017", "", "-2009"))
+
+linear_comp_log %>% 
+  kable(escape = FALSE) %>%
+  kable_material(c("striped", "hover")) %>% 
+  kable_styling(fixed_thead = T)
+
+```
+

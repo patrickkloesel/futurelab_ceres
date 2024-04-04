@@ -32,11 +32,13 @@ gen_p <- function(df, results = TRUE, auto = FALSE){
       pl <- res %>% 
         plot(zero_line = FALSE) +
         ggtitle(label = mt, subtitle = st) +
-        scale_x_continuous(breaks = f(10))
+        scale_x_continuous(breaks = f(10)) +
+        theme(text = element_text(size = 25))
       
       pg <- res %>%
         plot_grid() +
-        ggtitle(label = mt, subtitle = st)
+        ggtitle(label = mt, subtitle = st) +
+        theme(text = element_text(size = 25))
       grid.arrange(pl, pg, ncol = 2)
       
       if(results == TRUE & auto == FALSE){
@@ -68,10 +70,10 @@ convert <- function(mod){
   }else{
     c_mods <- tibble()
     for(m in 1:nrow(mod)){
-      if(mod %>% slice(m) %>% pull(is) %>% first %>% plot_grid %>% ggplot_build %>% try %>% is.error){next}else{
-        mod_name <- mod %>% slice(m) %>% pull(mod_name)
+      if(mod %>% slice(m) %>% pull(is) %>% first %>% plot_grid(regex_exclude_indicators = "iis") %>% ggplot_build %>% try %>% is.error){next}else{
+        mod_name <- mod %>% slice(m) %>% pull(dep)
         # Currently, this extracts the data used to build the plot_grid in isatpanel; not ideal
-        grid_dat <- mod %>% slice(m) %>% pull(is) %>% first %>% plot_grid %>% ggplot_build
+        grid_dat <- mod %>% slice(m) %>% pull(is) %>% first %>% plot_grid(regex_exclude_indicators = "iis") %>% ggplot_build
         grid_dat <- grid_dat$plot$data
         grid_dat$model <- mod_name
         c_mods <- rbind(c_mods, grid_dat)
@@ -81,6 +83,7 @@ convert <- function(mod){
   }
 }
 
+# Possible that this incorrectly distinguishes negative and positive breaks by including impulse effects? To be checked and corrected.
 # Possible that this incorrectly distinguishes negative and positive breaks by including impulse effects? To be checked and corrected.
 plot_comp <- function(mod, panel = "country", na.rm = TRUE, sign = NULL){
   tmp <- convert(mod)
@@ -92,19 +95,21 @@ plot_comp <- function(mod, panel = "country", na.rm = TRUE, sign = NULL){
     break}else{}
   
   if(na.rm == TRUE){
-    tmp <- tmp %>% group_by(id) %>% filter(!all(is.na(effect)))
+    tmp <- tmp %>% group_by(id, model) %>% filter(!all(is.na(effect)))
   }
   if(sign == "pos"){
-    tmp <- tmp %>% group_by(id) %>% filter(any(effect > 0))
+    tmp <- tmp %>% group_by(id, model) %>% filter(any(effect > 0))
     
-  }else if(sign == "neg") { tmp <- tmp %>% group_by(id) %>% filter(any(effect < 0))}
+  }else if(sign == "neg") { tmp <- tmp %>% group_by(id, model) %>% filter(any(effect < 0))}
   
-  p <- tmp %>% ggplot(aes(x = time, y = model)) +
-    geom_tile(aes(fill = effect), na.rm = NA) +
+  p <- tmp %>% 
+    mutate(id = as.character(id)) %>% 
+    ggplot(aes(x = time, y = model)) +
+    geom_tile(aes(fill = effect), na.rm = TRUE) +
     scale_fill_gradient2(na.value = NA, name = "Effect")+
     scale_x_continuous(expand = c(0,0)) +
     scale_y_discrete(expand = c(0,0), limits = rev) +
-    facet_grid(id~.) +
+    facet_grid(id~., scales = "free") +
     theme_bw() +
     theme(panel.grid = element_blank(),
           panel.border = element_rect(fill = NA),
@@ -113,5 +118,107 @@ plot_comp <- function(mod, panel = "country", na.rm = TRUE, sign = NULL){
           strip.text.y = element_text(size = 14, angle = 0)) +
     labs(x = NULL, y = NULL,title= "Model Overview")
   
-  print(p)
+  return(p)
+}
+
+##### modified function!
+#plot_comp <- function(mod, panel = "country", na.rm = TRUE, sign = NULL) {
+#  tmp <- convert(mod)
+#  
+#  if (is.null(tmp) || nrow(tmp) == 0) {
+#    print("No models to plot.")
+#    return(NULL)  # Return NULL to indicate no models
+#  }
+#  
+#  if (panel == "model") {
+#    tmp <- tmp %>% rename(id = model, model = id)
+#  } else if (panel != "country") {
+#    print("Error: Invalid panel type.")
+#    return(NULL)
+#  }
+#  
+#  if (na.rm == TRUE) {
+#    tmp <- tmp %>% group_by(id) %>% filter(!all(is.na(effect)))
+#  }
+#  
+#  if (!is.null(sign) && length(sign) > 0) {
+#    if (sign == "pos") {
+#      tmp <- tmp %>% group_by(id) %>% filter(any(effect > 0))
+#    } else if (sign == "neg") {
+#      tmp <- tmp %>% group_by(id) %>% filter(any(effect < 0))
+#    }
+#  } else {
+#    print("Warning: 'sign' argument is NULL or empty.")
+#  }
+#  
+#  p <- tmp %>% ggplot(aes(x = time, y = model)) +
+#    geom_tile(aes(fill = effect), na.rm = TRUE) +
+#    scale_fill_gradient2(na.value = NA, name = "Effect") +
+#    scale_x_continuous(expand = c(0,0)) +
+#    scale_y_discrete(expand = c(0,0), limits = rev) +
+#    facet_grid(id~.) +
+#    theme_bw() +
+#    theme(panel.grid = element_blank(),
+#          panel.border = element_rect(fill = NA),
+#          strip.background = element_blank(),
+#          axis.text = element_text(size = 18, color = "black"),
+#          strip.text.y = element_text(size = 20, angle = 0)) +
+#    labs(x = NULL, y = NULL, title = "Model Overview")
+#  
+#  print(p)
+#}
+
+plot_comp_new <- function(mod, sign = "all", leg = NULL, color_spec = c("red", "blue")){
+  p_data <- tibble()
+  #if(nrow(mod) > 8){print(paste0("WARNING: Plotting ", nrow(mod), " models. Take care when plotting too many models."))}
+  
+  for(r in 1:nrow(mod)){
+    tmp <- mod %>% 
+      slice(r)
+    
+    raw_breaks <- tmp %>% pull(is) %>% first %>% 
+      break_uncertainty
+    
+    if(sign == "neg"){
+      raw_breaks <- raw_breaks %>% filter(coef < 0)
+    }else if(sign == "pos"){
+      raw_breaks <- raw_breaks %>% filter(coef > 0)
+    }else if(sign == "all"){
+      raw_breaks <- raw_breaks
+    }
+    
+    p_data <- raw_breaks %>%
+      mutate(breaks = time) %>% 
+      select(id, time, coef, breaks) %>% 
+      complete(id, time = 2000:2019) %>% 
+      group_by(id) %>% 
+      fill(coef, .direction = "down") %>% 
+      ungroup() %>% 
+      mutate(dep = tmp$dep) %>% 
+      rbind(p_data)
+  }
+  
+  p <- p_data %>%
+    # makes sure that empty rows are shown as well (ie. where no breaks are detected)
+    complete(id, time, dep) %>% 
+    ggplot(aes(x = time, y = dep)) +
+    geom_tile(aes(fill = coef), na.rm = TRUE) +  
+    scale_fill_gradient2(na.value = NA, name = "Effect", low = color_spec[1], mid = "grey", high = color_spec[2])+
+    scale_x_continuous(expand = c(0,0)) +
+    scale_y_discrete(expand = c(0,0), limits = rev) +
+    facet_grid(id~., scales = "free") +
+    theme_bw() +
+    theme(panel.grid = element_blank(),
+          panel.border = element_rect(fill = NA),
+          strip.background = element_blank(),
+          axis.text.y = element_text(size = 8, color = "black"),
+          axis.text.x = element_text(size = 10, color = "black"),
+          strip.text.y = element_text(size = 12, angle = 0),
+          plot.caption = element_text(size = 12, hjust = 0.5),
+          #panel.background = element_rect(fill = "lightgrey"),
+          legend.position = "bottom"
+    ) +
+    labs(x = NULL, y = NULL,title = NULL, caption = leg)
+  
+  return(p)
 }

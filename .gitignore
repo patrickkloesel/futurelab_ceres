@@ -49,3 +49,9 @@ po/*~
 rsconnect/
 patent_data_project/residuals_overview.Rmd
 *.png
+*.png
+*.png
+*.png
+/patent_data_project/sharing/overview_results_files/figure-html
+/patent_data_project/sharing/overview_results_files/figure-html
+*.png
