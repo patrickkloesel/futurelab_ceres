@@ -102,6 +102,19 @@ iea_brown_patents <- read.csv(".\\data\\IEA-h2020-data-topic=Patents-allYears=tr
 
 df6 <- left_join(df5, iea_brown_patents, by = c("ISO" = "countryISO", "year")) %>% rename("brown_patents" = "value")
 
+##################### Add all technologies count and creat share green/tot count 
+
+oecd_tot_pat <- read.csv(".\\data\\OECD_patents_all_technologies_counts.csv") %>% 
+  select(REF_AREA, Technology.domain, TIME_PERIOD, OBS_VALUE) %>% 
+  group_by(REF_AREA, TIME_PERIOD) %>% 
+  tidyr::spread(key = Technology.domain, value = OBS_VALUE) %>% 
+  mutate(share_green_tot = (`Environment-related technologies` / `All technologies (total patents)`) *100) %>% 
+  select(!c(`Environment-related technologies`, `All technologies (total patents)`)) %>% 
+  ungroup()
+
+df6 <- left_join(df6, oecd_tot_pat, by = c("ISO"="REF_AREA", "year"="TIME_PERIOD"))
+  
+
 ##################### Sanity check
 
 top_25 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "TWN", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR", "SGP", "BRA")
