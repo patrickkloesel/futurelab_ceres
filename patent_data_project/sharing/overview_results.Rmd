@@ -95,7 +95,7 @@ res <- rbind(res_base, res_linear_trend, res_storage_base, res_storage_linear)
 **Some news & observations**
  
  * There seem to be two pairs of specifications/results: *IHS and Log* vs *Count and Max norm*. These two yield to very similar results between each other;
- * **Proposal: energy storage**: when doing policy attribution, it might be difficult to make sense of breaks happening in such a broad class of technologies as CCMT (which includes green technologies for many sectors like buildings, waste, transport, CCS). It might be more reasonable to focus on key technologies related to renewables, such as wind (Y02E10/70-76) and solar (Y02E10/40-60), and use Y02E as the 'umbrella' class. Since we dropped batteries, which was a subclass of a subclass, my opinion is that it is still appropriate to include green technologies related to energy storage (Y02E60/10-16), as this is often cited as a key technology related to renewables.The full green tech classification done by OECD for our data is ([here](https://stats.oecd.org/wbos/fileview2.aspx?IDFile=c5c477c0-d300-42fe-af1f-d4a450c79a39)), as an indicator of *technology development*.
+ * **Proposal: energy storage**: when doing policy attribution, it might be difficult to make sense of breaks happening in such a broad class of technologies as CCMT (which includes green technologies for many sectors like buildings, waste, transport, CCS). It might be more reasonable to focus on key technologies related to renewables, such as wind (Y02E10/70-76) and solar (Y02E10/40-60), and use Y02E as the 'umbrella' class. Since we dropped batteries, which was a subclass of a subclass, my opinion is that it is still appropriate to include green technologies related to energy storage (Y02E60/10-16), as this is often cited as a key technology related to renewables.The full green tech classification done by OECD for our data is [here](https://stats.oecd.org/wbos/fileview2.aspx?IDFile=c5c477c0-d300-42fe-af1f-d4a450c79a39), as an indicator of *technology development*.
  * **New brown patents control** is only strongly significant for ccmt and energy technologies, and only in the count and log specifications. Find [here](https://lauramenicacci.github.io/futurelab_ceres/patent_data_project/sharing/brow_patents) a small analysis of the time series compared to the green patents. Short answer: brown patenting is strongly positively correlated with green patenting for all countries in our sample, except for USA and Canada. The methodology for the classification of brown patents can be found [here](https://iea.blob.core.windows.net/assets/bb70e652-6862-4f15-9ba7-f3249d1551ea/Methodologicalnotesforpatentcounts.pdf)
  * **Added linear country trends**
  
@@ -140,18 +140,16 @@ res %>%
 ```
 
 
-## Latest experiment with trend breaks {.tabset}
-
-Here only experimented with the base model and stricter p-values. 
+## Latest experiments with trend breaks {.tabset}
 
 ```{r models tis, echo=FALSE, results = 'asis', fig.height=40, fig.width=60, cache = TRUE}
-res_tis <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\26_03_TIS_tighter_pval.RDS") %>% 
+res <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\26_03_TIS_tighter_pval.RDS") %>% 
   separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
   mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
          formula = trimws(formula), 
          tech = word(dep, -1, sep = " ")) 
 
-res_tis %>%
+res %>%
        dplyr::group_split(tech) %>%
        purrr::iwalk(.,~{
          name <- unique(.x$tech)
@@ -170,7 +168,6 @@ res_tis %>%
          cat('\n')
          cat('\n')
        })
-       
 ```
 
 
@@ -260,7 +257,7 @@ max_comp_base %>%
 ```
 
 
-### Brown patents control: {.tabset}
+### Brown patents control {.tabset}
 
 #### Count {.tabset}
 
@@ -327,6 +324,44 @@ linear_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denma
                            solar = c("","-2005","","","+2003", "+2005", "", "","-2015","", "-2007", "", "", "", "", ""),
                            wind =c("","+2015","","+2006","+2007, -2012", "", "", "","","", "", "", "", "+2018", "-2005", ""), 
                            storage =c("","-2010, +2015, -2017","", "", "+2004, +2011, +2016", "","+2005, +2011", "", "", "", "", "", "", "+2005, +2017", "", "-2009"))
+
+linear_comp_log %>% 
+  kable(escape = FALSE) %>%
+  kable_material(c("striped", "hover")) %>% 
+  kable_styling(fixed_thead = T)
+
+```
+
+### Linear country trends + brown patents {.tabset}
+
+#### Count {.tabset}
+
+```{r, echo=FALSE, results='asis'}
+linear_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
+                           ccmt = c("+2016","-2012","","-2017","+2007, -2013", ""),
+                           energy = c("+2016","-2012","-2012","-2014","+2006, -2011, -2014", ""), 
+                           solar = c("+2016","-2012","-2012","+2007","+2006, -2011", ""),
+                           wind = c("","+2006", "", "", "-2017", "-2012"), 
+                           storage = c("", "-2013", "", "+2010", "", "")
+                           )
+
+linear_comp_count %>% 
+  kable(escape = FALSE) %>%
+  kable_material(c("striped", "hover")) %>% 
+  kable_styling(fixed_thead = T)
+
+```
+
+
+#### Log {.tabset} 
+
+```{r, echo=FALSE, results='asis'}
+linear_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria","Finland", "Israel","India", "Norway", "Japan", "The Netherlands", "Belgium"), 
+                           ccmt = c("","","","+2007","+2003", "", "", "","","", "", "-2018", "", "-2010", "", "", ""),
+                           energy = c("","+2005, -2009","","","+2003", "", "", "","","", "", "+2006", "", "+2003, +2017", "-2005", "", "-2003, -2019"), 
+                           solar = c("","-2005","","","+2003", "+2003", "", "","-2015","", "-2007", "", "", "", "", "", ""),
+                           wind =c("","+2015","+2004","","", "", "", "","","", "", "", "", "+2018", "-2005", "", ""), 
+                           storage =c("","-2010","", "", "+2004, +2011, +2016", "","+2005, +2011", "", "", "", "", "", "", "+2005, +2017", "", "-2009", ""))
 
 linear_comp_log %>% 
   kable(escape = FALSE) %>%
