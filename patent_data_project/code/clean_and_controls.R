@@ -109,8 +109,9 @@ oecd_tot_pat <- read.csv(".\\data\\OECD_patents_all_technologies_counts.csv") %>
   group_by(REF_AREA, TIME_PERIOD) %>% 
   tidyr::spread(key = Technology.domain, value = OBS_VALUE) %>% 
   mutate(share_green_tot = (`Environment-related technologies` / `All technologies (total patents)`) *100) %>% 
-  select(!c(`Environment-related technologies`, `All technologies (total patents)`)) %>% 
-  ungroup()
+  select(!c(`Environment-related technologies`)) %>% 
+  ungroup() %>% 
+  rename("tot_count"="All technologies (total patents)")
 
 df6 <- left_join(df6, oecd_tot_pat, by = c("ISO"="REF_AREA", "year"="TIME_PERIOD"))
   
