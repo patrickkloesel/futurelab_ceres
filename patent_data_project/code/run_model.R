@@ -51,21 +51,23 @@ df_mod <- df %>%
 
 df_mod %>% filter(!complete.cases(.))
 
+## NEW MAIN: y=ihs, x=log(gdp)+log(pop), fpr/pval=0.01, N=23, 19, 21
 
 # Formulas
 
 dep_ihs <- c("ihs_count_ccmt", "ihs_count_energy", "ihs_count_wind", "ihs_count_solar", "ihs_count_storage")   
 controls_logs <- c("~ lgdp + lpop")
 
-# Basic formula
-f_ihs <- paste0(dep_ihs, controls_logs) 
+dep_count <- c("count_ccmt", "count_energy", "count_wind", "count_solar", "count_storage")   
+controls <- c("~ gdp + pop")
 
-## Run new main specification: y=ihs, x=log(gdp)+log(pop), fpr/pval=0.01, N=23, 19, 21
+# Basic formula
+f <- paste0(dep_count, controls) 
 
 cl <- makeCluster(5) 
 registerDoParallel(cl)
 
-models <- foreach(f = f_ihs, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:%  
+models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:%  
   foreach(smpl = c("top_main", "top_21", "top_19"), .combine = rbind) %:% # specify samples
   foreach(a = c(1), .combine = rbind) %:%
   foreach(p.value = c(0.01), .combine = rbind, .errorhandling = "remove") %dopar% {
@@ -96,7 +98,7 @@ models <- foreach(f = f_ihs, .combine = rbind, .packages = c('tidyverse', 'getsp
 print(nrow(models))
 stopCluster(cl) # stop parallelizing 
 
-saveRDS(models, ".\\results\\15_04_new_main.RDS")  # save model output
+saveRDS(models, ".\\results\\16_04_new_main_count_samples.RDS")  # save model output
 
 
 ## BROWN PATENTS (ROBUSTNESS CHECK)

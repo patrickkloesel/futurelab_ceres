@@ -42,17 +42,19 @@ conflicts_prefer(ggpubr::get_legend)
 conflicts_prefer(dplyr::summarize)
 conflicts_prefer(lubridate::year)
 
-#match policy to breaks based on different confidence intervals
+## directory
+here::i_am("code/policy_match.R")
 
-source("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\code\\00_oecd_project_functions.R")
+#match policy to breaks based on different confidence intervals
+source("code/00_oecd_project_functions.R")
 
 ## Read preprocessed oecd policy data
-oecd_grouped = read.csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\OECD_data_preprocessed_august_23.csv")
+oecd_grouped = read.csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\OECD_Paper_old\\OECD_data_preprocessed_august_23.csv")
 
-# filter OECD policy data for the top 25 patenting countries
-top_25 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "TWN", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR", "SGP", "BRA")
+# filter OECD policy data for the top 25 patenting countries (update: removed SGP and TWN)
+top_23 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR", "BRA")
 # NOTE: we don't have Singapore and Taiwan policies
-oecd_grouped_25 = oecd_grouped %>% filter(ISO %in% top_25)
+oecd_grouped_23 = oecd_grouped %>% filter(ISO %in% top_23)
 
 #set the color palette for the policies 
 palette <- c("#e6194b","#f58231","#f032e6","#991eb4","#ffe119","#bfef45","#3cb44b","#4363d8","#fabed4","#42d4f4","#ffd8b1","#fffac8","#aaffc3","#dcbeff","#800000","#9a6324","#808000","#000075","#469990","#000000","#a9a9a9","tan","aquamarine")
@@ -61,16 +63,12 @@ color_dict = palette
 
 
 ## Load the break detection results
-
-results = readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\05_02_all.RDS")
+results = readRDS("results/15_04_new_main.RDS") %>% filter(id_sample %in% c("top_main"))
 
 ## add model info to results 
 results$tech = str_to_title(sapply(strsplit(results$source, "~"), function(x) x[1]))
 results$tech = str_to_title(sapply(sub(paste0(".*", "ount_"), "", results$tech), function(x) x[1])) # add technology class 
-results$dep = str_to_title(sapply(strsplit(results$source, "_"), function(x) x[1])) # add information on y transformation
 
-results = results %>% filter(!(tech == "Batteries")) # drop batteries for now
-results_f = results %>% filter(p_val == 0.01) %>% filter(dep == "Log") # filter now for stricter pval and specific dep
 
 ############ FUNCTION GET BREAK LIST MODIFIED
 # (we don't need to transform to ISO as they're already ISO (however might need to do the contrary for plotting)
@@ -86,14 +84,12 @@ get_breaks_list <- function(res){
 
 #basic reformatting based on the getspanel package 
 
-policy_out_f <- foreach(i = 1:nrow(results_f), .combine = rbind, .packages = c('tidyverse', 'getspanel')) %dopar% {
-  #list[res,out,policy_match] <- extract_and_match(i,results_f,oecd_grouped)
-  models = tibble(dep = results_f$dep[i],
-                  tech = results_f$tech[i],
-                  out = list(get_breaks_list(results_f$is[[i]])),
-                  is =  list(results_f %>% slice(i) %>% pull(is) %>% first))
+policy_out_f <- foreach(i = 1:nrow(results), .combine = rbind, .packages = c('tidyverse', 'getspanel')) %dopar% {
+  #list[res,out,policy_match] <- extract_and_match(i,results,oecd_grouped)
+  models = tibble(tech = results$tech[i],
+                  out = list(get_breaks_list(results$is[[i]])),
+                  is =  list(results %>% slice(i) %>% pull(is) %>% first))
 }
-
 
 #match policies based on different time intervals (statistical interval as extracted from break detection method (policy_match),
 # 2 year fixed (policy_match_2y), 3 year fixed (policy_match_3y))
@@ -160,11 +156,10 @@ match_oecd_policies <- function(data,out,fixed_interval = 0, tci_interval = FALS
 
 policy_match <- foreach(i = 1:nrow(policy_out_f), .combine = rbind, .packages = c('tidyverse', 'getspanel')) %dopar% {
   #list[res,out,policy_match] <- extract_and_match(i,results,oecd_grouped)
-  models = tibble(dep = results_f$dep[i],
-                  tech = results_f$tech[i],
-                  policy_match = list(match_oecd_policies(oecd_grouped_25, policy_out_f$out[[i]])),
-                  policy_match_2y = list(match_oecd_policies(oecd_grouped_25, policy_out_f$out[[i]],fixed_interval=2)),
-                  policy_match_3y = list(match_oecd_policies(oecd_grouped_25, policy_out_f$out[[i]],fixed_interval=3)))
+  models = tibble(tech = results$tech[i],
+                  policy_match = list(match_oecd_policies(oecd_grouped_23, policy_out_f$out[[i]])),
+                  policy_match_2y = list(match_oecd_policies(oecd_grouped_23, policy_out_f$out[[i]],fixed_interval=2)),
+                  policy_match_3y = list(match_oecd_policies(oecd_grouped_23, policy_out_f$out[[i]],fixed_interval=3)))
   
 }
 
@@ -177,7 +172,7 @@ policy_out_f$policy_match_3y = policy_match$policy_match_3y
 
 #save -> This version is used in Fig. 2 and 3!
 
-saveRDS(policy_out_f,"Policy_out_first_try_patents_logs.RDS")
+saveRDS(policy_out_f,"results/15_04_policy_out_main.RDS")
 
 
 ## TO DO:

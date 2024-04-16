@@ -1,5 +1,5 @@
 ---
-title: "Latest updates: brown patents controls, trend breaks, and more"
+title: "Restrict samples, ETS, shares"
 author: "Laura Menicacci"
 date: "2024-04-04"
 output: html_document
@@ -19,6 +19,8 @@ pre {
 
 
 ```{r setup, fig.height = 15, fig.width = 15, echo=FALSE}
+## directory
+here::i_am("sharing/overview_results.Rmd")
 
 ## libraries
 suppressWarnings(suppressMessages(library(knitr)))
@@ -38,79 +40,86 @@ source("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\pate
 ```
 
 
-```{r resu, echo=FALSE, cache = TRUE}
+**Some news & observations**
+ 
+ * Decisions until now: 
+    * sample: removed Singapore and Taiwan
+    * y: added energy storage as dependent var to analyse
+    * **Main**: base / ihs count / 0.01 for all the technologies (so no brown patents control, no linear country trends)
+ * New models:
+   * Included ETS dummy variable in the OECD-paper fashion for EU countries (2005 and 2018)
+   * Restricted samples: **top_21**: dropped Norway, Brazil, total patents coverage: 94.96% and **top_19**: dropped Finland, Russia, Norway, Brazil, total patents coverage: 94.15%. 
+ * Decisions to be made:
+   * Sample restriction: remove only norway and brazil or also finland and russia? (explain rationale)
+   * ETS dummy: does it work? 
 
-# Base specification + brown patent control
-res_base <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\05_02_all.RDS") %>% 
-  rbind(readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\22_03_brown.RDS")) %>% 
-  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
-  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
-         formula = trimws(formula), 
-         tech = word(dep, -1, sep = " "), 
-         fesis = TRUE, 
-         tis = FALSE, 
-         model = case_when(grepl("brown_patents", formula) | grepl("lbrown", formula) ~ "Brown", TRUE ~ "Base")) %>% 
-  filter(!(tech %in% "Batteries"))
+```{r sample choice, echo=FALSE}
 
-#gc()
+df1 <- read_csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\data\\patents_panel_5techs.csv", show_col_types = F) # this is the dataset with only the 5 technologies of interest for our study, 1995-2020, full country sample (196)  # sort top patenting countries by mean
 
-# Linear country trend, linear c. trends + brown pat control results
-res_linear_trend <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\28_03_trends.RDS") %>% 
-  rbind(readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\28_03_trends_brown.RDS")) %>% 
-  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
-  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
-         formula = trimws(formula), 
-         tech = word(dep, -1, sep = " "), 
-         model = case_when(grepl("brown_patents", formula) | grepl("lbrown", formula) ~ "Linear trend + brown", TRUE ~ "Linear trend" )) %>% 
-  filter(p_val %in% c(0.01, 0.05))
-  
-#gc()
+top_25 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "TWN", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR", "SGP", "BRA")
 
-# Base
-res_storage_base <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\03_04_storage_base.RDS") %>% 
-  rbind(readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\03_04_storage_base_brown.RDS")) %>%
-  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
-  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
-         formula = trimws(formula), 
-         tech = word(dep, -1, sep = " "), 
-         model = case_when(grepl("brown_patents", formula) | grepl("lbrown", formula) ~ "Brown", TRUE ~ "Base")) 
+# Singapore is to be removed anyways, Taiwan too but it will be removed later since it's not in the last, here we're only dropping least patenting countries among the top 25
+top_22 <- top_25[1:(length(top_25) - 3)] # remove Norway, Singapore, Brazil
+top_20 <- top_25[1:(length(top_25) - 5)] # remove Finland, Russia, (Norway, Singapore, Brazil)
+top_19 <- top_25[1:(length(top_25) - 6)] # remove Belgium, (Finland, Russia, Norway, Singapore, Brazil)
 
-#gc()
+# HERE ALSO REMOVE TAIWAN
+top_25_total <- df1 %>% filter(ISO %in% top_25) %>% summarise(count_top25 = sum(count))
+top_21_total <- df1 %>% filter(ISO %in% top_22 & !(ISO %in% "TWN")) %>% summarise(count_top21 = sum(count))
+top_19_total <- df1 %>% filter(ISO %in% top_20 & !(ISO %in% "TWN")) %>% summarise(count_top19 = sum(count))
+top_18_total <- df1 %>% filter(ISO %in% top_19 & !(ISO %in% "TWN")) %>% summarise(count_top18 = sum(count))
 
-# Linear
-res_storage_linear <- rbind(readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\03_04_storage_linear_trends.RDS")) %>%
-  rbind(readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\03_04_storage_trends_brown.RDS")) %>%
-separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
-  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
-         formula = trimws(formula), 
-         tech = word(dep, -1, sep = " "), 
-         model = case_when(grepl("brown_patents", formula) | grepl("lbrown", formula) ~ "Linear trend + brown", TRUE ~ "Linear trend" ))
 
-#gc()
-
-res <- rbind(res_base, res_linear_trend, res_storage_base, res_storage_linear)
+df1 %>% 
+  summarise(tot_count = sum(count)) %>% 
+  mutate(count_top25 = top_25_total$count_top25, count_top21 = top_21_total$count_top21, count_top19 = top_19_total$count_top19, count_top18 = top_18_total$count_top18) %>% 
+  mutate(perc_coverage_top_25 = (100 * count_top25) / tot_count, 
+         perc_coverage_top21 = (100 * count_top21) / tot_count, 
+         perc_coverage_top19 = (100 * count_top19) / tot_count,
+         perc_coverage_top18 = (100 * count_top18) / tot_count         ) %>%
+  select(perc_coverage_top_25, perc_coverage_top21, perc_coverage_top19, perc_coverage_top18) %>% 
+  kable(format = "html") %>% 
+  kable_minimal()
 
 ```
 
-**Some news & observations**
- 
- * There seem to be two pairs of specifications/results: *IHS and Log* vs *Count and Max norm*. These two yield to very similar results between each other;
- * **Proposal: energy storage**: when doing policy attribution, it might be difficult to make sense of breaks happening in such a broad class of technologies as CCMT (which includes green technologies for many sectors like buildings, waste, transport, CCS). It might be more reasonable to focus on key technologies related to renewables, such as wind (Y02E10/70-76) and solar (Y02E10/40-60), and use Y02E as the 'umbrella' class. Since we dropped batteries, which was a subclass of a subclass, my opinion is that it is still appropriate to include green technologies related to energy storage (Y02E60/10-16), as this is often cited as a key technology related to renewables.The full green tech classification done by OECD for our data is [here](https://stats.oecd.org/wbos/fileview2.aspx?IDFile=c5c477c0-d300-42fe-af1f-d4a450c79a39), as an indicator of *technology development*.
- * **New brown patents control** is only strongly significant for ccmt and energy technologies, and only in the count and log specifications. Find [here](https://lauramenicacci.github.io/futurelab_ceres/patent_data_project/sharing/brow_patents) a small analysis of the time series compared to the green patents. Short answer: brown patenting is strongly positively correlated with green patenting for all countries in our sample, except for USA and Canada. The methodology for the classification of brown patents can be found [here](https://iea.blob.core.windows.net/assets/bb70e652-6862-4f15-9ba7-f3249d1551ea/Methodologicalnotesforpatentcounts.pdf)
- * **Added linear country trends**
- 
+
 ## Models comparison {.tabset}
 
- * Technology classes: climate change mitigation technologies, energy, solar, wind, **energy storage**
- * Y: Levels, Logs+1, IHS, Max normalization by technology
- * Controls: gdp, pop, **brown patents, linear country trends**
+ * Technology classes: climate change mitigation technologies, energy, solar, wind, energy storage
+ * Y transformations: count, IHS, share of y over all patents
+ * Controls: gdp, pop, EU ETS (for EU countries)
  * AR term = 1
  * IIS=ON
- * p-val = 0.01, 0.05
- * Sample: top 25 patenting countries (by mean)
+ * p-val = 0.01
+ * **Samples**: N=23 (-SGP,TWN) , N=21 (-SGP,TWN,*-NOR, BRA*), N=19 (-SGP,TWN,*-NOR, BRA, RUS, FIN*)
  * Time series: 2000-2019
 
 ```{r models, echo=FALSE, results = 'asis', fig.height=40, fig.width=60, cache = TRUE}
+
+res <- readRDS(here::here("results/15_04_new_main.RDS")) %>% 
+  rbind(readRDS(here::here("results/15_04_ets_dummy.RDS"))) %>% 
+  rbind(readRDS(here::here("results/16_04_new_main_count_samples.RDS"))) %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula), 
+         tech = word(dep, -1, sep = " ")) %>% 
+  rowwise() %>%
+  mutate(model = case_when(
+    grepl("ETS", source) ~ "ETS",
+    TRUE ~ "Main"
+  )) %>%
+  ungroup()
+  
+res_shares <- readRDS(here::here("results/15_04_shares.RDS")) %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         tech = word(dep, -2, sep = " "), 
+         model = "Main") %>% 
+  mutate(tech = case_when(tech == "Green"~"Ccmt", TRUE ~tech))
+
+res <- rbind(res, res_shares)
 
 res %>%
        dplyr::group_split(tech) %>%
@@ -121,9 +130,9 @@ res %>%
                    cat('#### ', m, '{.tabset}   \n')
                 for(d in unique(.x$dep)){
                    cat('##### ', d, '{.tabset}   \n')
-                  for(p in unique(.x$p_val)){
-                    cat('###### ', p, '{.tabset}   \n')
-                    filter(.x, p_val == p & dep == d & model == m) %>% gen_p(., auto = TRUE)
+                  for(s in unique(.x$id_sample)){
+                    cat('###### ', s, '{.tabset}   \n')
+                    filter(.x, dep == d & model == m & id_sample == s) %>% gen_p(., auto = TRUE)
                   cat('\n')
                   cat('\n')
                     }
@@ -140,91 +149,58 @@ res %>%
 ```
 
 
-## Latest experiments with trend breaks {.tabset}
+## Policy matching {.tabset}
 
-```{r models tis, echo=FALSE, results = 'asis', fig.height=40, fig.width=60, cache = TRUE}
-res <- readRDS("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\results\\26_03_TIS_tighter_pval.RDS") %>% 
-  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
-  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
-         formula = trimws(formula), 
-         tech = word(dep, -1, sep = " ")) 
+Only for main specification: IHS ~log(gdp)+log(pop), N=23, pval=0.01. 
 
-res %>%
-       dplyr::group_split(tech) %>%
-       purrr::iwalk(.,~{
-         name <- unique(.x$tech)
-         cat('### ', name, '{.tabset}   \n')
-              for(p in unique(.x$dep)){
-                   cat('#### ', p, '{.tabset}   \n')
-                for(sm in unique(.x$p_val)){
-                   cat('##### ', sm, '{.tabset}   \n')
-                   filter(.x, p_val == sm & dep == p) %>% gen_p(., auto = TRUE)
-                cat('\n')
-                cat('\n')
-                }
-           cat('\n')
-           cat('\n')
-           }
-         cat('\n')
-         cat('\n')
-       })
+### Green {.tabset}
+
+```{r green policy, echo=FALSE}
+
+knitr::include_graphics(here::here("figs/Fig_ccmt_15_04.png"))
+
 ```
 
+
+### Energy {.tabset}
+
+```{r energy policy, echo=FALSE}
+
+knitr::include_graphics(here::here("figs/Fig_energy_15_04.png"))
+
+```
+
+### Solar {.tabset}
+
+```{r solar policy, echo=FALSE}
+
+knitr::include_graphics(here::here("figs/Fig_solar_15_04.png"))
+
+```
+
+### Wind {.tabset}
+
+```{r wind policy, echo=FALSE}
+
+knitr::include_graphics(here::here("figs/Fig_wind_15_04.png"))
+
+```
+
+### Storage {.tabset}
+
+```{r storage policy, echo=FALSE}
+
+knitr::include_graphics(here::here("figs/Fig_storage_15_04.png"))
+
+```
 
 ## Country, sign and year comparison of breaks {.tabset}
 
- * Selected only p-value = 0.01
- * **Common countries across y transformations**: China, South Korea, Denmark
- * **Base model**
-    * Count: China, Germany, Japan, South Korea, USA, Denmark (6)
-    * Log: Australia, Brasil, China, Denmark, Singapore,Spain, Russia, South Korea, Taiwan, Austria (10)
- * **+ Brown patents**
-    * Count w. brown patents : same set of countries, different breaks
-    * Log w. brown patents: +3 countries (Finland, *Israel*, India)
- * **+ Linear country trends (& no brown)**
-    * Count: same set of countries, less breaks and more consistent across techs
-    * Log: +3 countries (*Israel*, Norway, The Netherlands), other countries disappear! (Australia, China, South Korea)
+ * **New main sample**: almost same results compared to old one with **IHS**, fit looks good to me already at top_21. With **count** the fit of other countries is worsening a bit, breaks remain almost the same. 
+ * **+ EU dummies**: only significant in the energy technology in top_21 and top_19 sample
+ * **Shares**: fit looks always good! but very few breaks. when we restrict the sample sometimes there are no breaks retained (e.g. top_19, solar)
 
-### Base {.tabset}
-
-#### Count {.tabset}
-
-```{r, echo=FALSE, results='asis'}
-base_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
-                           ccmt = c("+2013","+2006, -2012","-2008, +2009","+2009","+2005, +2012, -2014", ""),
-                           energy = c("+2013","+2007, -2012","+2009","-2014","+2006, -2014", ""), 
-                           solar = c("+2015","-2012, +2014","-2012","+2007","+2006, -2011", ""),
-                           wind = c("","+2006", "", "", "-2013, +2015, -2017", "+2007, -2012, -2018"), 
-                           storage = c("", "", "-2008, +2009, +2017", "-2006, +2009", "", "")
-                           )
-
-base_comp_count %>% 
-  kbl() %>%
-  kable_material(c("striped", "hover"))
-
-
-```
-
-
-#### Log {.tabset}
-
-```{r, echo=FALSE, results='asis'}
-base_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria", "Belgium", "Norway"), 
-                           ccmt = c("-2005","-2008, +2010","+2015","+2005, -2006, +2007","+2003", "", "", "","","", "", ""),
-                           energy = c("", "", "+2015", "+2005", "+2003, -2006, +2007", "+2003", "-2007", "", "", "", "", ""), 
-                           solar = c("-2005", "+2014", "", "", "", "+2003", "-2019", "+2007", "+2006", "", "", ""),
-                           wind = c("+2002, -2005", "", "", "+2006", "+2007, -2012", "", "", "","","-2002", "", ""), 
-                           storage = c("", "-2010, +2014", "", "-2012, +2014", "+2004", "", "-2017","", "", "+2007", "-2003", "+2003, +2017")
-                          )
-
-base_comp_log %>% 
-  kable(escape = FALSE) %>%
-  kable_material(c("striped", "hover")) %>% 
-  kable_styling(fixed_thead = T)
-
-```
-
-#### Ihs {.tabset}
+### Old IHS with 25 countries {.tabset}
 
 ```{r, echo=FALSE, results='asis'}
 ihs_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria", "Finland", "India"), 
@@ -240,133 +216,57 @@ ihs_comp_log %>%
   kable_styling(fixed_thead = T)
 ```
 
-#### Max normalization {.tabset}
+
+### New main (-singapore and taiwan) {.tabset}
+
+#### IHS {.tabset}
 
 ```{r, echo=FALSE, results='asis'}
-max_comp_base <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
-                           ccmt = c("","+2006, -2012","-2008, +2009","+2009","+2005, -2012", ""),
-                           energy = c("+2016","+2007, -2012","+2009","+2009,-2014","+2006, -2014", ""), 
-                           solar = c("+2015","-2012, +2014","-2012","+2007, -2012","+2006, -2011", ""),
-                           wind = c("","+2006, -2013, +2016", "-2016", "", "-2013, +2015, -2017", "+2007, -2012, +2014, -2018")
-                           )
+ihs_main <- data.frame(country = c("Australia", "China", "Denmark", "Israel", "Spain", "Russia","Brasil", "Finland", "South Korea", "Austria", "India", "Norway", "Belgium"), 
+                           ccmt = c("-2005", "+2015","+2005, -2006, +2007","+2006, -2009, -2018", "", "", "", "", "", "", "", "", ""),
+                           energy = c("", "+2015", "+2005","+2006, -2009", "+2003", "-2007", "", "", "", "", "", "", ""), 
+                           solar = c("+2005","", "","", "+2003", "-2019","+2014", "+2012", "+2007","", "", "", ""),
+                           wind = c("+2002, -2005", "-2002, +2004", "+2006", "", "", "-2004", "", "","","-2002", "+2008","", ""), 
+                       storage= c("", "", "-2012, +2014", "", "+2005", "-2017", "+2008, -2010, +2014", "-2002, +2005","","+2007", "", "+2003, +2017", "-2003")
+                          )
 
-max_comp_base %>% 
+ihs_main %>% 
   kable(escape = FALSE) %>%
   kable_material(c("striped", "hover")) %>% 
   kable_styling(fixed_thead = T)
 ```
-
-
-### Brown patents control {.tabset}
 
 #### Count {.tabset}
-
 ```{r, echo=FALSE, results='asis'}
-brown_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
-                           ccmt = c("","+2006, -2012","","+2009","+2005, -2013", ""),
-                           energy = c("+2016","+2007, -2012","+2009","-2014","+2006, -2011", ""), 
-                           solar = c("+2015, -2019","-2012","-2012","+2007","-2006", ""),
-                           wind = c("+2016","+2006, -2013, +2016", "", "", "+2007, -2014", "+2007, -2012")
+base_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
+                           ccmt = c("+2013","","-2008, +2009","+2009","+2006, -2014", ""),
+                           energy = c("+2013","+2007, -2012","+2009","-2014","+2006, -2014", ""), 
+                           solar = c("+2015, -2019","-2012","-2012","+2007","+2006, -2011", ""),
+                           wind = c("","+2006", "", "", "", "+2007, -2012, +2014"), 
+                           storage = c("", "", "-2008, +2009, +2017", "-2006, +2009", "", "")
                            )
 
-brown_comp_count %>% 
-  kable(escape = FALSE) %>%
-  kable_material(c("striped", "hover")) %>% 
-  kable_styling(fixed_thead = T)
+base_comp_count %>% 
+  kbl() %>%
+  kable_material(c("striped", "hover"))
+
 
 ```
 
 
-#### Log {.tabset} 
+#### Shares {.tabset}
 
-```{r, echo=FALSE, results='asis'}
-brown_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria","Finland", "Israel","India"), 
-                           ccmt = c("-2005","","+2015","+2005, -2006, +2007","+2003, +2008, -2010", "", "", "","","", "-2003", "-2018", ""),
-                           energy = c("","+2005, -2007","+2015","","+2003, -2006, +2007", "+2003", "-2007", "","","", "", "", ""), 
-                           solar = c("","+2014","+2015","","", "+2003", "", "+2007","+2007","", "", "", ""),
-                           wind =c("+2002, -2005","","","+2006","+2007, -2012", "", "", "","","-2002", "", "", "+2008")
-                           )
+```{r}
+shares_main <- data.frame(country = c("Denmark", "Norway", "Russia", "Brasil", "Spain","Austria", "Germany", "Japan", "South Korea"), 
+                           ccmt = c("+2007, -2012", "-2013, +2015", "-2015", "", "", "", "", "", ""),
+                           energy = c("-2011", "+2019", "", "+2014, -2016, +2018", "", "", "", "",""), 
+                           solar = c("", "", "", "+2012", "+2012, -2018", "", "", "", ""),
+                           wind = c("+2008, +2010, -2011", "+2019", "", "", "","", "", "", ""), 
+                       storage= c("", "+2017", "", "-2010", "","+2016", "+2009", "+2009", "+2009"))
 
-brown_comp_log %>% 
+shares_main %>% 
   kable(escape = FALSE) %>%
   kable_material(c("striped", "hover")) %>% 
   kable_styling(fixed_thead = T)
-
-```
-
-### Linear country trends {.tabset}
-
-#### Count {.tabset}
-
-```{r, echo=FALSE, results='asis'}
-linear_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
-                           ccmt = c("+2016","-2012","","-2017","+2007", ""),
-                           energy = c("+2016","-2012","-2012","-2014","+2006, -2014", ""), 
-                           solar = c("+2016","-2012","-2012","+2007","+2006, -2011", ""),
-                           wind = c("","+2006", "", "", "-2007, -2013, -2018", "-2012"), 
-                           storage = c("", "-2013", "", "+2010", "", "")
-                           )
-
-linear_comp_count %>% 
-  kable(escape = FALSE) %>%
-  kable_material(c("striped", "hover")) %>% 
-  kable_styling(fixed_thead = T)
-
-```
-
-
-#### Log {.tabset} 
-
-```{r, echo=FALSE, results='asis'}
-linear_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria","Finland", "Israel","India", "Norway", "Japan", "The Netherlands"), 
-                           ccmt = c("","-2008","","+2007","+2003", "", "", "","","", "", "+2004", "", "-2010", "", ""),
-                           energy = c("","+2005, -2009","","","-2013, -2019", "", "", "","","", "", "+2006", "", "+2003, +2017", "-2005", ""), 
-                           solar = c("","-2005","","","+2003", "+2005", "", "","-2015","", "-2007", "", "", "", "", ""),
-                           wind =c("","+2015","","+2006","+2007, -2012", "", "", "","","", "", "", "", "+2018", "-2005", ""), 
-                           storage =c("","-2010, +2015, -2017","", "", "+2004, +2011, +2016", "","+2005, +2011", "", "", "", "", "", "", "+2005, +2017", "", "-2009"))
-
-linear_comp_log %>% 
-  kable(escape = FALSE) %>%
-  kable_material(c("striped", "hover")) %>% 
-  kable_styling(fixed_thead = T)
-
-```
-
-### Linear country trends + brown patents {.tabset}
-
-#### Count {.tabset}
-
-```{r, echo=FALSE, results='asis'}
-linear_comp_count <- data.frame(country = c("China", "Germany", "Japan", "South Korea", "USA", "Denmark"), 
-                           ccmt = c("+2016","-2012","","-2017","+2007, -2013", ""),
-                           energy = c("+2016","-2012","-2012","-2014","+2006, -2011, -2014", ""), 
-                           solar = c("+2016","-2012","-2012","+2007","+2006, -2011", ""),
-                           wind = c("","+2006", "", "", "-2017", "-2012"), 
-                           storage = c("", "-2013", "", "+2010", "", "")
-                           )
-
-linear_comp_count %>% 
-  kable(escape = FALSE) %>%
-  kable_material(c("striped", "hover")) %>% 
-  kable_styling(fixed_thead = T)
-
-```
-
-
-#### Log {.tabset} 
-
-```{r, echo=FALSE, results='asis'}
-linear_comp_log <- data.frame(country = c("Australia", "Brasil", "China", "Denmark", "Singapore","Spain", "Russia", "South Korea", "Taiwan", "Austria","Finland", "Israel","India", "Norway", "Japan", "The Netherlands", "Belgium"), 
-                           ccmt = c("","","","+2007","+2003", "", "", "","","", "", "-2018", "", "-2010", "", "", ""),
-                           energy = c("","+2005, -2009","","","+2003", "", "", "","","", "", "+2006", "", "+2003, +2017", "-2005", "", "-2003, -2019"), 
-                           solar = c("","-2005","","","+2003", "+2003", "", "","-2015","", "-2007", "", "", "", "", "", ""),
-                           wind =c("","+2015","+2004","","", "", "", "","","", "", "", "", "+2018", "-2005", "", ""), 
-                           storage =c("","-2010","", "", "+2004, +2011, +2016", "","+2005, +2011", "", "", "", "", "", "", "+2005, +2017", "", "-2009", ""))
-
-linear_comp_log %>% 
-  kable(escape = FALSE) %>%
-  kable_material(c("striped", "hover")) %>% 
-  kable_styling(fixed_thead = T)
-
 ```
 
