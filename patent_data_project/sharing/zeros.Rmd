@@ -1,0 +1,84 @@
+---
+title: "zero_count"
+author: "Laura Menicacci"
+date: "2024-04-26"
+output: html_document
+---
+# Count very carefully where we even have zeros and how many they are
+
+```{r, fig.height = 15, fig.width = 15, echo=FALSE}
+
+suppressWarnings(suppressMessages(library(tidyverse)))
+suppressWarnings(suppressMessages(library(here)))
+suppressWarnings(suppressMessages(library(doParallel)))
+suppressWarnings(suppressMessages(library(gdata)))
+suppressWarnings(suppressMessages(library(gridExtra)))
+suppressWarnings(suppressMessages(library(ggridges)))
+suppressWarnings(suppressMessages(library(kableExtra)))
+
+
+here::i_am("sharing/zeros.Rmd")
+
+# Load plotting functions
+#source("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\code\\plotting_functions.R")
+
+top_main <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR", "BRA")
+
+df <- read_csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\data\\patents_panel_5techs.csv", show_col_types = F)  %>% filter(ISO %in% top_main)
+
+```
+
+```{r, fig.height = 15, fig.width = 15, echo=FALSE}
+df %>% 
+  group_by(ISO, year, tech) %>% 
+  filter(count == 0) %>% 
+  count(count) %>% 
+  ggplot(aes(x = year, y = n, fill = tech)) +
+  geom_col() +
+  facet_wrap(~ISO, scales = "fixed") +
+  scale_x_continuous(breaks = c(1995, 1997, 1999, 2001, 2003, 2005, 2007, 2009, 2011, 2013,2015, 2017, 2019))+
+  theme_bw()+
+  theme(legend.position = "bottom") + 
+  ggtitle("Count of zeros by country and technology", subtitle = "Australia and Japan have no zeros.")
+
+#df %>%
+#  ggplot(aes(x = year, y = n, fill = tech)) +
+#  geom_col() +
+#  facet_wrap(~ISO, scales = "fixed") +
+#  scale_x_continuous(breaks = c(1995, 1997, 1999, 2001, 2003, 2005, 2007, 2009, 2011, 2013,2015, 2017, 2019))+
+#  scale_x_continuous(breaks = c(1995, 1997, 1999, 2001, 2003, 2005, 2007, 2009, 2011, 2013, 2015, 2017, 2019))+
+#  theme_bw()+
+#  theme(legend.position = "bottom") + 
+#  ggtitle("Count of zeros by country and technology", subtitle = "Australia and Japan have no zeros.")
+```
+
+
+## Table format 
+
+Number of zero counts by country, in descending order. 
+
+```{r, echo=FALSE}
+
+df %>% 
+  group_by(ISO) %>% 
+  filter(count == 0) %>% 
+  count(count) %>% 
+  select(ISO, n) %>% 
+  arrange(desc(n)) %>% 
+  kable(format = "html") #%>% 
+#kable_styling(bootstrap_options = c("hover", "responsive"), full_width = F, fixed_thead = T, position = "left") %>% 
+#scroll_box(width = "300px", height = "300px")
+
+```
+
+
+# total number of zeros in our sample
+```{r, echo=FALSE}
+df %>% 
+  filter(count == 0) %>% 
+  count(nrow(count))%>% 
+  kable(format = "html") 
+```
+
+
+
