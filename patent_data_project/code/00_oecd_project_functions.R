@@ -42,25 +42,24 @@ conflicts_prefer(ggpubr::get_legend)
 conflicts_prefer(dplyr::summarize)
 conflicts_prefer(lubridate::year)
 
-## the following policy matching functions are commented because they have been adapted to the patent proj needs and 
-## they are run in the policy_match.R script
-
 ## takes an isatpanel object, uses break_uncertainty() in getspanel to format output and get uncertainty range
+get_breaks_list <- function(res){
+  out = break_uncertainty(res)
+  out$min_year = as.numeric(out$time)-as.numeric(out$tci)
+  out$max_year = as.numeric(out$time)+as.numeric(out$tci)
+  return(out)
+}
 
-#get_breaks_list <- function(res){
-#  out = break_uncertainty(res)
-#  out$id = countrycode(out$id,'iso3c', 'country.name')
-#  out[out$id=='SouthKorea','id'] = 'KOR'
-#  out[out$id=='SouthAfrica','id'] = 'ZAF'
-#  if(any(is.na(out$id))){
-#    print('Warning! Unmatched country names in out. Investigate!')
-#  }
-#  out$min_year = as.numeric(out$time)-as.numeric(out$tci)
-#  out$max_year = as.numeric(out$time)+as.numeric(out$tci)
-#  #filter negative breaks
-#  out = out[out$coef <0,] # comment out this to get all breaks
-#  return(out)
-#}
+
+## filters for correct country and interval years of breaks to match correctly with OECD climate policy data
+##nNecessary for match_oecd_policies()
+filter_oecd <- function(data,country,min_year,max_year){
+  data = data %>% 
+    filter(ISO %in% country) %>% 
+    filter(year >= min_year & year <= max_year)
+  
+  return(data)
+}
 
 ## takes the preprocessed oecd data (as data), the formated break detection data (out), a sector (module) + optional parameters
 ## automatically extracts for each break and module the policies that fall between the max and min year
@@ -68,45 +67,45 @@ conflicts_prefer(lubridate::year)
 ## if tci_interval is true, it takes for each break the maximum of the specified fixed interval and the tci
 ## if introductions_only is true, the oecd data is filtered to only match introductions
 
-#match_oecd_policies <- function(data,out,module,fixed_interval = 0, tci_interval = FALSE, introductions_only = FALSE){
-#  
-#  
-#  if(tci_interval == TRUE){
-#    #in this case, we keep the maximum of the tci interval and the fixed interval
-#    breaks_modify = which(out$tci<= fixed_interval)
-#    
-#    out$min_year[breaks_modify] = out$time[breaks_modify]-fixed_interval
-#    out$max_year[breaks_modify] = out$time[breaks_modify]+fixed_interval
-#    
-#  }else if(fixed_interval>0){
-#    out$min_year = out$time-fixed_interval
-#    out$max_year = out$time+fixed_interval
-#    
-#  }
-#  
-#  if(introductions_only == TRUE){
-#    #in this case we only want to keep introductions and add ons 
-#    add_ons = data[data$source == 'add-on', ]
-#    data = data[data$introduction == 1,]
-#    data = data[!is.na(data$ISO),]
-#    
-#    data = rbind(data,add_ons)
-#  }
-#  
-#  ##match break policies
-#  policy_store = data.frame()
-#  rownames(out) <- NULL
-#  for(i in 1:nrow(out)){
-#    policy_match = filter_oecd(data,out$id[i],out$min_year[i],out$max_year[i],module) # qua cambiato country_code con id
-#    if(nrow(policy_match)>0){
-#      policy_match$coeff = out$coef[i]
-#      policy_match$min_year = out$min_year[i]
-#      policy_match$max_year = out$max_year[i]
-#      policy_match$unique_break_identifier = paste(out$id[i],out$min_year[i],out$max_year[i],sep='_')} # qua cambiato country_code con id
-#    policy_store = rbind(policy_store,policy_match)
-#  }
-#  return(policy_store)
-#}
+match_oecd_policies <- function(data,out,fixed_interval = 0, tci_interval = FALSE, introductions_only = FALSE){ # removed module here
+  
+  
+  if(tci_interval == TRUE){
+    #in this case, we keep the maximum of the tci interval and the fixed interval
+    breaks_modify = which(out$tci<= fixed_interval)
+    
+    out$min_year[breaks_modify] = out$time[breaks_modify]-fixed_interval
+    out$max_year[breaks_modify] = out$time[breaks_modify]+fixed_interval
+    
+  }else if(fixed_interval>0){
+    out$min_year = out$time-fixed_interval
+    out$max_year = out$time+fixed_interval
+    
+  }
+  
+  if(introductions_only == TRUE){
+    #in this case we only want to keep introductions and add ons 
+    add_ons = data[data$source == 'add-on', ]
+    data = data[data$introduction == 1,]
+    data = data[!is.na(data$ISO),]
+    
+    data = rbind(data,add_ons)
+  }
+  
+  ##match break policies
+  policy_store = data.frame()
+  rownames(out) <- NULL
+  for(i in 1:nrow(out)){
+    policy_match = filter_oecd(data,out$id[i],out$min_year[i],out$max_year[i]) # here changed country_code with id and removed module
+    if(nrow(policy_match)>0){
+      policy_match$coeff = out$coef[i]
+      policy_match$min_year = out$min_year[i]
+      policy_match$max_year = out$max_year[i]
+      policy_match$unique_break_identifier = paste(out$id[i],out$min_year[i],out$max_year[i],sep='_')} # here changed country_code with id
+    policy_store = rbind(policy_store,policy_match)
+  }
+  return(policy_store)
+}
 
 #Takes the "out" output and computes overlapping breaks. Overlapping means two breaks happen in the same sector and country
 # s.t. the confidence interval of one completely contains the other break. In that case, we keep the one with the wider confidence
@@ -285,7 +284,7 @@ plot_counterfactual <- function(x, country, out, plus_t = 5, facet.scales = "fre
   
 }
 
-# Policy_name was originally Policy_name_fig_2_3
+# Policy_name was originally Policy_name_fig_2_3 - 22.04 UPDATED TO 'POLICY' MOMENTANEOUSLY
 #produces Fig. 2+3
 plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5,symbol_size=3, ylim=c(0,5),policy_plot_prop=1, sector = "x",int_size=2,legend=TRUE){  
   # removed label_df, after policy_match
@@ -310,7 +309,7 @@ plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5
     group_by(year) %>%
     mutate(enumeration = row_number()) %>% ungroup
   
-  policy_match_plot <- policy_match_country[c('year','Policy_name',"enumeration")] # remove ,'Module' after year
+  policy_match_plot <- policy_match_country[c('year','Policy',"enumeration")] # remove 'Module' after year
   
   # commented: patent proj doesnt need this 
   #label_df_sub = label_df[label_df$country == country & label_df$Module==sector,]
@@ -319,10 +318,10 @@ plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5
   #if(nrow(label_df_sub)>0){
   #  EU_flags = data.frame(year = unique(label_df_sub$year), indicator = 0.9, icon = "\U1F1EA\U1F1FA")
   #  
-  #  label_df_sub$icon <- ifelse(label_df_sub$Policy_name == "EU-MEPS", "\u2699",  # Manufacturing wheel icon
-  #                              ifelse(label_df_sub$Policy_name == "EU-Labels", "\U0001f3f7",  # Label icon
-  #                                     ifelse(label_df_sub$Policy_name == "EU-ETS", "\u20ac",  # Euro sign icon
-  #                                            ifelse(label_df_sub$Policy_name == 'EU', "\U0001F1E9\U0001F1EA", #EU flag
+  #  label_df_sub$icon <- ifelse(label_df_sub$Policy == "EU-MEPS", "\u2699",  # Manufacturing wheel icon
+  #                              ifelse(label_df_sub$Policy == "EU-Labels", "\U0001f3f7",  # Label icon
+  #                                     ifelse(label_df_sub$Policy == "EU-ETS", "\u20ac",  # Euro sign icon
+  #                                            ifelse(label_df_sub$Policy == 'EU', "\U0001F1E9\U0001F1EA", #EU flag
   #                                                   ""))))}
   #
   ##enumerate the labels in each year s.t. they do not overlap in case of duplications, start at 2 bc we plot eu sign on 1
@@ -360,11 +359,11 @@ plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5
     
   if(nrow(policy_match_plot)>0){
       policy_match_plot <- policy_match_plot %>%
-        complete(Policy_name,year = 1998:max(max(out$max_year),2022), fill = list(enumeration = 0)) %>% as.data.frame()
+        complete(Policy,year = 1998:max(max(out$max_year),2022), fill = list(enumeration = 0)) %>% as.data.frame()
       p_policy <- p_policy + 
       geom_rect(data = out_sub, aes(xmin = min_year, xmax = max_year, ymin = -Inf, ymax = Inf),fill = "grey",alpha = 0.5, na.rm = TRUE, show.legend=FALSE) +
       geom_rect(data = out_sub, aes(xmin = time-int_size, xmax = time+int_size, ymin = -Inf, ymax = Inf),fill = "grey",alpha = 0.3, na.rm = TRUE, show.legend=FALSE) +
-      geom_point(data = policy_match_country, aes(x=year, y=enumeration, fill=Policy_name),shape=22,size=cube_size)
+      geom_point(data = policy_match_country, aes(x=year, y=enumeration, fill=Policy),shape=22,size=cube_size)
       }
     # commented: patent proj doesnt need this 
     #if(nrow(label_df_sub)>0){
