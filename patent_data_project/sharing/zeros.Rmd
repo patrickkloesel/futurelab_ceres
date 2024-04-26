@@ -26,43 +26,48 @@ top_main <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DN
 
 df <- read_csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\data\\patents_panel_5techs.csv", show_col_types = F)  %>% filter(ISO %in% top_main)
 
+df1 <- read_csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\data\\patents_panel_5techs_spread.csv", show_col_types = F)  %>% filter(ISO %in% top_main)
+
 ```
 
+## Sample goes from 2000 to 2019 with 23 countries (original top 25 minus Taiwan and Singapore)
 ```{r, fig.height = 15, fig.width = 15, echo=FALSE}
-df %>% 
-  group_by(ISO, year, tech) %>% 
-  filter(count == 0) %>% 
-  count(count) %>% 
-  ggplot(aes(x = year, y = n, fill = tech)) +
-  geom_col() +
-  facet_wrap(~ISO, scales = "fixed") +
-  scale_x_continuous(breaks = c(1995, 1997, 1999, 2001, 2003, 2005, 2007, 2009, 2011, 2013,2015, 2017, 2019))+
+
+zeros <- df1 %>%
+  filter(year > 1999) %>% 
+  group_by(ISO, year) %>% 
+  filter(if_any(starts_with("count_"), ~ . == 0)) %>% 
+  select(!c(count_ccmt, count_energy)) %>%  # these do not have zeros
+  summarize(count_solar_zeros = sum(count_solar == 0),
+  count_wind_zeros = sum(count_wind == 0), 
+  count_storage_zeros = sum(count_storage == 0), .groups = "keep") %>% 
+  pivot_longer(cols = starts_with("count_"), names_to = "Technology", values_to = "Count") %>% 
+  ungroup()
+
+zeros %>% 
+  ggplot(aes(x = year, y = Count, fill = Technology)) +
+  geom_col(position = "stack") +
+  facet_wrap(~ISO, scales = "free_y") +
+  scale_x_continuous(breaks = seq(2000, 2020, by = 2))+
+  #scale_y_continuous(breaks = c(0,1, 2))+
   theme_bw()+
   theme(legend.position = "bottom") + 
-  ggtitle("Count of zeros by country and technology", subtitle = "Australia and Japan have no zeros.")
+  ggtitle("Count of zeros by country and technology", subtitle = "Australia and Japan have no zeros. Ccmt and energy have no zeros.")
 
-#df %>%
-#  ggplot(aes(x = year, y = n, fill = tech)) +
-#  geom_col() +
-#  facet_wrap(~ISO, scales = "fixed") +
-#  scale_x_continuous(breaks = c(1995, 1997, 1999, 2001, 2003, 2005, 2007, 2009, 2011, 2013,2015, 2017, 2019))+
-#  scale_x_continuous(breaks = c(1995, 1997, 1999, 2001, 2003, 2005, 2007, 2009, 2011, 2013, 2015, 2017, 2019))+
-#  theme_bw()+
-#  theme(legend.position = "bottom") + 
-#  ggtitle("Count of zeros by country and technology", subtitle = "Australia and Japan have no zeros.")
+
 ```
 
 
 ## Table format 
 
-Number of zero counts by country, in descending order. 
+Number of zero counts by country, in descending order.Over all technologies. 
 
 ```{r, echo=FALSE}
 
-df %>% 
+zeros %>% 
   group_by(ISO) %>% 
-  filter(count == 0) %>% 
-  count(count) %>% 
+  filter(Count == 1) %>% 
+  count(Count) %>% 
   select(ISO, n) %>% 
   arrange(desc(n)) %>% 
   kable(format = "html") #%>% 
@@ -74,9 +79,9 @@ df %>%
 
 # total number of zeros in our sample
 ```{r, echo=FALSE}
-df %>% 
-  filter(count == 0) %>% 
-  count(nrow(count))%>% 
+zeros %>% 
+  filter(Count ==1) %>% 
+  count(nrow(Count))%>% 
   kable(format = "html") 
 ```
 
