@@ -98,6 +98,15 @@ df1 %>%
 
 ```{r models, echo=FALSE, results = 'asis', fig.height=40, fig.width=60, cache = TRUE}
 
+the_rest <- readRDS(here::here("results/25_04_ets_dummy_rest.RDS")) %>% 
+    separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+    mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula), 
+         tech = str_extract(dep, "(?<= )[^ ]+"), 
+         model = case_when(
+    grepl("ETS", source) ~ "ETS")) %>% 
+    mutate(tech = case_when(tech == "Green"~"Ccmt", TRUE ~tech))
+
 res <- readRDS(here::here("results/15_04_new_main.RDS")) %>% 
   rbind(readRDS(here::here("results/15_04_ets_dummy.RDS"))) %>% 
   rbind(readRDS(here::here("results/16_04_new_main_count_samples.RDS"))) %>% 
@@ -119,7 +128,7 @@ res_shares <- readRDS(here::here("results/15_04_shares.RDS")) %>%
          model = "Main") %>% 
   mutate(tech = case_when(tech == "Green"~"Ccmt", TRUE ~tech))
 
-res <- rbind(res, res_shares)
+res <- rbind(res, res_shares, the_rest)
 
 res %>%
        dplyr::group_split(tech) %>%
@@ -148,51 +157,6 @@ res %>%
        
 ```
 
-
-## Policy matching {.tabset}
-
-Only for main specification: IHS ~log(gdp)+log(pop), N=23, pval=0.01. 
-
-### Green {.tabset}
-
-```{r green policy, echo=FALSE}
-
-knitr::include_graphics(here::here("figs/Fig_ccmt_15_04.png"))
-
-```
-
-
-### Energy {.tabset}
-
-```{r energy policy, echo=FALSE}
-
-knitr::include_graphics(here::here("figs/Fig_energy_15_04.png"))
-
-```
-
-### Solar {.tabset}
-
-```{r solar policy, echo=FALSE}
-
-knitr::include_graphics(here::here("figs/Fig_solar_15_04.png"))
-
-```
-
-### Wind {.tabset}
-
-```{r wind policy, echo=FALSE}
-
-knitr::include_graphics(here::here("figs/Fig_wind_15_04.png"))
-
-```
-
-### Storage {.tabset}
-
-```{r storage policy, echo=FALSE}
-
-knitr::include_graphics(here::here("figs/Fig_storage_15_04.png"))
-
-```
 
 ## Country, sign and year comparison of breaks {.tabset}
 
@@ -256,7 +220,7 @@ base_comp_count %>%
 
 #### Shares {.tabset}
 
-```{r}
+```{r, echo=FALSE, results='asis'}
 shares_main <- data.frame(country = c("Denmark", "Norway", "Russia", "Brasil", "Spain","Austria", "Germany", "Japan", "South Korea"), 
                            ccmt = c("+2007, -2012", "-2013, +2015", "-2015", "", "", "", "", "", ""),
                            energy = c("-2011", "+2019", "", "+2014, -2016, +2018", "", "", "", "",""), 

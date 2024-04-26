@@ -189,21 +189,23 @@ saveRDS(models, ".\\results\\15_04_shares.RDS")  # save model output
 
 # Formulas
 
-dep_ihs <- c("ihs_count_ccmt", "ihs_count_energy", "ihs_count_wind", "ihs_count_solar", "ihs_count_storage")   
+deps_lev <- c("count_ccmt", "count_energy", "count_wind", "count_solar", "count_storage")   
+deps_share <- c("share_green_tot", "share_energy_tot", "share_wind_tot", "share_solar_tot", "share_storage_tot")   
+
+##logs
 controls_logs_ets_electricity <- c("~ lgdp + lpop + ETS_E_2005 + ETS_E_2018")
-controls_logs_ets_industry <- c("~ lgdp + lpop + ETS_I_2005 + ETS_I_2018")
-controls_logs_ets_both <- c("~ lgdp + lpop + ETS_E_2005 + ETS_E_2018 + ETS_I_2005 + ETS_I_2018")
+## levels
+controls_ets_electricity <- c("~ gdp + pop + ETS_E_2005 + ETS_E_2018")
 
-f_ihs_ets_e <- paste0(dep_ihs, controls_logs_ets_electricity)
-f_ihs_ets_i <- paste0(dep_ihs, controls_logs_ets_industry)
-f_ihs_ets <- paste0(dep_ihs, controls_logs_ets_both)
+f_ets_lev <- paste0(deps_lev, controls_ets_electricity)
+f_ets_share <- paste0(deps_share, controls_logs_ets_electricity)
 
-f <- c(f_ihs_ets_e, f_ihs_ets_i, f_ihs_ets)
+f_ets <- c(f_ets_lev, f_ets_share)
 
 cl <- makeCluster(5) 
 registerDoParallel(cl)
 
-models <- foreach(f = f_ihs_ets_e, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:%  
+models <- foreach(f = f_ets, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:%  
   foreach(smpl = c("top_main", "top_21", "top_19"), .combine = rbind) %:% # specify samples
   foreach(a = c(1), .combine = rbind) %:%
   foreach(p.value = c(0.01), .combine = rbind, .errorhandling = "remove") %dopar% {
@@ -234,4 +236,4 @@ models <- foreach(f = f_ihs_ets_e, .combine = rbind, .packages = c('tidyverse', 
 print(nrow(models))
 stopCluster(cl) # stop parallelizing 
 
-saveRDS(models, ".\\results\\15_04_ets_dummy.RDS")  # save model output
+saveRDS(models, ".\\results\\25_04_ets_dummy_rest.RDS")  # save model output
