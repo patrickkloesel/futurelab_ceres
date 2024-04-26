@@ -17,11 +17,9 @@ colnames(oecd_data)[colnames(oecd_data) == "PriorityArea"] ="Module"
 oecd_data = oecd_data[oecd_data$year > 1995,]
 
 #fix naming issue
-
 oecd_data$Policy[oecd_data$Policy=='ETS_Buildings'] = "ETS Buildings"
 
 ##remove duplicates after renaming 
-
 oecd_data = oecd_data[!duplicated(oecd_data),]
 
 ##get 2-year stringency diff for 1 and 2 year lag values that are NA will produce an NA in the difference. -> will be further used in step 2

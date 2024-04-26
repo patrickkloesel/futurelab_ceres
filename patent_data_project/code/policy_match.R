@@ -52,10 +52,10 @@ source("code/00_oecd_project_functions.R")
 ## filter for "Cross_sectoral", "Industry", "Electricity", "International" sectors (exclude Buildings and Transport)
 oecd_grouped = read.csv("data/OECD_data_preprocessed.csv") %>% filter(Module %in% c("Cross_sectoral", "Industry", "Electricity", "International"))
 
-#set the color palette for the policies 
-palette <- c("#e6194b","#f58231","#f032e6","#991eb4","#ffe119","#bfef45","#3cb44b","#4363d8","#fabed4","#42d4f4","#ffd8b1","#fffac8","#aaffc3","#dcbeff","#800000","#9a6324","#808000","#000075","#469990","#000000","#a9a9a9","tan","aquamarine")
-names(palette) <- unique(oecd_grouped$Policy)
-color_dict = palette
+##set the color palette for the policies 
+#palette <- c("#e6194b","#f58231","#f032e6","#991eb4","#ffe119","#bfef45","#3cb44b","#4363d8","#fabed4","#42d4f4","#ffd8b1","#fffac8","#aaffc3","#dcbeff","#800000","#9a6324","#808000","#000075","#469990","#000000","#a9a9a9","tan","aquamarine")
+#names(palette) <- unique(oecd_grouped$Policy)
+#color_dict = palette
 
 
 ## Load the break detection results
@@ -110,7 +110,8 @@ saveRDS(policy_out_f,"results/22_04_policy_out_pos.RDS")
 ##we could merge them into one break
 
 for (i in 1:nrow(policy_out_f)) {
-  filter_break_overlap(policy_out_f$out[[i]])
+  a <- filter_break_overlap(policy_out_f$out[[i]])
+  print(a)
 }
 
-##no overlapping breaks, no merging needed
+##no overlapping breaks, denmark in ccmt differs just for one year: merge? 
