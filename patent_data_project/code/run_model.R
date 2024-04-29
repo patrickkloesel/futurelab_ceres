@@ -15,16 +15,16 @@ eu_countries <- c("DEU","FRA", "GBR","ITA", "DNK", "NLD", "AUT", "SWE", "ESP","B
 # top 25 green patenting countries by mean 
 top_25 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "TWN", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR", "SGP", "BRA")
 
-# removed Singapore and Taiwan: 23
-top_main <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR", "BRA")
+# removed Singapore and Taiwan, Brazil: 22
+top_main <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR")
 
 # removed Brazil, Norway: 21
-top_21 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS")
+#top_21 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS")
 
 # removed Finland, Russia, Norway, Brazil: 19
-top_19 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL")
+#top_19 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL")
 
-samples <- mget(c("top_main", "top_21", "top_19"))
+samples <- mget(c("top_main")) #  "top_21", "top_19"
 
 df_mod <- df %>% 
   filter(year < 2020 & year > 1999) %>% # cut time series 
@@ -62,13 +62,13 @@ dep_count <- c("count_ccmt", "count_energy", "count_wind", "count_solar", "count
 controls <- c("~ gdp + pop")
 
 # Basic formula
-f <- paste0(dep_count, controls) 
+f <- paste0(dep_ihs, controls_logs) 
 
 cl <- makeCluster(5) 
 registerDoParallel(cl)
 
 models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:%  
-  foreach(smpl = c("top_main", "top_21", "top_19"), .combine = rbind) %:% # specify samples
+  foreach(smpl = c("top_main"), .combine = rbind) %:% # specify samples
   foreach(a = c(1), .combine = rbind) %:%
   foreach(p.value = c(0.01), .combine = rbind, .errorhandling = "remove") %dopar% {
     dat <- df_mod %>% filter(ISO %in% samples[[smpl]])
@@ -98,7 +98,7 @@ models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel
 print(nrow(models))
 stopCluster(cl) # stop parallelizing 
 
-saveRDS(models, ".\\results\\16_04_new_main_count_samples.RDS")  # save model output
+saveRDS(models, ".\\results\\29_04_ihs_top22.RDS")  # save model output
 
 
 ## BROWN PATENTS (ROBUSTNESS CHECK)
