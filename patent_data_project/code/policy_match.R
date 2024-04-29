@@ -1,56 +1,16 @@
-library(data.table)
-library(dplyr)
-library(tidyr)
-library(xlsx)
-library(stringr)
-library(gets)
-library(getspanel)
-library(countrycode)
-library(vtable)
-library(cowplot)
-library(ggplot2)
-library(pheatmap)
-library(cowplot)
-library(gsubfn)
-library(data.table)
-library(tidyverse)
-library(openxlsx)
-library(gets)
-library(getspanel)
-library(here)
-library(doParallel)
-library(gridExtra)
-library(conflicted)
-library(viridis)
-library(gplots)
-library(devtools)
-library(RColorBrewer)
-library(Polychrome)
-library(grid)
-library(scales)
-library("rnaturalearth")
-library("rnaturalearthdata")
-library(wesanderson)
-library(seriation)
-library(ggpubr)
-
-conflict_prefer("filter", "dplyr")
-conflict_prefer("first", "dplyr")
-conflict_prefer("lag", "dplyr")
-conflict_prefer("here","here")
-conflicts_prefer(ggpubr::get_legend)
-conflicts_prefer(dplyr::summarize)
-conflicts_prefer(lubridate::year)
-
 ## directory
 here::i_am("code/policy_match.R")
+
+## library
+library(dplyr)
+library(foreach)
 
 #match policy to breaks based on different confidence intervals
 source("code/00_oecd_project_functions.R")
 
 ## Read preprocessed oecd policy data
 ## filter for "Cross_sectoral", "Industry", "Electricity", "International" sectors (exclude Buildings and Transport)
-oecd_grouped = read.csv("data/OECD_data_preprocessed.csv") %>% filter(Module %in% c("Cross_sectoral", "Industry", "Electricity", "International"))
+oecd_grouped = read.csv("data/out/OECD_data_preprocessed.csv") %>% filter(Module %in% c("Cross_sectoral", "Industry", "Electricity", "International"))
 
 ##set the color palette for the policies 
 #palette <- c("#e6194b","#f58231","#f032e6","#991eb4","#ffe119","#bfef45","#3cb44b","#4363d8","#fabed4","#42d4f4","#ffd8b1","#fffac8","#aaffc3","#dcbeff","#800000","#9a6324","#808000","#000075","#469990","#000000","#a9a9a9","tan","aquamarine")
@@ -59,7 +19,7 @@ oecd_grouped = read.csv("data/OECD_data_preprocessed.csv") %>% filter(Module %in
 
 
 ## Load the break detection results
-results = readRDS("results/15_04_new_main.RDS") %>% filter(id_sample %in% c("top_main"))
+results = readRDS("results/29_04_ihs_top22.RDS") %>% filter(id_sample %in% c("top_main"))
 
 ## add model info to results 
 results$tech = str_to_title(sapply(strsplit(results$source, "~"), function(x) x[1]))
@@ -102,7 +62,7 @@ policy_out_f$policy_match_3y = policy_match$policy_match_3y
 
 #save -> This version is used in Fig. 2 and 3!
 
-saveRDS(policy_out_f,"results/22_04_policy_out_pos.RDS")
+saveRDS(policy_out_f,"results/29_04_policy_out_pos.RDS")
 
 
 ##check for overlapping breaks

@@ -5,11 +5,12 @@ here::i_am("code/plot_policy_match.R")
 source('code/00_oecd_project_functions.R')
 conflicts_prefer(ggpubr::get_legend)
 
-top_23 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR", "BRA")
-oecd_grouped = read.csv("data/o/OECD_data_preprocessed.csv") %>% filter(Module %in% c("Cross_sectoral", "Industry", "Electricity"))
+##new main sample: removed Brazil, Singapore, Taiwan from top 25
+top_22 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR")
+oecd_grouped = read.csv("data/out/OECD_data_preprocessed.csv") %>% filter(Module %in% c("Cross_sectoral", "International", "Electricity"))
 
 # policy output
-policy_out = readRDS("results/22_04_policy_out_pos.RDS")
+policy_out = readRDS("results/29_04_policy_out_pos.RDS")
 
 #set the color palette for the policies 
 palette <- c("#e6194b","#f58231","#f032e6","#991eb4","#ffe119","#bfef45","#3cb44b","#4363d8","#fabed4","#42d4f4","#ffd8b1","#fffac8","#aaffc3","#dcbeff","#800000","#9a6324","#808000","#000075","#469990","#000000","#a9a9a9","tan","aquamarine")
@@ -22,7 +23,7 @@ color_dict = palette1
 
 ## make panels for each sector (=tech) 
 tech_plots = list()
-ncol = c(3,4,4,4,8)  # n of col for each panel
+ncol = c(3,4,4,4,5)  # n of col for each panel: adjust to the number of breaks for each technology
 box_size = c(4,4,4,4,4) # size of policy boxes 
 ylims = list(c(0,9),c(0,9),c(0,9),c(0,9),c(0,9)) # max n of policy boxes that can be stacked on top of each other
 prop = c(0.6,0.6,0.6,0.6,0.6)
@@ -81,17 +82,17 @@ for(s in unique(policy_out$tech)){
 
 # save figure
 
-path = paste("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\figs\\",'Ccmt_26_04',".png",sep='')
+path = paste("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\figs\\",'Storage_29_04',".png",sep='')
 
 png(path, width     =50,height    = 17,units     = "in",res= 200)
-p <- cowplot::plot_grid(plotlist = list(tech_plots[[1]]),nrow=1)+theme(plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm"))
+p <- cowplot::plot_grid(plotlist = list(tech_plots[[5]]),nrow=1)+theme(plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm"))
 y.grob <- textGrob("ihs(patent count)",
                    gp=gpar(fontface="bold", fontsize=25), rot=90)
 
 x.grob <- textGrob("years",
                    gp=gpar(fontface="bold", fontsize=25))
 
-top.grob <- textGrob("Ccmt",
+top.grob <- textGrob("Storage",
                      gp=gpar(fontface="bold", fontsize=25))
 grid.arrange(arrangeGrob(p, top  = top.grob, left = y.grob, bottom = x.grob))
 
