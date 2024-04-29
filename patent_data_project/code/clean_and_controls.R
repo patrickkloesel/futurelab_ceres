@@ -2,10 +2,10 @@
 
 library(tidyverse)
 
-df <- read_csv(".\\data\\PAT_DEV_MOD_SPEC.csv", show_col_types = F) 
+df <- read_csv(".\\data\\raw\\PAT_DEV_MOD_SPEC.csv", show_col_types = F) 
 
 ## Add energy storage
-e_storage <- read_csv(".\\data\\PAT_DEV_03042024202801223_energy_storage.csv", show_col_types = F)
+e_storage <- read_csv(".\\data\\raw\\PAT_DEV_03042024202801223_energy_storage.csv", show_col_types = F)
 
 df <- rbind(df, e_storage)
 
@@ -24,7 +24,7 @@ df1 <- df1 %>%
   summarise(count = sum(count)) %>%
   ungroup()
 
-################### Assume that count = 0 when missing
+################### Assume that count = 0 when missing (doublechecked with OECD documentation: https://stats.oecd.org/wbos/fileview2.aspx?IDFile=125cb3c8-3023-4ddc-940e-6ab627068740)
 
 # add 0 values for missing years
 
@@ -47,13 +47,13 @@ df2 <- merged_df %>% select(ISO, year, tech, count.y) %>% rename("count" = "coun
 
 ################### Add gdp and population as controls
 
-gdp <- read_csv(".\\data\\GDP.csv", skip = 4) %>% 
+gdp <- read_csv(".\\data\\raw\\GDP.csv", skip = 4) %>% 
   select(`Country Name`, `Country Code`, "1990", "1991", "1992", "1993", "1994", "1995", "1996","1997", "1998", "1999","2000" ,"2001" ,"2002" ,"2003" ,"2004" ,"2005" ,"2006" ,"2007" ,"2008" ,"2009" ,"2010" ,"2011", "2012","2013","2014","2015","2016","2017","2018","2019","2020") %>% 
   pivot_longer(cols = c("1990", "1991", "1992", "1993", "1994", "1995", "1996","1997", "1998", "1999","2000" ,"2001" ,"2002" ,"2003" ,"2004" ,"2005" ,"2006" ,"2007" ,"2008" ,"2009" ,"2010" ,"2011", "2012","2013","2014","2015","2016","2017","2018","2019","2020"), 
                names_to = "year", 
                values_to = "gdp")
 
-pop <- read_csv(".\\data\\POP.csv", skip = 4) %>% 
+pop <- read_csv(".\\data\\raw\\POP.csv", skip = 4) %>% 
   select(`Country Name`, `Country Code`, "1990", "1991", "1992", "1993", "1994", "1995", "1996","1997", "1998", "1999","2000" ,"2001" ,"2002" ,"2003" ,"2004" ,"2005" ,"2006" ,"2007" ,"2008" ,"2009" ,"2010" ,"2011", "2012","2013","2014","2015","2016","2017","2018","2019","2020") %>% 
   pivot_longer(cols = c("1990", "1991", "1992", "1993", "1994", "1995", "1996","1997", "1998", "1999","2000" ,"2001" ,"2002" ,"2003" ,"2004" ,"2005" ,"2006" ,"2007" ,"2008" ,"2009" ,"2010" ,"2011", "2012","2013","2014","2015","2016","2017","2018","2019","2020"), 
                names_to = "year", 
@@ -68,9 +68,9 @@ df3 <- left_join(df2, controls, by = c("ISO" = "Country Code" , "year"))
 
 ##################### Add Taiwan controls 
 
-taiwan_pop <- read_csv(".\\data\\taiwan\\population-unwpp.csv") %>% filter(Entity %in% c("Taiwan")) %>% filter(Year > 1994)
+taiwan_pop <- read_csv(".\\data\\raw\\taiwan\\population-unwpp.csv") %>% filter(Entity %in% c("Taiwan")) %>% filter(Year > 1994)
 
-taiwan_gdp <- read_csv(".\\data\\taiwan\\national-gdp-penn-world-table.csv") %>%  filter(Entity %in% c("Taiwan")) %>% filter(Year > 1994)
+taiwan_gdp <- read_csv(".\\data\\raw\\taiwan\\national-gdp-penn-world-table.csv") %>%  filter(Entity %in% c("Taiwan")) %>% filter(Year > 1994)
 
 controls_taiwan <- left_join(taiwan_gdp, taiwan_pop, by = c("Entity", "Code", "Year")) %>% 
   select(!Entity) %>% rename("ISO" = "Code", "year" = "Year", "gdp" = "GDP (output, multiple price benchmarks)", "pop" = "Population (historical estimates)")
@@ -92,19 +92,20 @@ df5 <- df4 %>%
 
 ##################### Add brown patents data
 
-iea_brown_patents <- read.csv(".\\data\\IEA-h2020-data-topic=Patents-allYears=true.csv") %>% 
+iea_brown_patents <- read.csv(".\\data\\raw\\IEA-h2020-data-topic=Patents-allYears=true.csv") %>% 
   filter(indicator %in% c("Detail")) %>%  # remove total counts
   filter(!countryISO %in% c("WORLD")) %>% # remove world counts
   filter(!category %in% c("Clean Energy")) %>%  # remove clean energy counts
   select(countryISO, category, year, value) %>% 
   group_by(countryISO, year) %>% 
-  summarise(value = sum(value), .groups = "keep") # aggregate counts by country and year
+  summarise(value = sum(value), .groups = "keep") %>% 
+  ungroup() # aggregate counts by country and year
 
 df6 <- left_join(df5, iea_brown_patents, by = c("ISO" = "countryISO", "year")) %>% rename("brown_patents" = "value")
 
 ##################### Add all technologies count and creat share green/tot count 
 
-oecd_tot_pat <- read.csv(".\\data\\OECD_patents_all_technologies_counts.csv") %>% 
+oecd_tot_pat <- read.csv(".\\data\\raw\\OECD_patents_all_technologies_counts.csv") %>% 
   select(REF_AREA, Technology.domain, TIME_PERIOD, OBS_VALUE) %>% 
   group_by(REF_AREA, TIME_PERIOD) %>% 
   tidyr::spread(key = Technology.domain, value = OBS_VALUE) %>% 
@@ -125,7 +126,7 @@ df6 %>%
   filter(ISO %in% top_25) %>% 
   filter(!complete.cases(.)) # 3 NAs from brown patents in the sample (Israel 2010, Israel 2015 and Singapore 2001)
 
-# change them to 0 assuming there was no fossil fuel patent in that year&country (doublechecked with disaggregated data provided by IEA )  
+# change them to 0 assuming there was no fossil fuel patent in that year&country (doublechecked with disaggregated data provided by IEA)  
 df6[df6$year == 2001 & df6$ISO == "SGP", "brown_patents"] <- 0
 df6[df6$year == 2010 & df6$ISO == "ISR", "brown_patents"] <- 0
 df6[df6$year == 2015 & df6$ISO == "ISR", "brown_patents"] <- 0
