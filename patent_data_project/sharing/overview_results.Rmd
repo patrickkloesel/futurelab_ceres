@@ -1,5 +1,5 @@
 ---
-title: "Restrict samples, ETS, shares"
+title: "Experiments from 15.04: restrict samples, ETS, shares"
 author: "Laura Menicacci"
 date: "2024-04-04"
 output: html_document
@@ -40,10 +40,7 @@ source("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\pate
 ```
 
 
-**Most recent modeling choice**
 
- * Sample: removed Singapore, Taiwan **AND BRAZIL** after thorough analysis of zeros. We now have a total of 16 zeros across the whole sample, distributed in the following countries: FIN	3, IND	3, NOR	3, BEL	2, CHN	2, AUT	1, DNK	1, ISR	1. The technology with most zeros is wind with 12 zeros. 
- * **Main**: base / ihs count / 0.01 for all the technologies (so no brown patents control, no linear country trends)
 
 ```{r sample choice, echo=FALSE}
 
@@ -77,31 +74,31 @@ source("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\pate
 ```
 
 
-## Models comparison {.tabset}
+## Models comparison of LAST WEEK {.tabset}
 
  * Technology classes: climate change mitigation technologies, energy, solar, wind, energy storage
- * Y transformations: IHS
- * Controls: gdp, pop
+ * Y transformations: count, IHS, share of y over all patents
+ * Controls: gdp, pop, EU ETS (for EU countries)
  * AR term = 1
  * IIS=ON
  * p-val = 0.01
- * **Sample**: N=22 (-SGP,TWN, BRA)
+ * **Samples**: N=23 (-SGP,TWN) , N=21 (-SGP,TWN,*-NOR, BRA*), N=19 (-SGP,TWN,*-NOR, BRA, RUS, FIN*). top_main refers to the N=23 sample, without singapore and taiwan. 
  * Time series: 2000-2019
 
 ```{r models, echo=FALSE, results = 'asis', fig.height=40, fig.width=60, cache = TRUE}
 
-#the_rest <- readRDS(here::here("results/25_04_ets_dummy_rest.RDS")) %>% 
-#    separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
-#    mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
-#         formula = trimws(formula), 
-#         tech = str_extract(dep, "(?<= )[^ ]+"), 
-#         model = case_when(
-#    grepl("ETS", source) ~ "ETS")) %>% 
-#    mutate(tech = case_when(tech == "Green"~"Ccmt", TRUE ~tech))
+the_rest <- readRDS(here::here("results/25_04_ets_dummy_rest.RDS")) %>% 
+    separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+    mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula), 
+         tech = str_extract(dep, "(?<= )[^ ]+"), 
+         model = case_when(
+    grepl("ETS", source) ~ "ETS")) %>% 
+    mutate(tech = case_when(tech == "Green"~"Ccmt", TRUE ~tech))
 
-res <- readRDS(here::here("results/29_04_ihs_top22.RDS")) %>% 
-#  rbind(readRDS(here::here("results/15_04_ets_dummy.RDS"))) %>% 
-#  rbind(readRDS(here::here("results/16_04_new_main_count_samples.RDS"))) %>% 
+res <- readRDS(here::here("results/15_04_new_main.RDS")) %>% 
+  rbind(readRDS(here::here("results/15_04_ets_dummy.RDS"))) %>% 
+  rbind(readRDS(here::here("results/16_04_new_main_count_samples.RDS"))) %>% 
   separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
   mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
          formula = trimws(formula), 
@@ -113,14 +110,15 @@ res <- readRDS(here::here("results/29_04_ihs_top22.RDS")) %>%
   )) %>%
   ungroup()
   
-#res_shares <- readRDS(here::here("results/15_04_shares.RDS")) %>% 
-#  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
-#  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
-#         tech = word(dep, -2, sep = " "), 
-#         model = "Main") %>% 
-#  mutate(tech = case_when(tech == "Green"~"Ccmt", TRUE ~tech))
+res_shares <- readRDS(here::here("results/15_04_shares.RDS")) %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         tech = word(dep, -2, sep = " "), 
+         model = "Main") %>% 
+  mutate(tech = case_when(tech == "Green"~"Ccmt", TRUE ~tech))
 
-#res <- rbind(res, res_shares, the_rest)
+
+res <- rbind(res, res_shares, the_rest)
 
 res %>%
        dplyr::group_split(tech) %>%
@@ -149,9 +147,59 @@ res %>%
        
 ```
 
+
+## Most recent modeling choice 29.04 {.tabset}
+
+ * Sample: removed Singapore, Taiwan **AND BRAZIL** (N=22) after thorough analysis of zeros. We now have a total of 16 zeros across the whole sample, distributed in the following countries: FIN	3, IND	3, NOR	3, BEL	2, CHN	2, AUT	1, DNK	1, ISR	1. The technology with most zeros is wind with 12 zeros. 
+ * **Main**: base / ihs count / 0.01 for all the technologies (so no brown patents control, no linear country trends)
+ 
+```{r models 29.04, echo=FALSE, results = 'asis', fig.height=40, fig.width=60, cache = TRUE}
+res <- readRDS(here::here("results/29_04_ihs_top22.RDS")) %>% 
+#  rbind(readRDS(here::here("results/15_04_ets_dummy.RDS"))) %>% 
+#  rbind(readRDS(here::here("results/16_04_new_main_count_samples.RDS"))) %>% 
+  separate(source, into = c("dep","formula"), sep = "[~]", remove = FALSE) %>%
+  mutate(dep = str_to_title(gsub("_"," ",trimws(dep))),
+         formula = trimws(formula), 
+         tech = word(dep, -1, sep = " ")) %>% 
+  rowwise() %>%
+  mutate(model = case_when(
+    grepl("ETS", source) ~ "ETS",
+    TRUE ~ "Main"
+  )) %>%
+  ungroup()
+
+
+res %>%
+       dplyr::group_split(tech) %>%
+       purrr::iwalk(.,~{
+         name <- unique(.x$tech)
+         cat('### ', name, '{.tabset}   \n')
+              for(m in unique(.x$model)){
+                   cat('#### ', m, '{.tabset}   \n')
+                for(d in unique(.x$dep)){
+                   cat('##### ', d, '{.tabset}   \n')
+                  for(s in unique(.x$id_sample)){
+                    cat('###### ', s, '{.tabset}   \n')
+                    filter(.x, dep == d & model == m & id_sample == s) %>% gen_p(., auto = TRUE)
+                  cat('\n')
+                  cat('\n')
+                    }
+              cat('\n')
+              cat('\n')
+                }
+          cat('\n')
+          cat('\n')
+           }
+      cat('\n')
+      cat('\n')
+       })
+
+```
+
+
 ## Policy matching {.tabset}
 
-OECD policy data filtered for **Electricity, Cross-sectoral, International** modules. 
+For latest specification of 29.04 (the one excluding Brazil). OECD policy data filtered for **Electricity, Cross-sectoral, International** modules. Many policy instruments from international and cross-sectoral to be removed. 
 
 ### Ccmt {.tabset}
 
@@ -191,7 +239,7 @@ knitr::include_graphics("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futu
 
 ## Country, sign and year comparison of breaks {.tabset}
 
-### Old breaks (-singapore and taiwan) {.tabset}
+### Old breaks (sample -singapore and taiwan) {.tabset}
 
 #### IHS {.tabset}
 
