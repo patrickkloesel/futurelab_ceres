@@ -5,25 +5,21 @@ here::i_am("code/plot_policy_match.R")
 source('code/00_oecd_project_functions.R')
 conflicts_prefer(ggpubr::get_legend)
 
-##new main sample: removed Brazil, Singapore, Taiwan from top 25
-top_22 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR")
-oecd_grouped = read.csv("data/out/OECD_data_preprocessed.csv") %>% filter(Module %in% c("Cross_sectoral", "International", "Electricity"))
+oecd_grouped = read.csv("data/out/OECD_data_preprocessed_Apr_24.csv")
 
 # policy output
-policy_out = readRDS("results/29_04_policy_out_pos.RDS")
+policy_out = readRDS("results/03_05_policy_out_pos.RDS")
 
 #set the color palette for the policies 
 palette <- c("#e6194b","#f58231","#f032e6","#991eb4","#ffe119","#bfef45","#3cb44b","#4363d8","#fabed4","#42d4f4","#ffd8b1","#fffac8","#aaffc3","#dcbeff","#800000","#9a6324","#808000","#000075","#469990","#000000","#a9a9a9","tan","aquamarine")
-new_colours <- c("#ffbf00", "#00cc99", "#d2691e", "#9bddff", "#e9967a", "#c23b22", "#ff1493" , "#996515")
-palette1 <- c(palette, new_colours)
-names(palette1) <- unique(oecd_grouped$Policy)
-color_dict = palette1
+names(palette) <- unique(oecd_grouped$Policy)
+color_dict = palette
 
 # reminder you have to iterate over: countries = unique(out$id)
 
 ## make panels for each sector (=tech) 
 tech_plots = list()
-ncol = c(3,4,4,4,5)  # n of col for each panel: adjust to the number of breaks for each technology
+ncol = c(3,3,4,4,5)  # n of col for each panel: adjust to the unique number of countries in each technology
 box_size = c(4,4,4,4,4) # size of policy boxes 
 ylims = list(c(0,9),c(0,9),c(0,9),c(0,9),c(0,9)) # max n of policy boxes that can be stacked on top of each other
 prop = c(0.6,0.6,0.6,0.6,0.6)
@@ -52,7 +48,6 @@ for(s in unique(policy_out$tech)){
     myplots[[counter]] <- p_out
     counter = counter+1
   }
-  # mi sa che questo a me non serve
   #sector_policies = data.frame(sector_policies = oecd_grouped[,c('Policy')]) # removed oecd_grouped$Module == s inside squared brackets before comma (filters rows)
   #sector_policies = sector_policies[!duplicated(sector_policies),]
   #sector_policies = data.frame(Policy = sector_policies)
@@ -82,17 +77,17 @@ for(s in unique(policy_out$tech)){
 
 # save figure
 
-path = paste("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\figs\\",'Storage_29_04',".png",sep='')
+path = paste("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\figs\\",'Ccmt_03_05',".png",sep='')
 
 png(path, width     =50,height    = 17,units     = "in",res= 200)
-p <- cowplot::plot_grid(plotlist = list(tech_plots[[5]]),nrow=1)+theme(plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm"))
+p <- cowplot::plot_grid(plotlist = list(tech_plots[[1]]),nrow=1)+theme(plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm"))
 y.grob <- textGrob("ihs(patent count)",
                    gp=gpar(fontface="bold", fontsize=25), rot=90)
 
 x.grob <- textGrob("years",
                    gp=gpar(fontface="bold", fontsize=25))
 
-top.grob <- textGrob("Storage",
+top.grob <- textGrob("Ccmt",
                      gp=gpar(fontface="bold", fontsize=25))
 grid.arrange(arrangeGrob(p, top  = top.grob, left = y.grob, bottom = x.grob))
 

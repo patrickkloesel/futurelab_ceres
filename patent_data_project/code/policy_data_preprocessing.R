@@ -1,5 +1,8 @@
 library(countrycode)
 library(dplyr)
+library(here)
+
+here::i_am("code/policy_data_preprocessing.R")
 
 oecd_data = read.csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\OECD_Paper_old\\Annika_code\\hold_back_until_data_publication\\CAPMF_2023_Policy.csv",sep=";")
 
@@ -93,9 +96,6 @@ oecd_grouped = oecd_grouped[oecd_grouped$diff_adj==1 | oecd_grouped$diff_2_adj==
 oecd_grouped = as.data.frame(oecd_grouped)
 rownames(oecd_grouped) <- NULL
 
-## filter by modules and merge RDD policies into sectors 
-#oecd_grouped = oecd_grouped[oecd_grouped$Module %in% c('Buildings','Industry','Transport','Electricity'),] MAYBE THIS WE DON'T NEED FOR THE PATENT PROJECT? 
-
 ## add missing policies on finance and taxation, perform corrections
 
 missing = read.csv('C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\OECD_Paper_old\\Annika_code\\hold_back_until_data_publication\\add_on_data.csv', sep = ';')
@@ -113,57 +113,65 @@ missing$source = 'add-on'
 
 oecd_grouped  <- dplyr::bind_rows(oecd_grouped,missing)
 
+##########################################
+
+##restrict policy instruments types based on relevance
+##assess whether they can affect technology development for the classes in our sample
+
+# electricity
+oecd_names_elec <- oecd_grouped %>% filter(Module %in% c('Electricity')) %>% pull(Policy) %>% unique()
+
+# buildings: not included (storage related to buildings should not be included in our technology count)
+# industry: not included for the moment
+# transport: not included (storage related to transport should not be included in our technology count)
+
+# cross-sectoral
+oecd_names_cro <- oecd_grouped %>% filter(Module == 'Cross_sectoral') %>% select(Policy, Policytype, Policytype_detail)  %>% unique() %>% pull(Policy)
+cross_selected <- c("Methane Policies","RDD_Renewables", "RDD_Otherstorage", "Bans Phase Outs Fossil Fuel Extraction")
+#cross_maybe <- c("RDD_EnergyEfficiency",  "Fossil Fuel Subsidies Producer Support")
+#cross_dropped <- c("RDD_Nuclear", "Independent Advisory Body", "RDD_CCS","RDD_Hydrogen", "Net Zero Targets", "Nationally Determined Contributions")
+
+# international
+oecd_names_int <- oecd_grouped %>% filter(Module == 'International') %>% select(Policy, Policytype, Policytype_detail)  %>% unique() %>% pull(Policy)
+int_selected <- c("Ratification of Climate Treaties" )
+#int_dropped <- c( "GHG Reporting Accounting", "UNFCCC Submission",  "Evaluation Biannual Report", "International Initiatives", "Pricing Aviation Maritime" )
+#int_maybe <-c("Ban on Financing Fossil Fuels Abroad", ,  "Ban on Export Credits Coal") # they're technically technology standards
+
+oecd_grouped = oecd_grouped %>% filter(Policy %in% c(oecd_names_elec, cross_selected, int_selected)) # 17 total policy instrument types
+
+### change the names of the policies
+oecd_names = read.csv('C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\OECD_Paper_old\\Annika_code\\hold_back_until_data_publication\\CAPMF_policies_names.csv',sep=';')
+oecd_names = oecd_names[c('Module',"Policy_new",'Policy_name_fig_1','Policy_name_fig_2_3','Policy_name_fig_4','Market_non_market','Cluster_categories')]
+names(oecd_names)[names(oecd_names) == "Policy.Name..our.short.framing."] <- "Policy_name"
+names(oecd_names)[names(oecd_names) == "Broad.Category"] <- "Broad_category"
+names(oecd_names)[names(oecd_names) == "Policy_new"] <- "Policy"
+
+oecd_grouped <- merge(oecd_grouped, oecd_names, by=c('Module','Policy'),all.x=TRUE)
+
 ## filter by our current country sample
-ISO_main <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR", "BRA")
+ISO_main <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR")
 
 oecd_grouped <- oecd_grouped %>% filter(ISO %in% ISO_main)
 
-### change the names of the policies 
-#
-#oecd_names = read.csv('C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\OECD_Paper_old\\Annika_code\\hold_back_until_data_publication\\CAPMF_policies_names.csv',sep=';')
-#oecd_names = oecd_names[c('Module',"Policy_new",'Policy_name_fig_1','Policy_name_fig_2_3','Policy_name_fig_4','Market_non_market','Cluster_categories')]
-#names(oecd_names)[names(oecd_names) == "Policy.Name..our.short.framing."] <- "Policy_name"
-#names(oecd_names)[names(oecd_names) == "Broad.Category"] <- "Broad_category"
-#names(oecd_names)[names(oecd_names) == "Policy_new"] <- "Policy"
-#
-#oecd_grouped <- merge(oecd_grouped, oecd_names, by=c('Module','Policy'),all.x=TRUE)
-#
-### get intel on country groups
-#all_countries = as.data.frame(unique(oecd_grouped$ISO))
-#colnames(all_countries) = c('ISO')
-#all_countries$high_income = 0  
-#
-#developed_countries = read.csv('country_groupings.csv')
-#developed_countries$ISO = countrycode(developed_countries$Developed,origin='country.name',destination='iso3c')
-#all_countries[all_countries$ISO %in% developed_countries$ISO,'high_income'] = 1
-#
-#
-###reference for EU countries  
-#EU<- data.frame('country'=c("Austria", "Croatia", "Belgium", "Bulgaria", "Cyprus", 
-#                            "Czech Republic", "Germany", "Denmark", "Spain", "Estonia", "Finland",
-#                            "France", "United Kingdom", "Greece", "Hungary", "Ireland", "Italy",
-#                            "Lithuania", "Luxembourg", "Latvia", "Malta", "Netherlands", "Poland",
-#                            "Portugal", "Romania", "Slovak Republic", "Slovenia", "Sweden"))
-#EU$ISO = countrycode(EU$country,origin='country.name',destination='iso3c')
-#
-#EU_15 <- data.frame('country' = c("Austria", "Belgium", "Germany", "Denmark", "Spain", "Finland",
-#                                  "France", "United Kingdom", "Greece", "Ireland", "Italy",
-#                                  "Luxembourg", "Netherlands",
-#                                  "Portugal", "Sweden"))
-#
-#EU_2004 <- data.frame('country' = c("Czech Republic","Lithuania","Slovenia","Slovak Republic","Hungary","Estonia","Cyprus","Malta","Latvia","Poland"))
-#
-#EU_2007 <- data.frame('country' = c("Bulgaria","Romania"))
-#
-###filter the ones out that were dropped from break detection analysis because overall emissions are too low
-#final_countries = read.csv('final_countries_in_analysis.csv')
-#final_countries$ISO = countrycode(final_countries$unique.df_excl.country.,origin='country.name',destination='iso3c')
-#
-#all_countries = all_countries[all_countries$ISO %in% final_countries$ISO,]
-#EU_countries = EU[EU$ISO %in% final_countries$ISO,]
-#
-#oecd_grouped = oecd_grouped[oecd_grouped$ISO %in% final_countries$ISO,]
-#
+#order the data by year in each group 
+oecd_grouped <- oecd_grouped %>%
+  group_by(ISO, Policy_name_fig_1, Module) %>%
+  arrange(year)
+
+oecd_grouped$label= 'jump'
+
+oecd_grouped <- oecd_grouped %>%
+  group_by(ISO, Policy_name_fig_1, Module) %>%
+  dplyr::mutate(label = ifelse(n_distinct(year) > 1 & diff_2_adj == 1 & lag(diff_2_adj) == 1 & lag(year)==year-1, "slow_increase", label))
+
+#we clean up the remaining NAs in the label column. They come from add-on policies and the first ocurrence of policies that exist multiple times
+oecd_grouped$label[is.na(oecd_grouped$label)] = 'jump'
+
+# here write number of countries and number of selected policies
+
+write.csv(oecd_grouped,'data/out/OECD_data_preprocessed_Apr_24.csv')
+
+################################# still from old oecd: 
 ##1. remove all EU policies we controlled for from EU countries
 ##because the oecd policise have slightly different names in the "Policy" column this does not filter out any add-on policies
 #
@@ -198,36 +206,10 @@ oecd_grouped <- oecd_grouped %>% filter(ISO %in% ISO_main)
 #
 ### with everything filtered, tag policies that are still slow increases in the data 
 #
-##order the data by year in each group 
-#oecd_grouped <- oecd_grouped %>%
-#  group_by(ISO, Policy_name_fig_1, Module) %>%
-#  arrange(year)
-#
-#oecd_grouped$label= 'jump'
-#
-#oecd_grouped <- oecd_grouped %>%
-#  group_by(ISO, Policy_name_fig_1, Module) %>%
-#  dplyr::mutate(label = ifelse(n_distinct(year) > 1 & diff_2_adj == 1 & lag(diff_2_adj) == 1 & lag(year)==year-1, "slow_increase", label))
-#
-##we clean up the remaining NAs in the label column. They come from add-on policies and the first ocurrence of policies that exist multiple times
-#oecd_grouped$label[is.na(oecd_grouped$label)] = 'jump'
+
 #
 #### SAVE the label df (for plotting)
 #
 #write.csv(label_df,'EU_policies_label_df.csv')
-#
-###finally add country group info
-#
-#developed_countries = read.csv('country_groupings.csv')
-#developed_countries$ISO = countrycode(developed_countries$Developed,origin='country.name',destination='iso3c')
-#oecd_grouped$High_income = 0
-#oecd_grouped[oecd_grouped$ISO %in% developed_countries$ISO,'High_income'] = 1
-#
-###count number of developed economies and developing economies 
-#length(unique(oecd_grouped$ISO[oecd_grouped$High_income==1]))
-#length(unique(oecd_grouped$ISO[oecd_grouped$High_income==0]))
-#
-##27 countries in the developed economies group, 14 countries in the developing economies group group 
 
 
-write.csv(oecd_grouped,'.\\data\\OECD_data_preprocessed_Apr_24.csv')
