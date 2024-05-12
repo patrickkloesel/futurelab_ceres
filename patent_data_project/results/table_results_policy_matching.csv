@@ -1,0 +1,105 @@
+Tech,Break_id,Break_year,Module,Policy,year,Value,Policytype,Policytype_detail,diff,diff_2,introduction,diff_adj,diff_2_adj,source,Policy_name_fig_1,Policy_name_fig_2_3,Policy_name_fig_4,Market_non_market,Cluster_categories,label,coeff,min_year,max_year,unique_break_identifier
+CCMT,CHN,2015,Electricity,AirEmissionStandards,2012,8,NMBI,Performance Standards,6,6,0,1,1,OECD,Air pollution standard,Air pollution standard,Air pollution standard,Non-market,Regulation,jump,0.239216312,2012,2018,CHN_2012_2018
+CCMT,CHN,2015,Electricity,ETS Electricity,2014,6,MBI,Carbon Pricing,6,6,1,1,1,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.239216312,2012,2018,CHN_2012_2018
+CCMT,CHN,2015,Electricity,Auction,2016,3,MBI,Subsidy,3,3,1,1,1,OECD,Renewable auction,Renewable auction,Renewable subsidy,Market,Subsidy,jump,0.239216312,2012,2018,CHN_2012_2018
+CCMT,CHN,2015,Electricity,PlanningRenewablesExpansion,2016,2,NMBI,Other regulatory instruments,2,2,1,1,1,OECD,Renewable expansion planning,Renewable expansion planning,Renewable planning,Non-market,Regulation,jump,0.239216312,2012,2018,CHN_2012_2018
+CCMT,CHN,2015,Electricity,Auction,2018,5,MBI,Subsidy,5,2,0,1,1,OECD,Renewable auction,Renewable auction,Renewable subsidy,Market,Subsidy,jump,0.239216312,2012,2018,CHN_2012_2018
+CCMT,CHN,2015,Electricity,Renewable energy certificates,2018,7,MBI,Subsidy,7,7,1,1,1,OECD,Renewable portfolio standard,Renewable portfolio standard,Renewable portfolio standard,Non-market,Regulation,jump,0.239216312,2012,2018,CHN_2012_2018
+CCMT,DNK,2005,Cross_sectoral,RDD_Renewables,2004,9,MBI,Other MBI,3,3,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.406408265,2004,2006,DNK_2004_2006
+CCMT,DNK,2005,Electricity,ETS Electricity,2005,6,MBI,Carbon Pricing,6,6,1,1,1,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.406408265,2004,2006,DNK_2004_2006
+CCMT,DNK,2005,Cross_sectoral,RDD_Otherstorage,2006,5,MBI,Other MBI,3,1,0,1,0,OECD,NA,NA,NA,NA,NA,jump,0.406408265,2004,2006,DNK_2004_2006
+CCMT,DNK,2005,Electricity,ETS Electricity,2006,8,MBI,Carbon Pricing,2,8,0,1,0,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.406408265,2004,2006,DNK_2004_2006
+CCMT,DNK,2007,Electricity,ETS Electricity,2005,6,MBI,Carbon Pricing,6,6,1,1,1,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.305298255,2005,2009,DNK_2005_2009
+CCMT,DNK,2007,Cross_sectoral,RDD_Otherstorage,2006,5,MBI,Other MBI,3,1,0,1,0,OECD,NA,NA,NA,NA,NA,jump,0.305298255,2005,2009,DNK_2005_2009
+CCMT,DNK,2007,Electricity,ETS Electricity,2006,8,MBI,Carbon Pricing,2,8,0,1,0,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.305298255,2005,2009,DNK_2005_2009
+CCMT,DNK,2007,Electricity,ETS Electricity,2008,8,MBI,Carbon Pricing,4,0,0,1,0,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.305298255,2005,2009,DNK_2005_2009
+CCMT,DNK,2007,Cross_sectoral,RDD_Otherstorage,2009,10,MBI,Other MBI,4,4,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.305298255,2005,2009,DNK_2005_2009
+CCMT,DNK,2007,Electricity,Feed-In-Tariffs,2009,3,MBI,Subsidy,3,3,0,1,1,OECD,Renewable feed in tariff,Renewable feed in tariff,Renewable subsidy,Market,Subsidy,jump,0.305298255,2005,2009,DNK_2005_2009
+CCMT,NOR,2015,Electricity,Renewable energy certificates,2012,4,MBI,Subsidy,4,4,1,1,1,OECD,Renewable portfolio standard,Renewable portfolio standard,Renewable portfolio standard,Non-market,Regulation,jump,0.210478921,2011,2019,NOR_2011_2019
+CCMT,NOR,2015,Electricity,Renewable energy certificates,2014,6,MBI,Subsidy,1,2,0,0,1,OECD,Renewable portfolio standard,Renewable portfolio standard,Renewable portfolio standard,Non-market,Regulation,jump,0.210478921,2011,2019,NOR_2011_2019
+CCMT,NOR,2015,Electricity,Renewable energy certificates,2015,7,MBI,Subsidy,1,2,0,0,1,OECD,Renewable portfolio standard,Renewable portfolio standard,Renewable portfolio standard,Non-market,Regulation,slow_increase,0.210478921,2011,2019,NOR_2011_2019
+CCMT,NOR,2015,Electricity,PlanningRenewablesExpansion,2016,9,NMBI,Other regulatory instruments,3,4,0,1,1,OECD,Renewable expansion planning,Renewable expansion planning,Renewable planning,Non-market,Regulation,jump,0.210478921,2011,2019,NOR_2011_2019
+CCMT,NOR,2015,Electricity,Renewable energy certificates,2016,8,MBI,Subsidy,1,2,0,0,1,OECD,Renewable portfolio standard,Renewable portfolio standard,Renewable portfolio standard,Non-market,Regulation,slow_increase,0.210478921,2011,2019,NOR_2011_2019
+CCMT,NOR,2015,International,Ratification of Climate Treaties,2017,10,Other,International Co-operation,2,3,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.210478921,2011,2019,NOR_2011_2019
+CCMT,NOR,2015,Cross_sectoral,RDD_Otherstorage,2018,10,MBI,Other MBI,2,1,0,1,0,OECD,NA,NA,NA,NA,NA,jump,0.210478921,2011,2019,NOR_2011_2019
+CCMT,NOR,2015,Electricity,ETS Electricity,2018,7,MBI,Carbon Pricing,2,2,0,1,1,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.210478921,2011,2019,NOR_2011_2019
+ENERGY,CHN,2015,International,Ratification of Climate Treaties,2010,7,Other,International Co-operation,2,2,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.305063519,2010,2020,CHN_2010_2020
+ENERGY,CHN,2015,Electricity,Feed-In-Tariffs,2011,5,MBI,Subsidy,2,2,0,1,1,OECD,Renewable feed in tariff,Renewable feed in tariff,Renewable subsidy,Market,Subsidy,jump,0.305063519,2010,2020,CHN_2010_2020
+ENERGY,CHN,2015,Electricity,AirEmissionStandards,2012,8,NMBI,Performance Standards,6,6,0,1,1,OECD,Air pollution standard,Air pollution standard,Air pollution standard,Non-market,Regulation,jump,0.305063519,2010,2020,CHN_2010_2020
+ENERGY,CHN,2015,Electricity,ETS Electricity,2014,6,MBI,Carbon Pricing,6,6,1,1,1,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.305063519,2010,2020,CHN_2010_2020
+ENERGY,CHN,2015,Electricity,Auction,2016,3,MBI,Subsidy,3,3,1,1,1,OECD,Renewable auction,Renewable auction,Renewable subsidy,Market,Subsidy,jump,0.305063519,2010,2020,CHN_2010_2020
+ENERGY,CHN,2015,Electricity,PlanningRenewablesExpansion,2016,2,NMBI,Other regulatory instruments,2,2,1,1,1,OECD,Renewable expansion planning,Renewable expansion planning,Renewable planning,Non-market,Regulation,jump,0.305063519,2010,2020,CHN_2010_2020
+ENERGY,CHN,2015,Electricity,Auction,2018,5,MBI,Subsidy,5,2,0,1,1,OECD,Renewable auction,Renewable auction,Renewable subsidy,Market,Subsidy,jump,0.305063519,2010,2020,CHN_2010_2020
+ENERGY,CHN,2015,Electricity,Renewable energy certificates,2018,7,MBI,Subsidy,7,7,1,1,1,OECD,Renewable portfolio standard,Renewable portfolio standard,Renewable portfolio standard,Non-market,Regulation,jump,0.305063519,2010,2020,CHN_2010_2020
+ENERGY,DNK,2005,International,Ratification of Climate Treaties,2002,5,Other,International Co-operation,2,2,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.342988273,2001,2009,DNK_2001_2009
+ENERGY,DNK,2005,Electricity,AirEmissionStandards,2003,5,NMBI,Performance Standards,3,3,0,1,1,OECD,Air pollution standard,Air pollution standard,Air pollution standard,Non-market,Regulation,jump,0.342988273,2001,2009,DNK_2001_2009
+ENERGY,DNK,2005,International,Ratification of Climate Treaties,2003,7,Other,International Co-operation,2,4,0,1,0,OECD,NA,NA,NA,NA,NA,jump,0.342988273,2001,2009,DNK_2001_2009
+ENERGY,DNK,2005,Cross_sectoral,RDD_Renewables,2004,9,MBI,Other MBI,3,3,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.342988273,2001,2009,DNK_2001_2009
+ENERGY,DNK,2005,Electricity,ETS Electricity,2005,6,MBI,Carbon Pricing,6,6,1,1,1,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.342988273,2001,2009,DNK_2001_2009
+ENERGY,DNK,2005,Cross_sectoral,RDD_Otherstorage,2006,5,MBI,Other MBI,3,1,0,1,0,OECD,NA,NA,NA,NA,NA,jump,0.342988273,2001,2009,DNK_2001_2009
+ENERGY,DNK,2005,Electricity,ETS Electricity,2006,8,MBI,Carbon Pricing,2,8,0,1,0,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.342988273,2001,2009,DNK_2001_2009
+ENERGY,DNK,2005,Electricity,ETS Electricity,2008,8,MBI,Carbon Pricing,4,0,0,1,0,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.342988273,2001,2009,DNK_2001_2009
+ENERGY,DNK,2005,Cross_sectoral,RDD_Otherstorage,2009,10,MBI,Other MBI,4,4,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.342988273,2001,2009,DNK_2001_2009
+ENERGY,DNK,2005,Electricity,Feed-In-Tariffs,2009,3,MBI,Subsidy,3,3,0,1,1,OECD,Renewable feed in tariff,Renewable feed in tariff,Renewable subsidy,Market,Subsidy,jump,0.342988273,2001,2009,DNK_2001_2009
+ENERGY,ESP,2003,International,Ratification of Climate Treaties,2002,7,Other,International Co-operation,2,2,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.674735605,2002,2004,ESP_2002_2004
+ENERGY,ESP,2003,Electricity,AirEmissionStandards,2004,5,NMBI,Performance Standards,3,3,0,1,1,OECD,Air pollution standard,Air pollution standard,Air pollution standard,Non-market,Regulation,jump,0.674735605,2002,2004,ESP_2002_2004
+WIND,AUS,2002,Electricity,Renewable energy certificates,2001,1,MBI,Subsidy,1,1,1,0,0,OECD,Renewable portfolio standard,Renewable portfolio standard,Renewable portfolio standard,Non-market,Regulation,jump,1.953591901,2001,2003,AUS_2001_2003
+WIND,AUS,2002,Electricity,AirEmissionStandards,2002,2,NMBI,Performance Standards,2,2,1,1,1,OECD,Air pollution standard,Air pollution standard,Air pollution standard,Non-market,Regulation,jump,1.953591901,2001,2003,AUS_2001_2003
+WIND,CHN,2004,,,,,,,,,,,,,,,,,,,,,,
+WIND,DNK,2006,International,Ratification of Climate Treaties,2002,5,Other,International Co-operation,2,2,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.758055842,2000,2012,DNK_2000_2012
+WIND,DNK,2006,Electricity,AirEmissionStandards,2003,5,NMBI,Performance Standards,3,3,0,1,1,OECD,Air pollution standard,Air pollution standard,Air pollution standard,Non-market,Regulation,jump,0.758055842,2000,2012,DNK_2000_2012
+WIND,DNK,2006,International,Ratification of Climate Treaties,2003,7,Other,International Co-operation,2,4,0,1,0,OECD,NA,NA,NA,NA,NA,jump,0.758055842,2000,2012,DNK_2000_2012
+WIND,DNK,2006,Cross_sectoral,RDD_Renewables,2004,9,MBI,Other MBI,3,3,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.758055842,2000,2012,DNK_2000_2012
+WIND,DNK,2006,Electricity,ETS Electricity,2005,6,MBI,Carbon Pricing,6,6,1,1,1,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.758055842,2000,2012,DNK_2000_2012
+WIND,DNK,2006,Cross_sectoral,RDD_Otherstorage,2006,5,MBI,Other MBI,3,1,0,1,0,OECD,NA,NA,NA,NA,NA,jump,0.758055842,2000,2012,DNK_2000_2012
+WIND,DNK,2006,Electricity,ETS Electricity,2006,8,MBI,Carbon Pricing,2,8,0,1,0,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.758055842,2000,2012,DNK_2000_2012
+WIND,DNK,2006,Electricity,ETS Electricity,2008,8,MBI,Carbon Pricing,4,0,0,1,0,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.758055842,2000,2012,DNK_2000_2012
+WIND,DNK,2006,Cross_sectoral,RDD_Otherstorage,2009,10,MBI,Other MBI,4,4,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.758055842,2000,2012,DNK_2000_2012
+WIND,DNK,2006,Electricity,Feed-In-Tariffs,2009,3,MBI,Subsidy,3,3,0,1,1,OECD,Renewable feed in tariff,Renewable feed in tariff,Renewable subsidy,Market,Subsidy,jump,0.758055842,2000,2012,DNK_2000_2012
+WIND,DNK,2006,Electricity,Fossil Fuel Subsidies Electricity,2012,5,MBI,Carbon Pricing,2,2,0,1,1,OECD,Fossil fuel subsidy reform,Fossil fuel subsidy reform,Fossil fuel subsidy reform,Market,Pricing,jump,0.758055842,2000,2012,DNK_2000_2012
+WIND,IND,2008,Electricity,Renewable energy certificates,2009,3,MBI,Subsidy,3,3,1,1,1,OECD,Renewable portfolio standard,Renewable portfolio standard,Renewable portfolio standard,Non-market,Regulation,jump,1.241278774,2006,2010,IND_2006_2010
+WIND,IND,2008,Electricity,Auction,2010,3,MBI,Subsidy,3,3,1,1,1,OECD,Renewable auction,Renewable auction,Renewable subsidy,Market,Subsidy,jump,1.241278774,2006,2010,IND_2006_2010
+SOLAR,CHN,2015,Electricity,Feed-In-Tariffs,2011,5,MBI,Subsidy,2,2,0,1,1,OECD,Renewable feed in tariff,Renewable feed in tariff,Renewable subsidy,Market,Subsidy,jump,0.632591401,2011,2019,CHN_2011_2019
+SOLAR,CHN,2015,Electricity,AirEmissionStandards,2012,8,NMBI,Performance Standards,6,6,0,1,1,OECD,Air pollution standard,Air pollution standard,Air pollution standard,Non-market,Regulation,jump,0.632591401,2011,2019,CHN_2011_2019
+SOLAR,CHN,2015,Electricity,ETS Electricity,2014,6,MBI,Carbon Pricing,6,6,1,1,1,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.632591401,2011,2019,CHN_2011_2019
+SOLAR,CHN,2015,Electricity,Auction,2016,3,MBI,Subsidy,3,3,1,1,1,OECD,Renewable auction,Renewable auction,Renewable subsidy,Market,Subsidy,jump,0.632591401,2011,2019,CHN_2011_2019
+SOLAR,CHN,2015,Electricity,PlanningRenewablesExpansion,2016,2,NMBI,Other regulatory instruments,2,2,1,1,1,OECD,Renewable expansion planning,Renewable expansion planning,Renewable planning,Non-market,Regulation,jump,0.632591401,2011,2019,CHN_2011_2019
+SOLAR,CHN,2015,Electricity,Auction,2018,5,MBI,Subsidy,5,2,0,1,1,OECD,Renewable auction,Renewable auction,Renewable subsidy,Market,Subsidy,jump,0.632591401,2011,2019,CHN_2011_2019
+SOLAR,CHN,2015,Electricity,Renewable energy certificates,2018,7,MBI,Subsidy,7,7,1,1,1,OECD,Renewable portfolio standard,Renewable portfolio standard,Renewable portfolio standard,Non-market,Regulation,jump,0.632591401,2011,2019,CHN_2011_2019
+SOLAR,ESP,2003,International,Ratification of Climate Treaties,2002,7,Other,International Co-operation,2,2,0,1,1,OECD,NA,NA,NA,NA,NA,jump,1.479038097,2002,2004,ESP_2002_2004
+SOLAR,ESP,2003,Electricity,AirEmissionStandards,2004,5,NMBI,Performance Standards,3,3,0,1,1,OECD,Air pollution standard,Air pollution standard,Air pollution standard,Non-market,Regulation,jump,1.479038097,2002,2004,ESP_2002_2004
+SOLAR,FIN,2012,Electricity,Feed-In-Tariffs,2011,3,MBI,Subsidy,3,3,1,1,1,OECD,Renewable feed in tariff,Renewable feed in tariff,Renewable subsidy,Market,Subsidy,jump,0.717123633,2009,2015,FIN_2009_2015
+SOLAR,FIN,2012,Electricity,PlanningRenewablesExpansion,2014,4,NMBI,Other regulatory instruments,2,2,0,1,1,OECD,Renewable expansion planning,Renewable expansion planning,Renewable planning,Non-market,Regulation,jump,0.717123633,2009,2015,FIN_2009_2015
+SOLAR,FIN,2012,Electricity,AirEmissionStandards,2015,8,NMBI,Performance Standards,1,2,0,0,1,OECD,Air pollution standard,Air pollution standard,Air pollution standard,Non-market,Regulation,jump,0.717123633,2009,2015,FIN_2009_2015
+SOLAR,KOR,2007,Cross_sectoral,RDD_Otherstorage,2003,8,MBI,Other MBI,2,0,0,1,0,OECD,NA,NA,NA,NA,NA,jump,0.663000456,2003,2011,KOR_2003_2011
+SOLAR,KOR,2007,Electricity,Feed-In-Tariffs,2003,4,MBI,Subsidy,4,4,1,1,1,OECD,Renewable feed in tariff,Renewable feed in tariff,Renewable subsidy,Market,Subsidy,jump,0.663000456,2003,2011,KOR_2003_2011
+SOLAR,KOR,2007,Cross_sectoral,RDD_Renewables,2004,6,MBI,Other MBI,4,4,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.663000456,2003,2011,KOR_2003_2011
+SOLAR,KOR,2007,Electricity,AirEmissionStandards,2005,7,NMBI,Performance Standards,4,4,0,1,1,OECD,Air pollution standard,Air pollution standard,Air pollution standard,Non-market,Regulation,jump,0.663000456,2003,2011,KOR_2003_2011
+SOLAR,KOR,2007,Cross_sectoral,RDD_Otherstorage,2006,7,MBI,Other MBI,3,-1,0,1,0,OECD,NA,NA,NA,NA,NA,jump,0.663000456,2003,2011,KOR_2003_2011
+SOLAR,KOR,2007,Cross_sectoral,RDD_Otherstorage,2008,8,MBI,Other MBI,2,1,0,1,0,OECD,NA,NA,NA,NA,NA,jump,0.663000456,2003,2011,KOR_2003_2011
+SOLAR,KOR,2007,Cross_sectoral,RDD_Renewables,2009,9,MBI,Other MBI,1,2,0,0,1,OECD,NA,NA,NA,NA,NA,jump,0.663000456,2003,2011,KOR_2003_2011
+SOLAR,KOR,2007,Cross_sectoral,RDD_Renewables,2010,10,MBI,Other MBI,1,2,0,0,1,OECD,NA,NA,NA,NA,NA,slow_increase,0.663000456,2003,2011,KOR_2003_2011
+STORAGE,AUT,2007,Cross_sectoral,RDD_Otherstorage,2004,7,MBI,Other MBI,2,2,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.668525136,2004,2010,AUT_2004_2010
+STORAGE,AUT,2007,Electricity,ETS Electricity,2005,6,MBI,Carbon Pricing,6,6,1,1,1,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.668525136,2004,2010,AUT_2004_2010
+STORAGE,AUT,2007,Electricity,ETS Electricity,2006,8,MBI,Carbon Pricing,2,8,0,1,0,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.668525136,2004,2010,AUT_2004_2010
+STORAGE,AUT,2007,Cross_sectoral,RDD_Otherstorage,2008,5,MBI,Other MBI,2,1,0,1,0,OECD,NA,NA,NA,NA,NA,jump,0.668525136,2004,2010,AUT_2004_2010
+STORAGE,AUT,2007,Cross_sectoral,RDD_Renewables,2008,8,MBI,Other MBI,2,2,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.668525136,2004,2010,AUT_2004_2010
+STORAGE,AUT,2007,Electricity,ETS Electricity,2008,8,MBI,Carbon Pricing,4,0,0,1,0,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.668525136,2004,2010,AUT_2004_2010
+STORAGE,AUT,2007,Cross_sectoral,RDD_Otherstorage,2010,9,MBI,Other MBI,3,4,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.668525136,2004,2010,AUT_2004_2010
+STORAGE,DNK,2014,Electricity,AirEmissionStandards,2013,8,NMBI,Performance Standards,3,3,0,1,1,OECD,Air pollution standard,Air pollution standard,Air pollution standard,Non-market,Regulation,jump,1.266739018,2013,2015,DNK_2013_2015
+STORAGE,DNK,2014,Electricity,PlanningRenewablesExpansion,2015,7,NMBI,Other regulatory instruments,6,6,0,1,1,OECD,Renewable expansion planning,Renewable expansion planning,Renewable planning,Non-market,Regulation,jump,1.266739018,2013,2015,DNK_2013_2015
+STORAGE,ESP,2005,Electricity,AirEmissionStandards,2004,5,NMBI,Performance Standards,3,3,0,1,1,OECD,Air pollution standard,Air pollution standard,Air pollution standard,Non-market,Regulation,jump,0.93512814,2004,2006,ESP_2004_2006
+STORAGE,ESP,2005,Electricity,ETS Electricity,2005,6,MBI,Carbon Pricing,6,6,1,1,1,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.93512814,2004,2006,ESP_2004_2006
+STORAGE,ESP,2005,Electricity,ETS Electricity,2006,8,MBI,Carbon Pricing,2,8,0,1,0,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.93512814,2004,2006,ESP_2004_2006
+STORAGE,FIN,2005,Electricity,ETS Electricity,2005,6,MBI,Carbon Pricing,6,6,1,1,1,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,1.191659981,2004,2006,FIN_2004_2006
+STORAGE,FIN,2005,Cross_sectoral,RDD_Renewables,2006,10,MBI,Other MBI,2,1,0,1,0,OECD,NA,NA,NA,NA,NA,jump,1.191659981,2004,2006,FIN_2004_2006
+STORAGE,FIN,2005,Electricity,ETS Electricity,2006,8,MBI,Carbon Pricing,2,8,0,1,0,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,1.191659981,2004,2006,FIN_2004_2006
+STORAGE,NOR,2003,Electricity,AirEmissionStandards,2002,5,NMBI,Performance Standards,3,3,0,1,1,OECD,Air pollution standard,Air pollution standard,Air pollution standard,Non-market,Regulation,jump,0.852121809,2001,2005,NOR_2001_2005
+STORAGE,NOR,2004,International,Ratification of Climate Treaties,2002,7,Other,International Co-operation,2,2,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.852121809,2001,2005,NOR_2001_2005
+STORAGE,NOR,2005,Electricity,ETS Electricity,2005,3,MBI,Carbon Pricing,3,3,1,1,1,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.852121809,2001,2005,NOR_2001_2005
+STORAGE,NOR,2017,Electricity,Renewable energy certificates,2015,7,MBI,Subsidy,1,2,0,0,1,OECD,Renewable portfolio standard,Renewable portfolio standard,Renewable portfolio standard,Non-market,Regulation,slow_increase,0.77503052,2015,2019,NOR_2015_2019
+STORAGE,NOR,2017,Electricity,PlanningRenewablesExpansion,2016,9,NMBI,Other regulatory instruments,3,4,0,1,1,OECD,Renewable expansion planning,Renewable expansion planning,Renewable planning,Non-market,Regulation,jump,0.77503052,2015,2019,NOR_2015_2019
+STORAGE,NOR,2017,Electricity,Renewable energy certificates,2016,8,MBI,Subsidy,1,2,0,0,1,OECD,Renewable portfolio standard,Renewable portfolio standard,Renewable portfolio standard,Non-market,Regulation,slow_increase,0.77503052,2015,2019,NOR_2015_2019
+STORAGE,NOR,2017,International,Ratification of Climate Treaties,2017,10,Other,International Co-operation,2,3,0,1,1,OECD,NA,NA,NA,NA,NA,jump,0.77503052,2015,2019,NOR_2015_2019
+STORAGE,NOR,2017,Cross_sectoral,RDD_Otherstorage,2018,10,MBI,Other MBI,2,1,0,1,0,OECD,NA,NA,NA,NA,NA,jump,0.77503052,2015,2019,NOR_2015_2019
+STORAGE,NOR,2017,Electricity,ETS Electricity,2018,7,MBI,Carbon Pricing,2,2,0,1,1,OECD,Emission trading scheme,Emission trading scheme,Taxation,Market,Pricing,jump,0.77503052,2015,2019,NOR_2015_2019
