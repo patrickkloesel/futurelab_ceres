@@ -10,7 +10,7 @@ here::i_am("code/04_policy_match.R")
 source("code/00_oecd_project_functions.R")
 
 ## Read preprocessed oecd policy data
-oecd_grouped = read.csv("data/out/OECD_data_preprocessed_Apr_24.csv") 
+oecd_grouped = read.csv("data/out/OECD_data_preprocessed_May_24.csv") 
 
 ##set the color palette for the policies 
 palette <- c("#e6194b","#f58231","#f032e6","#991eb4","#ffe119","#bfef45","#3cb44b","#4363d8","#fabed4","#42d4f4","#ffd8b1","#fffac8","#aaffc3","#dcbeff","#800000","#9a6324","#808000","#000075","#469990","#000000","#a9a9a9","tan","aquamarine")
@@ -60,7 +60,7 @@ policy_out_f$policy_match_3y = policy_match$policy_match_3y
 
 #save -> This version is used in Fig. 2 and 3!
 
-saveRDS(policy_out_f,"results/03_05_policy_out_pos.RDS")
+saveRDS(policy_out_f,"results/14_05_policy_out_pos.RDS")
 
 
 ##check for overlapping breaks

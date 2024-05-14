@@ -1,0 +1,27 @@
+Module,Policy,Policytype,Policytype_detail
+Cross_sectoral,Bans Phase Outs Fossil Fuel Extraction,NMBI,Technology Standards
+Cross_sectoral,Methane Policies,NMBI,Other NMBI
+Cross_sectoral,RDD_CCS,MBI,Other MBI
+Cross_sectoral,RDD_Hydrogen,MBI,Other MBI
+Cross_sectoral,RDD_Otherstorage,MBI,Other MBI
+Cross_sectoral,RDD_Renewables,MBI,Other MBI
+Electricity,AirEmissionStandards,NMBI,Performance Standards
+Electricity,Auction,MBI,Subsidy
+Electricity,BanPhaseOutCoal,NMBI,Technology Standards
+Electricity,Carbon Tax Electricity,MBI,Carbon Pricing
+Electricity,ETS Electricity,MBI,Carbon Pricing
+Electricity,Excise Taxes Electricity,MBI,Carbon Pricing
+Electricity,Feed-In-Tariffs,MBI,Subsidy
+Electricity,Fossil Fuel Subsidies Electricity,MBI,Carbon Pricing
+Electricity,PlanningRenewablesExpansion,NMBI,Other regulatory instruments
+Electricity,Renewable energy certificates,MBI,Subsidy
+Industry,Carbon Tax Industry,MBI,Carbon Pricing
+Industry,ETS Industry,MBI,Carbon Pricing
+Industry,EnergyEfficiencyMandates,NMBI,Other regulatory instruments
+Industry,Excise Taxes Industry,MBI,Carbon Pricing
+Industry,Financing Mechanism Industry,MBI,Subsidy
+Industry,Fossil Fuel Subsidies Industry,MBI,Carbon Pricing
+Industry,MEPS electric motors,NMBI,Performance Standards
+International,Ban on Export Credits Coal,NMBI,Technology Standards
+International,Ban on Financing Fossil Fuels Abroad,NMBI,Technology Standards
+International,Ratification of Climate Treaties,Other,International Co-operation
