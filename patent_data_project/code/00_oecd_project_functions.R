@@ -309,7 +309,7 @@ plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5
     group_by(year) %>%
     mutate(enumeration = row_number()) %>% ungroup
   
-  policy_match_plot <- policy_match_country[c('year','Policy',"enumeration")] # remove 'Module' after year
+  policy_match_plot <- policy_match_country[c('year','Policy_name_fig_2_3',"enumeration")] # remove 'Module' after year
   
   # commented: patent proj doesnt need this 
   #label_df_sub = label_df[label_df$country == country & label_df$Module==sector,]
@@ -318,10 +318,10 @@ plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5
   #if(nrow(label_df_sub)>0){
   #  EU_flags = data.frame(year = unique(label_df_sub$year), indicator = 0.9, icon = "\U1F1EA\U1F1FA")
   #  
-  #  label_df_sub$icon <- ifelse(label_df_sub$Policy == "EU-MEPS", "\u2699",  # Manufacturing wheel icon
-  #                              ifelse(label_df_sub$Policy == "EU-Labels", "\U0001f3f7",  # Label icon
-  #                                     ifelse(label_df_sub$Policy == "EU-ETS", "\u20ac",  # Euro sign icon
-  #                                            ifelse(label_df_sub$Policy == 'EU', "\U0001F1E9\U0001F1EA", #EU flag
+  #  label_df_sub$icon <- ifelse(label_df_sub$Policy_name_fig_2_3 == "EU-MEPS", "\u2699",  # Manufacturing wheel icon
+  #                              ifelse(label_df_sub$Policy_name_fig_2_3 == "EU-Labels", "\U0001f3f7",  # Label icon
+  #                                     ifelse(label_df_sub$Policy_name_fig_2_3 == "EU-ETS", "\u20ac",  # Euro sign icon
+  #                                            ifelse(label_df_sub$Policy_name_fig_2_3 == 'EU', "\U0001F1E9\U0001F1EA", #EU flag
   #                                                   ""))))}
   #
   ##enumerate the labels in each year s.t. they do not overlap in case of duplications, start at 2 bc we plot eu sign on 1
@@ -359,11 +359,11 @@ plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5
     
   if(nrow(policy_match_plot)>0){
       policy_match_plot <- policy_match_plot %>%
-        complete(Policy,year = 1998:max(max(out$max_year),2022), fill = list(enumeration = 0)) %>% as.data.frame()
+        complete(Policy_name_fig_2_3,year = 1998:max(max(out$max_year),2022), fill = list(enumeration = 0)) %>% as.data.frame()
       p_policy <- p_policy + 
       geom_rect(data = out_sub, aes(xmin = min_year, xmax = max_year, ymin = -Inf, ymax = Inf),fill = "grey",alpha = 0.5, na.rm = TRUE, show.legend=FALSE) +
       geom_rect(data = out_sub, aes(xmin = time-int_size, xmax = time+int_size, ymin = -Inf, ymax = Inf),fill = "grey",alpha = 0.3, na.rm = TRUE, show.legend=FALSE) +
-      geom_point(data = policy_match_country, aes(x=year, y=enumeration, fill=Policy),shape=22,size=cube_size)
+      geom_point(data = policy_match_country, aes(x=year, y=enumeration, fill=Policy_name_fig_2_3),shape=22,size=cube_size)
       }
     # commented: patent proj doesnt need this 
     #if(nrow(label_df_sub)>0){
