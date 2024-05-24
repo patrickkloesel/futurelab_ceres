@@ -5,9 +5,9 @@ library(doParallel)
 library(foreach)
 library(here)
 
-here::i_am("code/run_model.R")
+here::i_am("code/02_run_model.R")
 
-df <- read.csv(here::here("data/patents_panel_5techs_spread.csv"))
+df <- read.csv(here::here("data/out/patents_panel_5techs_spread.csv"))
 
 # For coding ETS dummy
 eu_countries <- c("DEU","FRA", "GBR","ITA", "DNK", "NLD", "AUT", "SWE", "ESP","BEL", "FIN")
@@ -18,13 +18,7 @@ top_25 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "TWN", "CAN", "ITA"
 # removed Singapore and Taiwan, Brazil: 22
 top_main <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR")
 
-# removed Brazil, Norway: 21
-#top_21 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS")
-
-# removed Finland, Russia, Norway, Brazil: 19
-#top_19 <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL")
-
-samples <- mget(c("top_main")) #  "top_21", "top_19"
+samples <- mget(c("top_main"))
 
 df_mod <- df %>% 
   filter(year < 2020 & year > 1999) %>% # cut time series 
@@ -51,7 +45,7 @@ df_mod <- df %>%
 
 df_mod %>% filter(!complete.cases(.))
 
-## NEW MAIN: y=ihs, x=log(gdp)+log(pop), fpr/pval=0.01, N=23, 19, 21
+## NEW MAIN: y=ihs, x=log(gdp)+log(pop), fpr/pval=0.01, N=22
 
 # Formulas
 
