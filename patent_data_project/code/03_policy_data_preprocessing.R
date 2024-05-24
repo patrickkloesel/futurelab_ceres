@@ -101,7 +101,7 @@ rownames(oecd_grouped) <- NULL
 
 ## restrict policy instrument types 
 
-policy_types <- read_csv("data/out/policy_types_innovation.csv") %>% pull(Policy)
+policy_types <- read_csv("data/out/policy_types_innovation.csv") %>% filter(Policy_match == 1) %>% pull(Policy)
 
 oecd_grouped = oecd_grouped %>% filter(Policy %in% policy_types)
 
@@ -129,9 +129,8 @@ names(oecd_names)[names(oecd_names) == "Policy_new"] <- "Policy"
 
 oecd_grouped <- merge(oecd_grouped, oecd_names, by=c('Module','Policy'),all.x=TRUE)
 
-## filter by our current country sample
+## filter for our current country sample
 ISO_main <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR")
-
 oecd_grouped_f <- oecd_grouped %>% filter(ISO %in% ISO_main)
 
 #order the data by year in each group 
@@ -148,13 +147,15 @@ oecd_grouped_f <- oecd_grouped_f %>%
 #we clean up the remaining NAs in the label column. They come from add-on policies and the first occurrence of policies that exist multiple times
 oecd_grouped_f$label[is.na(oecd_grouped_f$label)] = 'jump'
 
+## create label international climate treaties 
+
 # number of countries
 oecd_grouped_f %>% pull(ISO) %>% unique() %>% length() # 22
 
 # number of policies retained
-oecd_grouped_f %>% nrow() #770
+oecd_grouped_f %>% nrow() #668
 
 # number of selected policy types 
-oecd_grouped_f %>% pull(Policy) %>% unique() %>% length() #28
+oecd_grouped_f %>% pull(Policy) %>% unique() %>% length() #19
 
-write.csv(oecd_grouped_f,'data/out/OECD_data_preprocessed_May_24.csv')
+#write.csv(oecd_grouped_f,'data/out/OECD_data_preprocessed_May_24.csv')

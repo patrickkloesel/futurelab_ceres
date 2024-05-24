@@ -13,8 +13,9 @@ source("code/00_oecd_project_functions.R")
 oecd_grouped = read.csv("data/out/OECD_data_preprocessed_May_24.csv") 
 
 ##set the color palette for the policies 
-palette <- c("#e6194b","#f58231","#f032e6","#991eb4","#ffe119","#bfef45","#3cb44b","#4363d8","#fabed4","#42d4f4","#ffd8b1","#fffac8","#aaffc3","#dcbeff","#800000","#9a6324","#808000","#000075","#469990","#000000","#a9a9a9","tan","aquamarine")
-names(palette) <- unique(oecd_grouped$Policy)
+palette <- c("#e6194b","#f58231","#f032e6","#991eb4","#ffe119","#bfef45","#3cb44b","#4363d8","#fabed4","#42d4f4","#ffd8b1","#fffac8","#aaffc3","#dcbeff","#800000","#9a6324")
+#","#808000","#000075","#469990","#000000","#a9a9a9","tan","aquamarin
+names(palette) <- unique(oecd_grouped$Policy_name_fig_2_3)
 color_dict = palette
 
 ## Load the break detection results
@@ -37,10 +38,10 @@ policy_out_f <- foreach(i = 1:nrow(results), .combine = rbind, .packages = c('ti
 
 #filter for positive breaks only
 for (i in 1:nrow(policy_out_f)) {
-  policy_out_f$out[[i]] <- policy_out_f$out[[i]] %>% filter(coef>=0)
+  policy_out_f$out[[i]] <- policy_out_f$out[[i]] %>% filter(coef<=0)
 }
 
-################## Policy matching
+################## Policy_name_fig_2_3 matching
 
 policy_match <- foreach(i = 1:nrow(policy_out_f), .combine = rbind, .packages = c('tidyverse', 'getspanel')) %dopar% {
   #list[res,out,policy_match] <- extract_and_match(i,results,oecd_grouped)
@@ -60,7 +61,7 @@ policy_out_f$policy_match_3y = policy_match$policy_match_3y
 
 #save -> This version is used in Fig. 2 and 3!
 
-saveRDS(policy_out_f,"results/14_05_policy_out_pos.RDS")
+saveRDS(policy_out_f,"results/16_05_policy_out_neg.RDS")
 
 
 ##check for overlapping breaks
