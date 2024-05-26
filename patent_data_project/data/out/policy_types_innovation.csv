@@ -4,6 +4,7 @@ Cross_sectoral,Methane Policies,NMBI,Other NMBI,0
 Cross_sectoral,RDD_CCS,MBI,Other MBI,1
 Cross_sectoral,RDD_Hydrogen,MBI,Other MBI,1
 Cross_sectoral,RDD_Otherstorage,MBI,Other MBI,1
+Cross_sectoral,RDD_Nuclear,MBI,Other MBI,0
 Cross_sectoral,RDD_Renewables,MBI,Other MBI,1
 Electricity,AirEmissionStandards,NMBI,Performance Standards,1
 Electricity,Auction,MBI,Subsidy,1
