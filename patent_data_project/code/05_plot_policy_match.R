@@ -6,15 +6,16 @@ source('code/00_oecd_project_functions.R')
 conflicts_prefer(ggpubr::get_legend)
 
 oecd_grouped = read.csv("data/out/OECD_data_preprocessed_May_24.csv")
+oecd_grouped_pos <- oecd_grouped %>% filter(policy_sign=="positive")
+oecd_grouped_neg <- oecd_grouped %>% filter(policy_sign=="negative")
 
 # policy output
-policy_out = readRDS("results/16_05_policy_out_all.RDS")
+policy_out_pos = readRDS("results/26_05_policy_out_pos.RDS")
+policy_out_neg = readRDS("results/26_05_policy_out_neg.RDS")
 
 #set the color palette for the policies 
-palette <- c("#e6194b","#f58231","#f032e6","#991eb4","#ffe119","#bfef45","#3cb44b","#4363d8","#fabed4","#42d4f4","#ffd8b1","#fffac8","#aaffc3","#dcbeff","#800000","#9a6324","#808000")
 #new_colours <- c("#ffbf00", "#00cc99", "#d2691e", "#9bddff", "#e9967a", "#c23b22", "#ff1493" , "#996515")
-#palette1 <- c(palette, new_colours)
-#","aquamarine ,"#000075","#469990","#000000","#a9a9a9","tan
+palette <- c("#e6194b","#f58231","#f032e6","#991eb4","#ffe119","#bfef45","#3cb44b","#4363d8","#fabed4","#42d4f4","#ffd8b1","#fffac8","#aaffc3","#dcbeff","#800000","#9a6324", "#808000","#000075","#469990","#000000","#a9a9a9","tan","aquamarine")
 names(palette) <- unique(oecd_grouped$Policy_name_fig_2_3)
 color_dict = palette
 
@@ -23,16 +24,16 @@ color_dict = palette
 
 ## make panels for each sector (=tech) 
 tech_plots = list()
-ncol = c(8,4,8,6,12)  # n of col for each panel: adjust to the unique number of countries in each technology
-box_size = c(4,4,4,4,4) # size of policy boxes 
+ncol = c(4,3,4,4,6)  # n of col for each panel: adjust to the unique number of countries in each technology
+box_size = c(5,5,5,5,5) # size of policy boxes 
 ylims = list(c(0,9),c(0,9),c(0,9),c(0,9),c(0,9)) # max n of policy boxes that can be stacked on top of each other
 prop = c(0.6,0.6,0.6,0.6,0.6)
 #icon_links = c("Logos\\Buildings.png","Logos\\Electricity.png","Logos\\Industry.png","Logos\\Transport.png")
 i=1
-for(s in unique(policy_out$tech)){
-  policy_out_sub = policy_out[policy_out$tech == s,] # iterate on row of tech class
-  out = rbind(policy_out_sub$out[[1]]) # iterate on break detection output of each tech class
-  policy_match = oecd_grouped
+for(s in unique(policy_out_pos$tech)){
+  policy_out_pos_sub = policy_out_pos[policy_out_pos$tech == s,] # iterate on row of tech class
+  out = rbind(policy_out_pos_sub$out[[1]]) # iterate on break detection output of each tech class
+  policy_match = oecd_grouped_pos
   
   myplots = list()
   #logo <- ggdraw() +
@@ -44,9 +45,9 @@ for(s in unique(policy_out$tech)){
   #counter = counter+1
   for(c in countries){
     #if(c %in% hi_countries){
-    res = policy_out_sub[1,]$is[[1]] # here we only have one country grouping so only [[1]] is needed
+    res = policy_out_pos_sub[1,]$is[[1]] # here we only have one country grouping so only [[1]] is needed
     #}else{
-    #  res = policy_out_sub[2,]$is[[1]]
+    #  res = policy_out_pos_sub[2,]$is[[1]]
     #}
     p_out<- plot_ts_example_with_policy(c,res,out,policy_match,tech = s,ylim = ylims[[i]], symbol_size = 4,cube_size = box_size[i],policy_plot_prop = prop[i]) # levato label_df = label_df
     myplots[[counter]] <- p_out
@@ -55,7 +56,7 @@ for(s in unique(policy_out$tech)){
   #sector_policies = data.frame(sector_policies = oecd_grouped[,c('Policy_name_fig_2_3')]) # removed oecd_grouped$Module == s inside squared brackets before comma (filters rows)
   #sector_policies = sector_policies[!duplicated(sector_policies),]
   #sector_policies = data.frame(Policy_name_fig_2_3 = sector_policies)
-  p_legend <- ggplot(oecd_grouped,aes(x=Policy_name_fig_2_3,fill=Policy_name_fig_2_3))+
+  p_legend <- ggplot(oecd_grouped_pos,aes(x=Policy_name_fig_2_3,fill=Policy_name_fig_2_3))+
     geom_bar(color='black',size = 0.02)+
     scale_fill_manual('',values = color_dict)+
     theme(legend.key.size = unit(0.6, 'cm'),
@@ -81,7 +82,7 @@ for(s in unique(policy_out$tech)){
 
 # save figure
 
-path = paste("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\figs\\",'Storage_16_05_all',".png",sep='')
+path = paste("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\figs\\",'Storage_26_05_pos',".png",sep='')
 
 png(path, width     =50,height    = 17,units     = "in",res= 200)
 p <- cowplot::plot_grid(plotlist = list(tech_plots[[5]]),nrow=1)+theme(plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm"))

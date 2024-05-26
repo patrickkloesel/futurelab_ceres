@@ -216,16 +216,13 @@ oecd_grouped_instability <- oecd_grouped_instability %>%
          introduction = ifelse(condition_1_t2 ==1 & condition_2_t2 == 1, 0,introduction))
 
 ## Filter out instability detection too now
-filtered_oecd <- oecd_grouped_instability %>%  # total 213 policies
+filtered_oecd <- oecd_grouped_instability %>%  # total 211 policies
   filter(is.na(change_type)==T) %>% # remove dips and spikes
   filter(diff_adj==1 | diff_2_adj==1 | introduction==1 | phase_out==1 | diff_adj_neg ==1 | diff_2_adj_neg==1 ) %>% # select tightenings, loosenings, introductions, phase-outs
-  select(ISO, Module, Policy, year, Value, Policytype, Policytype_detail, diff, diff_2, introduction, phase_out, diff_adj, diff_2_adj, diff_2_adj_neg, diff_2_adj) 
+  select(ISO, Module, Policy, year, Value, Policytype, Policytype_detail, diff, diff_2, introduction, phase_out, diff_adj, diff_2_adj, diff_adj_neg, diff_2_adj_neg) 
 
 ## substitute filtered RDD policies in the original dataset
-oecd_grouped <- oecd_grouped %>% filter(!grepl("RDD", Policy)) # drop
-oecd_grouped <- left_join(oecd_grouped, filtered_oecd, # add again
-                                by = c("ISO", "Module", "Policy", "year", "Value", "Policytype", "Policytype_detail", "diff", "diff_2", "introduction", "phase_out", "diff_adj", "diff_2_adj", "diff_2_adj_neg"))
-
+oecd_grouped <- oecd_grouped %>% filter(!grepl("RDD", Policy)) %>% rbind(filtered_oecd)
 
 ## add missing policies on finance and taxation, perform corrections
 
@@ -277,18 +274,18 @@ oecd_grouped_f <- oecd_grouped_f %>%
                                  phase_out==1 | diff_adj_neg==1 | diff_2_adj_neg==1  ~ "negative"))
 
 # number of introductions and tightenings
-oecd_grouped_f %>% filter(policy_sign == "positive") %>% nrow() #533 
+oecd_grouped_f %>% filter(policy_sign == "positive") %>% nrow() #676 
 
 # number of phase-outs and loosenings 
-oecd_grouped_f %>% filter(policy_sign == "negative") %>% nrow() #145
+oecd_grouped_f %>% filter(policy_sign == "negative") %>% nrow() #213
 
 # number of countries
 oecd_grouped_f %>% pull(ISO) %>% unique() %>% length() # 22
 
 # number of policies retained
-oecd_grouped_f %>% nrow() #683
+oecd_grouped_f %>% nrow() #894
 
 # number of selected policy types 
-oecd_grouped_f %>% pull(Policy) %>% unique() %>% length() #24
+oecd_grouped_f %>% pull(Policy) %>% unique() %>% length() #29
 
 write.csv(oecd_grouped_f,'data/out/OECD_data_preprocessed_May_24.csv')
