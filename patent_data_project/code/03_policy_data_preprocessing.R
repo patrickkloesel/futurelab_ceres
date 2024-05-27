@@ -155,9 +155,6 @@ oecd_grouped %>% filter(diff_2_adj ==1 & diff_2_adj_neg ==1)
 oecd_grouped %>% filter(diff_adj ==1 & diff_2_adj_neg ==1)
 oecd_grouped %>% filter(diff_2_adj ==1 & diff_adj_neg ==1)
 
-oecd_grouped = as.data.frame(oecd_grouped)
-rownames(oecd_grouped) <- NULL
-
 ## restrict policy instrument types 
 ## ALLORA QUESTO PROBABILMENTE VA RIFATTO PERCHE QUI ABBIAMO SELEZIONATO SOLO LE POLICIES CHE HANNO EFFETTIVAMENTE UN MATCH!! PERO CON IL NUOVO CODING POTREBBERO ESSERE DIVERSE? MM FORSE NO PERCHE IN REALTA FILTRIAMO TUTTO QUELLO CHE GIA C'ERA QUINDI IN CASO CE N'è DI MENO
 policy_types <- read_csv("data/out/policy_types_innovation.csv") %>% pull(Policy) #   %>% filter(Policy_match == 1) levato questo per ora: prima facciamo il policy matching e poi vediamo come sono matchate
@@ -224,6 +221,9 @@ filtered_oecd <- oecd_grouped_instability %>%  # total 211 policies
 ## substitute filtered RDD policies in the original dataset
 oecd_grouped <- oecd_grouped %>% filter(!grepl("RDD", Policy)) %>% rbind(filtered_oecd)
 
+oecd_grouped = as.data.frame(oecd_grouped)
+rownames(oecd_grouped) <- NULL
+
 ## add missing policies on finance and taxation, perform corrections
 
 missing = read.csv('C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\OECD_Paper_old\\Annika_code\\hold_back_until_data_publication\\add_on_data.csv', sep = ';')
@@ -273,19 +273,67 @@ oecd_grouped_f <- oecd_grouped_f %>%
   mutate(policy_sign = case_when(introduction==1 | diff_adj==1 | diff_2_adj==1 ~ "positive", 
                                  phase_out==1 | diff_adj_neg==1 | diff_2_adj_neg==1  ~ "negative"))
 
+#### merge ETS, Fossil fuel subsidies together as a single policy
+# if there's introduction and a tightening in the same year, code them as a tightening
+
+ff <- c("Fossil Fuel Subsidies Industry", "Fossil Fuel Subsidies Electricity")
+oecd_grouped_f <- oecd_grouped_f %>% 
+  group_by(Policy, ISO, year, Policytype, Policytype_detail, Policy_name_fig_1, Policy_name_fig_2_3, Policy_name_fig_4, Market_non_market, Cluster_categories,  source, label, policy_sign) %>% 
+  mutate(Policy = case_when(Policy %in% ff ~ "Fossil Fuel Subsidy", TRUE ~ Policy)) %>% 
+  summarise(across(
+    .cols = c(Module),
+      .fns = ~ ifelse(Policy == "Fossil Fuel Subsidy" & n() > 1, first(Module), Module),
+      .names = "{.col}"
+    ),
+    across(
+      .cols = c(Value, diff:diff_2),
+      .fns = ~ ifelse(Policy == "Fossil Fuel Subsidy" & n() > 1,  mean(.), .),
+      .names = "{.col}"
+    ),
+    across(
+      .cols = c(introduction:diff_adj_neg),
+      .fns = ~ max(., na.rm = FALSE),
+      .names = "{.col}"
+    ), .groups = "keep"
+  ) %>% 
+  unique()
+
+ets <- c("ETS Industry", "ETS Electricity")
+oecd_grouped_f <- oecd_grouped_f %>% 
+  group_by(Policy, ISO, year, Policytype, Policytype_detail, Policy_name_fig_1, Policy_name_fig_2_3, Policy_name_fig_4, Market_non_market, Cluster_categories,  source, label, policy_sign) %>% 
+  mutate(Policy = case_when(Policy %in% ets ~ "ETS", TRUE ~ Policy)) %>% 
+  summarise(across(
+    .cols = c(Module),
+    .fns = ~ ifelse(Policy == "ETS" & n() > 1, first(Module), Module),
+    .names = "{.col}"
+  ),
+  across(
+    .cols = c(Value, diff:diff_2),
+    .fns = ~ ifelse(Policy == "ETS" & n() > 1,  mean(.), .),
+    .names = "{.col}"
+  ),
+  across(
+    .cols = c(introduction:diff_adj_neg),
+    .fns = ~ max(., na.rm = FALSE),
+    .names = "{.col}"
+  ), .groups = "keep"
+  ) %>% 
+  unique()
+
+
 # number of introductions and tightenings
-oecd_grouped_f %>% filter(policy_sign == "positive") %>% nrow() #676 
+oecd_grouped_f %>% filter(policy_sign == "positive") %>% nrow() #619 
 
 # number of phase-outs and loosenings 
-oecd_grouped_f %>% filter(policy_sign == "negative") %>% nrow() #213
+oecd_grouped_f %>% filter(policy_sign == "negative") %>% nrow() #175
 
 # number of countries
 oecd_grouped_f %>% pull(ISO) %>% unique() %>% length() # 22
 
 # number of policies retained
-oecd_grouped_f %>% nrow() #894
+oecd_grouped_f %>% nrow() #799
 
 # number of selected policy types 
-oecd_grouped_f %>% pull(Policy) %>% unique() %>% length() #29
+oecd_grouped_f %>% pull(Policy) %>% unique() %>% length() #27
 
 write.csv(oecd_grouped_f,'data/out/OECD_data_preprocessed_May_24.csv')

@@ -55,3 +55,7 @@ patent_data_project/residuals_overview.Rmd
 /patent_data_project/sharing/overview_results_files/figure-html
 /patent_data_project/sharing/overview_results_files/figure-html
 *.png
+*.RDS
+*.RDS
+*.csv
+*.RDS
