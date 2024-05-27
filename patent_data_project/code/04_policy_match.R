@@ -35,7 +35,9 @@ policy_out_f <- foreach(i = 1:nrow(results), .combine = rbind, .packages = c('ti
                   is =  list(results %>% slice(i) %>% pull(is) %>% first))
 }
 
+################## Policy_name_fig_2_3 matching
 
+##POSITIVE
 
 #filter for positive breaks
 policy_out_f_pos <- policy_out_f
@@ -43,15 +45,7 @@ for (i in 1:nrow(policy_out_f_pos)) {
   policy_out_f_pos$out[[i]] <- policy_out_f_pos$out[[i]] %>% filter(coef>=0)
 }
 
-#filter for negative breaks
-policy_out_f_neg <- policy_out_f
-for (i in 1:nrow(policy_out_f_neg)) {
-  policy_out_f_neg$out[[i]] <- policy_out_f_neg$out[[i]] %>% filter(coef<=0)
-}
 
-################## Policy_name_fig_2_3 matching
-
-##POSITIVE
 oecd_grouped_pos <- oecd_grouped %>% filter(policy_sign=="positive")
 policy_match_pos <- foreach(i = 1:nrow(policy_out_f_pos), .combine = rbind, .packages = c('tidyverse', 'getspanel')) %dopar% {
   #list[res,out,policy_match_pos] <- extract_and_match(i,results,oecd_grouped)
@@ -69,6 +63,13 @@ policy_out_f_pos$policy_match_pos_2y = policy_match_pos$policy_match_pos_2y
 policy_out_f_pos$policy_match_pos_3y = policy_match_pos$policy_match_pos_3y
 
 ##NEGATIVE
+
+#filter for negative breaks
+policy_out_f_neg <- policy_out_f
+for (i in 1:nrow(policy_out_f_neg)) {
+  policy_out_f_neg$out[[i]] <- policy_out_f_neg$out[[i]] %>% filter(coef<=0)
+}
+
 oecd_grouped_neg <- oecd_grouped %>% filter(policy_sign=="negative")
 policy_match_neg <- foreach(i = 1:nrow(policy_out_f_neg), .combine = rbind, .packages = c('tidyverse', 'getspanel')) %dopar% {
   #list[res,out,policy_match_neg] <- extract_and_match(i,results,oecd_grouped)
