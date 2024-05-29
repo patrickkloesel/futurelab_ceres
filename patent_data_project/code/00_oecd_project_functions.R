@@ -435,13 +435,13 @@ create_fig_2_3_legend <- function(key_size = 1, font_size = 15, CI_width = 2){
 sector_policy_match <- function(df, spec){
   sector_policy_match = tibble()
   counter=1
-  for(s in c('Buildings','Electricity','Industry','Transport')){
+  for(s in c('Ccmt','Energy','Solar','Wind','Storage')){
     for(sp in spec){
-      policy_out_sub = df[df$sector==s,]
+      policy_out_sub = df[df$tech==s,]
       combined_out = rbind(policy_out_sub[1,sp][[1]][[1]],policy_out_sub[2,sp][[1]][[1]])
       
       spec_tibble = tibble(sector_policy_match = list(combined_out),
-                           sector = s,
+                           tech = s,
                            spec = sp)
       sector_policy_match = rbind(sector_policy_match, spec_tibble)
       
@@ -450,4 +450,84 @@ sector_policy_match <- function(df, spec){
     }
   }
   return(sector_policy_match)
+}
+
+venn_diagram_plot_basic <- function(policy_match, sector, title, shape = 'circle'){
+  
+  if(sector == 'Transport' & title == 'Developed economies'){
+    shape = 'ellipse'
+  }
+  
+  policy_no_dups <- policy_match %>% group_by(unique_break_identifier) %>% distinct(Cluster_categories, .keep_all = TRUE)
+  policy_no_dups$coeff <- (exp(policy_no_dups$coeff)-1)*100
+  
+  colors <- c('#f8f3e8','#f8dbb8','#dfebeb','#ffcbcb')
+  names(colors) <- c('Subsidy','Regulation','Pricing','Information')
+  
+  sector_colors = c("#EB5600" , "#E7C019","#BAC36B","#3B9AB2")
+  names(sector_colors) = c('Buildings','Electricity','Industry','Transport')
+  
+  euler_input <- policy_no_dups %>% 
+    group_by(unique_break_identifier) %>% 
+    arrange(unique_break_identifier, Cluster_categories) %>% 
+    summarize(combination = paste0(Cluster_categories, collapse = "&"), .groups = "drop") %>% as.data.frame()
+  
+  ##merge in coeffs 
+  coeff_sub = policy_no_dups[c('unique_break_identifier','coeff')]
+  coeff_sub = coeff_sub[!duplicated(coeff_sub),]
+  
+  euler_input = merge(euler_input, coeff_sub,by='unique_break_identifier',all.x=TRUE)
+  
+  euler_input = euler_input %>% group_by(combination) %>% summarize(n = n(), mean_coeff = mean(coeff))
+  
+  euler_input$percent = round((euler_input$n / sum(euler_input$n))*100,1)
+  
+  euler_input$percent = paste(euler_input$percent,'%', sep = '')
+  
+  euler_input$label = euler_input$percent
+  
+  euler_plot <- round(euler_input$n/sum(euler_input$n),2)*100
+  
+  names(euler_plot) <- euler_input$combination
+  
+  euler_plot <- euler_plot[order(names(euler_plot))]
+  
+  #order the colors properly
+  #get order in which categories appear
+  category_order <- names(euler_plot) %>%
+    paste(collapse = " ") %>%
+    gsub("&", " ", .) %>%
+    strsplit(" ") %>%
+    unlist() %>%
+    unique()
+  
+  
+  colors_plot = colors[category_order]
+  
+  fit <- euler(euler_plot,
+               shape = shape)
+  
+  labels = data.frame(combination = names(fit$fitted.values))
+  labels$label = ""
+  labels_store = data.frame(combination = names(fit$fitted.values))
+  
+  #have to do this by hand because the eulerr package sometimes changes the order of categories in the labels
+  for(k in 1:nrow(labels)){
+    matching_indices <- which(sapply(euler_input$combination, function(x) identical(sort(unlist(strsplit(labels$combination[k], ""))), sort(unlist(strsplit(x, ""))))))
+    if(length(matching_indices)>0){
+      labels$label[k] = euler_input$label[matching_indices[1]]
+    }
+  }
+  
+  
+  labels <- labels[match(labels_store$combination, labels$combination), ]
+  
+  p <- plot(fit,labels = list(cex=1.7,padding=grid::unit(20, "mm")),quantities = list(labels = labels$label,cex = 2,padding = grid::unit(20, "mm")),fills=colors_plot,adjust_labels = TRUE)
+
+  ##transform into ggplot object to finalize 
+  
+  p <- cowplot::plot_grid(plotlist=list(p)) + ggtitle(title)+theme(plot.title = element_text(size=40,face = 'bold',margin=margin(0,0,30,0)),plot.margin = unit(c(0,0,0,0), "cm"))
+  
+  
+  return(list(p, euler_input))
 }
