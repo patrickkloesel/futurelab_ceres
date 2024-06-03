@@ -50,13 +50,13 @@ Sectoral,Buildings,,Subsidy,Subsidy,,,,Adoption subsidy,Adoption subsidy,Adoptio
 ,Transport,,Vehicle tax,Vehicle tax,,,,Vehicle tax (cars),Vehicle tax,Taxation (vehicle),Pricing,Vehicle tax,Vehicle taxation,Market,Additional data from the students
 ,Electricity,,Renewable expansion,Renewable expansion,,,,Renewable expansion planning,Renewable expansion planning,Renewable planning,Regulation,Renewable expansion planning,Planning,Non-market,Additional data from the students
 ,Transport,,Financial support,Financial support,,,,Adoption subsidy,Adoption subsidy,Adoption subsidy,Subsidy,Subsidy,Green subsidy,Market,Additional data from the students
-Cross_sectoral,Cross_sectoral,,Bans Phase Outs Fossil Fuel Extraction,Bans Phase Outs Fossil Fuel Extraction,Technology Standards,NMBI,,,Bans Phase Outs Fossil Fuel Extraction,Ban & phase out,Regulation,,,Non-market,
-Cross_sectoral,Cross_sectoral,,Methane Policies,Methane Policies,Other NMBI,NMBI,,,Methane Policies,Ban & phase out,Regulation,,,Non-market,
-Cross_sectoral,Cross_sectoral,,RDD_CCS,RDD_CCS,Other MBI,MBI,,,Public RD&D Carbon Capture and Storage,Technology support,Subsidy,,,Market,
-Cross_sectoral,Cross_sectoral,,RDD_Hydrogen,RDD_Hydrogen,Other MBI,MBI,,,Public RD&D Hydrogen,Technology support,Subsidy,,,Market,
-Cross_sectoral,Cross_sectoral,,RDD_Otherstorage,RDD_Otherstorage,Other MBI,MBI,,,Public RD&D Energy storage,Technology support,Subsidy,,,Market,
-Cross_sectoral,Cross_sectoral,,RDD_Nuclear,RDD_Nuclear,Other MBI,MBI,,,Public RD&D Nuclear,Technology support,Subsidy,,,Market,
-Cross_sectoral,Cross_sectoral,,RDD_Renewables,RDD_Renewables,Other MBI,MBI,,,Public RD&D Renewables,Technology support,Subsidy,,,Market,
-International,International,,Ban on Export Credits Coal,Ban on Export Credits Coal,Technology Standards,NMBI,,,Ban on Export Credits Coal,Ban & phase out,Regulation,,,Non-market,
-International,International,,Ban on Financing Fossil Fuels Abroad,Ban on Financing Fossil Fuels Abroad,Technology Standards,NMBI,,,Ban on Financing Fossil Fuels Abroad,Ban & phase out,Regulation,,,Non-market,
+Cross_sectoral,Cross_sectoral,,Bans Phase Outs Fossil Fuel Extraction,Bans Phase Outs Fossil Fuel Extraction,Technology Standards,NMBI,,Ban & phase out (fossil fuel extraction) ,Ban & phase out,Ban & phase out,Regulation,,,Non-market,
+Cross_sectoral,Cross_sectoral,,Methane Policies,Methane Policies,Other NMBI,NMBI,,Ban & phase out (methane fugitive emissions),Ban & phase out,Ban & phase out,Regulation,,,Non-market,
+Cross_sectoral,Cross_sectoral,,RDD_CCS,RDD_CCS,Other MBI,MBI,,Public RD&D (carbon capture & storage),Public RD&D,Technology support,Subsidy,,,Market,
+Cross_sectoral,Cross_sectoral,,RDD_Hydrogen,RDD_Hydrogen,Other MBI,MBI,,Public RD&D (hydrogen),Public RD&D,Technology support,Subsidy,,,Market,
+Cross_sectoral,Cross_sectoral,,RDD_Otherstorage,RDD_Otherstorage,Other MBI,MBI,,Public RD&D (energy storage),Public RD&D,Technology support,Subsidy,,,Market,
+Cross_sectoral,Cross_sectoral,,RDD_Nuclear,RDD_Nuclear,Other MBI,MBI,,Public RD&D (nuclear),Public RD&D,Technology support,Subsidy,,,Market,
+Cross_sectoral,Cross_sectoral,,RDD_Renewables,RDD_Renewables,Other MBI,MBI,,Public RD&D (renewables),Public RD&D,Technology support,Subsidy,,,Market,
+International,International,,Ban on Export Credits Coal,Ban on Export Credits Coal,Technology Standards,NMBI,,Ban & phase out (export credits coal),Ban & phase out,Ban & phase out,Regulation,,,Non-market,
+International,International,,Ban on Financing Fossil Fuels Abroad,Ban on Financing Fossil Fuels Abroad,Technology Standards,NMBI,,Ban & phase out (foss,Ban & phase out,Ban & phase out,Regulation,,,Non-market,
 International,International,,Ratification of Climate Treaties,Ratification of Climate Treaties,International Co-operation,Other,,,Ratification of Climate Treaties,International cooperation,Regulation,,,Non-market,

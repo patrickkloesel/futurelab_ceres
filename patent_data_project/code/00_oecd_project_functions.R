@@ -378,7 +378,7 @@ plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5
     }
     
     p_combined <- cowplot::plot_grid(plotlist=list(p,NULL, p_policy), ncol=1,nrow=3, 
-                                     rel_heights=c(3,-0.05,policy_plot_prop), align="v",axis='bt')+theme(plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm"))
+                                     rel_heights=c(2,-0.05,policy_plot_prop), align="v",axis='bt')+theme(plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm"))
                                      
   
   return(p_combined)
@@ -452,20 +452,20 @@ sector_policy_match <- function(df, spec){
   return(sector_policy_match)
 }
 
-venn_diagram_plot_basic <- function(policy_match, sector, title, shape = 'circle'){
+venn_diagram_plot_basic <- function(policy_match, tech, title, shape = 'ellipse'){
   
-  if(sector == 'Transport' & title == 'Developed economies'){
-    shape = 'ellipse'
-  }
+  #if(tech == 'Energy' & title == 'Energy'){
+  #  shape = 'ellipse'
+  #}
   
   policy_no_dups <- policy_match %>% group_by(unique_break_identifier) %>% distinct(Cluster_categories, .keep_all = TRUE)
-  policy_no_dups$coeff <- (exp(policy_no_dups$coeff)-1)*100
+  policy_no_dups$coeff <- sinh(policy_no_dups$coeff)*100 # NEW CHANGE!!03.06
   
-  colors <- c('#f8f3e8','#f8dbb8','#dfebeb','#ffcbcb')
-  names(colors) <- c('Subsidy','Regulation','Pricing','Information')
+  colors <- c('#f8dbb8','#dfebeb','#ffcbcb')
+  names(colors) <- c('Pricing', 'Regulation','Subsidy')
   
-  sector_colors = c("#EB5600" , "#E7C019","#BAC36B","#3B9AB2")
-  names(sector_colors) = c('Buildings','Electricity','Industry','Transport')
+  tech_colors = c("#EB5600", "#E7C019","#BAC36B","#3B9AB2")
+  names(tech_colors) = c('Energy','Solar','Storage','Wind')
   
   euler_input <- policy_no_dups %>% 
     group_by(unique_break_identifier) %>% 
@@ -522,12 +522,69 @@ venn_diagram_plot_basic <- function(policy_match, sector, title, shape = 'circle
   
   labels <- labels[match(labels_store$combination, labels$combination), ]
   
-  p <- plot(fit,labels = list(cex=1.7,padding=grid::unit(20, "mm")),quantities = list(labels = labels$label,cex = 2,padding = grid::unit(20, "mm")),fills=colors_plot,adjust_labels = TRUE)
-
+  p <- plot(fit,labels = list(cex=1.7, padding=grid::unit(20, "mm")), quantities = list(labels = labels$label, cex = 2, padding=grid::unit(20, "mm")), fills=colors_plot) #,#,adjust_labels = TRUE,
   ##transform into ggplot object to finalize 
   
   p <- cowplot::plot_grid(plotlist=list(p)) + ggtitle(title)+theme(plot.title = element_text(size=40,face = 'bold',margin=margin(0,0,30,0)),plot.margin = unit(c(0,0,0,0), "cm"))
   
   
   return(list(p, euler_input))
+}
+
+##get effect size means for Fig. 4
+
+get_effect_size_means <- function(out){
+  #filter slow increase policies to avoid double counting
+  out <- out[out$label!= "slow_increase",]
+  #I'm using the Fig 1 policy names here because two different policies in the broader fig 4 taxation category should still count
+  out <- out[!duplicated(out[, c("unique_break_identifier", "Policy_name_fig_1")]), ]
+  #add a new column which indicate whether the break is single policy or not
+  
+  out <- out %>%
+    group_by(unique_break_identifier) %>%
+    mutate(Count = n()) %>%
+    ungroup() %>%
+    mutate(SinglePolicy = if_else(Count == 1, 1, 0))
+  
+  out$coef_percent <- sinh(out$coeff)*100
+  
+  mean_df <- out %>% 
+    group_by(Policy_name_fig_4, SinglePolicy, Cluster_categories) %>% 
+    summarize(Average = mean(coef_percent),
+              FirstQuartile = quantile(coef_percent, 0.25),
+              ThirdQuartile = quantile(coef_percent, 0.75)) %>% as.data.frame()
+  return(mean_df)
+}
+
+get_effect_size_means_pricing <- function(out){
+  #filter slow increase policies to avoid double counting
+  out <- out[out$label!= "slow_increase",]
+  #I'm using the Fig 1 policy names here because two different policies in the broader fig 4 taxation category should still count
+  out <- out[!duplicated(out[, c("unique_break_identifier", "Policy_name_fig_1")]), ]
+  #add a new column which indicate whether the break is single policy or not
+  
+  out <- out %>%
+    group_by(unique_break_identifier) %>%
+    mutate(Count = n()) %>%
+    ungroup() %>%
+    mutate(SinglePolicy = if_else(Count == 1, 1, 0))
+  
+  #only keep mixes 
+  out <- out[out$SinglePolicy == 0,]
+  
+  out$coef_percent <- sinh(out$coeff)*100
+  
+  #label as pricing mix/no pricing mix 
+  
+  out <- out %>%
+    group_by(unique_break_identifier) %>%
+    mutate(Pricing_indicator = ifelse("Pricing" %in% Cluster_categories, 1,0)) %>%
+    ungroup()
+  
+  mean_df <- out %>% 
+    group_by(Policy_name_fig_4, Pricing_indicator, Cluster_categories) %>% 
+    summarize(Average = mean(coef_percent),
+              FirstQuartile = quantile(coef_percent, 0.25),
+              ThirdQuartile = quantile(coef_percent, 0.75)) %>% as.data.frame()
+  return(mean_df)
 }
