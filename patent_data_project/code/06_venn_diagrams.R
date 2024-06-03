@@ -1,3 +1,4 @@
+library(dplyr)
 library(eulerr)
 library(here)
 library("xtable")
@@ -46,9 +47,10 @@ vens = ven_diagrams$plot
 #remove ccmt to make it as four
 vens1 = vens[-1]
 
-ven_panel <- cowplot::plot_grid(plotlist=list(vens1[[1]],NULL,vens1[[2]],NULL,NULL,NULL,vens1[[3]],NULL,vens1[[4]]), nrow=3,ncol=3,rel_widths = c(1,0.05,1),rel_heights = c(1,0.05,1))+theme(plot.margin = unit(c(1,1,1,1),'cm'))
+blank_plot <- ggdraw()
+ven_panel <- cowplot::plot_grid(plotlist=list(vens1[[1]],blank_plot,vens1[[2]],blank_plot,blank_plot,blank_plot,vens1[[3]],blank_plot,vens1[[4]]), nrow=3,ncol=3,rel_widths = c(1,0.05,1),rel_heights = c(1,0.05,1))#+theme(plot.margin = unit(c(1,1,1,1),'cm'))
 
 #save fig
-png("Figs\\ven_diagrams.png", width     = 25.00,height    = 25.00,units     = "in",res       = 800)
+png("Figs\\ven_diagrams.png", width     = 25.00,height    = 25.00,units     = "in",res       = 600)
 ven_panel
 dev.off()

@@ -110,11 +110,11 @@ for(s in unique(policy_out_pos$tech)){
 
 ############# ccmt & energy
 
-path = paste("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\figs\\",'Ccmt_Energy_03_06_pos',".png",sep='')
+path = paste("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\figs\\",'Energy_Wind_03_06_pos',".png",sep='')
 
-png(path, width     =27,height    = 22,units     = "in",res       = 200)
+png(path, width     =22,height    = 22,units     = "in",res       = 200)
 
-p <- cowplot::plot_grid(plotlist = list(tech_plots[[1]],tech_plots[[2]]),nrow=2,rel_heights=c(0.45,0.55))+theme(plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm"))
+p <- cowplot::plot_grid(plotlist = list(tech_plots[[3]], tech_plots[[2]]),nrow=2,rel_heights=c(0.45,0.55))+theme(plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm"))
 y.grob <- textGrob("ihs(patent counts)",
                    gp=gpar(fontface="bold", fontsize=25), rot=90)
 
@@ -128,11 +128,11 @@ dev.off()
 
 ## solar, wind, storage
 
-path = paste("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\figs\\",'Wind_Solar_Storage_03_06_pos',".png",sep='')
+path = paste("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\figs\\",'Solar_Storage_03_06_pos',".png",sep='')
 
-png(path, width     =27,height    = 32,units     = "in",res       = 200)
+png(path, width     =25,height    = 20,units     = "in",res       = 200)
 
-p <- cowplot::plot_grid(plotlist = list(tech_plots[[3]],tech_plots[[4]], tech_plots[[5]]),nrow=3,rel_heights=c(0.45,0.45,0.55))+theme(plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm"))
+p <- cowplot::plot_grid(plotlist = list(tech_plots[[4]],tech_plots[[5]]),nrow=2,rel_heights=c(0.45,0.55))+theme(plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm"))
 y.grob <- textGrob("ihs(patent counts)",
                    gp=gpar(fontface="bold", fontsize=25), rot=90)
 

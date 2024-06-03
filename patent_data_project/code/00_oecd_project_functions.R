@@ -452,20 +452,16 @@ sector_policy_match <- function(df, spec){
   return(sector_policy_match)
 }
 
-venn_diagram_plot_basic <- function(policy_match, tech, title, shape = 'ellipse'){
-  
-  #if(tech == 'Energy' & title == 'Energy'){
-  #  shape = 'ellipse'
-  #}
+venn_diagram_plot_basic <- function(policy_match, tech, title, shape = 'circle'){
   
   policy_no_dups <- policy_match %>% group_by(unique_break_identifier) %>% distinct(Cluster_categories, .keep_all = TRUE)
-  policy_no_dups$coeff <- sinh(policy_no_dups$coeff)*100 # NEW CHANGE!!03.06
+  policy_no_dups$coeff <- (exp(policy_no_dups$coeff)-1)*100
   
   colors <- c('#f8dbb8','#dfebeb','#ffcbcb')
   names(colors) <- c('Pricing', 'Regulation','Subsidy')
   
-  tech_colors = c("#EB5600", "#E7C019","#BAC36B","#3B9AB2")
-  names(tech_colors) = c('Energy','Solar','Storage','Wind')
+  #tech_colors = c("#EB5600", "#E7C019","#BAC36B","#3B9AB2")
+  #names(tech_colors) = c('Energy','Solar','Storage','Wind')
   
   euler_input <- policy_no_dups %>% 
     group_by(unique_break_identifier) %>% 
@@ -485,6 +481,15 @@ venn_diagram_plot_basic <- function(policy_match, tech, title, shape = 'ellipse'
   euler_input$percent = paste(euler_input$percent,'%', sep = '')
   
   euler_input$label = euler_input$percent
+  
+  if(tech == 'Energy' & title == 'Energy'){
+    pricing_subsidy = data.frame(combination = "Pricing&Subsidy", 
+                                 n=0.5, 
+                                 mean_coeff = 0, 
+                                 percent=1, 
+                                 label=1)
+    euler_input <- rbind(euler_input, pricing_subsidy)
+    }
   
   euler_plot <- round(euler_input$n/sum(euler_input$n),2)*100
   
@@ -522,7 +527,11 @@ venn_diagram_plot_basic <- function(policy_match, tech, title, shape = 'ellipse'
   
   labels <- labels[match(labels_store$combination, labels$combination), ]
   
-  p <- plot(fit,labels = list(cex=1.7, padding=grid::unit(20, "mm")), quantities = list(labels = labels$label, cex = 2, padding=grid::unit(20, "mm")), fills=colors_plot) #,#,adjust_labels = TRUE,
+  if(tech == 'Energy' & title == 'Energy'){
+    labels <- labels %>% mutate(label = case_when(combination=="Pricing&Subsidy" ~ "", TRUE ~ label))
+  }
+  
+  p <- plot(fit,labels = list(cex=1.7, padding=grid::unit(20, "mm")), quantities = list(labels = labels$label, cex = 2, padding=grid::unit(20, "mm")), fills=colors_plot) #adjust_labels = TRUE,
   ##transform into ggplot object to finalize 
   
   p <- cowplot::plot_grid(plotlist=list(p)) + ggtitle(title)+theme(plot.title = element_text(size=40,face = 'bold',margin=margin(0,0,30,0)),plot.margin = unit(c(0,0,0,0), "cm"))
@@ -546,7 +555,7 @@ get_effect_size_means <- function(out){
     ungroup() %>%
     mutate(SinglePolicy = if_else(Count == 1, 1, 0))
   
-  out$coef_percent <- sinh(out$coeff)*100
+  out$coef_percent <- (exp(policy_no_dups$coeff)-1)*100
   
   mean_df <- out %>% 
     group_by(Policy_name_fig_4, SinglePolicy, Cluster_categories) %>% 
@@ -572,7 +581,7 @@ get_effect_size_means_pricing <- function(out){
   #only keep mixes 
   out <- out[out$SinglePolicy == 0,]
   
-  out$coef_percent <- sinh(out$coeff)*100
+  out$coef_percent <- (exp(policy_no_dups$coeff)-1)*100
   
   #label as pricing mix/no pricing mix 
   
