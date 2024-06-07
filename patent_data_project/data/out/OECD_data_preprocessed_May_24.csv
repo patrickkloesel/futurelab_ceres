@@ -80,46 +80,46 @@
 "79","Auction","USA",2008,"MBI","Subsidy","Renewable auction","Renewable auction","Renewable subsidy","Market","Subsidy","OECD","jump","positive","Electricity",4,4,4,1,0,1,1,0,0
 "80","Auction","USA",2020,"MBI","Subsidy","Renewable auction","Renewable auction","Renewable subsidy","Market","Subsidy","OECD","jump","negative","Electricity",1,-3,-3,0,0,0,0,1,1
 "81","Auction","USA",2021,"MBI","Subsidy","Renewable auction","Renewable auction","Renewable subsidy","Market","Subsidy","OECD","jump","negative","Electricity",0,-1,-4,0,1,0,0,0,0
-"82","Ban on Export Credits Coal","AUS",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"83","Ban on Export Credits Coal","AUT",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"84","Ban on Export Credits Coal","BEL",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"85","Ban on Export Credits Coal","CAN",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"86","Ban on Export Credits Coal","CHE",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"87","Ban on Export Credits Coal","DEU",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"88","Ban on Export Credits Coal","DNK",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"89","Ban on Export Credits Coal","ESP",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"90","Ban on Export Credits Coal","FIN",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"91","Ban on Export Credits Coal","FRA",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"92","Ban on Export Credits Coal","GBR",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"93","Ban on Export Credits Coal","ITA",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"94","Ban on Export Credits Coal","JPN",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"95","Ban on Export Credits Coal","KOR",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"96","Ban on Export Credits Coal","NLD",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"97","Ban on Export Credits Coal","NOR",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"98","Ban on Export Credits Coal","SWE",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"99","Ban on Export Credits Coal","USA",2021,"NMBI","Technology Standards","","Ban on Export Credits Coal","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
-"100","Ban on Financing Fossil Fuels Abroad","AUS",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
-"101","Ban on Financing Fossil Fuels Abroad","BEL",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
-"102","Ban on Financing Fossil Fuels Abroad","CAN",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
-"103","Ban on Financing Fossil Fuels Abroad","CAN",2022,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",9,3,9,0,0,1,0,0,0
-"104","Ban on Financing Fossil Fuels Abroad","CHE",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
-"105","Ban on Financing Fossil Fuels Abroad","CHN",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
-"106","Ban on Financing Fossil Fuels Abroad","DEU",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
-"107","Ban on Financing Fossil Fuels Abroad","DNK",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
-"108","Ban on Financing Fossil Fuels Abroad","DNK",2022,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",9,3,9,0,0,1,0,0,0
-"109","Ban on Financing Fossil Fuels Abroad","ESP",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
-"110","Ban on Financing Fossil Fuels Abroad","FIN",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
-"111","Ban on Financing Fossil Fuels Abroad","FRA",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
-"112","Ban on Financing Fossil Fuels Abroad","GBR",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",10,10,10,1,0,1,1,0,0
-"113","Ban on Financing Fossil Fuels Abroad","IND",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
-"114","Ban on Financing Fossil Fuels Abroad","ITA",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
-"115","Ban on Financing Fossil Fuels Abroad","JPN",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
-"116","Ban on Financing Fossil Fuels Abroad","KOR",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
-"117","Ban on Financing Fossil Fuels Abroad","NLD",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
-"118","Ban on Financing Fossil Fuels Abroad","RUS",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","slow_increase","positive","International",6,6,6,1,0,1,1,0,0
-"119","Ban on Financing Fossil Fuels Abroad","SWE",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
-"120","Ban on Financing Fossil Fuels Abroad","SWE",2022,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",9,3,9,0,0,1,0,0,0
-"121","Ban on Financing Fossil Fuels Abroad","USA",2021,"NMBI","Technology Standards","","Ban on Financing Fossil Fuels Abroad","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"82","Ban on Export Credits Coal","AUS",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"83","Ban on Export Credits Coal","AUT",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"84","Ban on Export Credits Coal","BEL",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"85","Ban on Export Credits Coal","CAN",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"86","Ban on Export Credits Coal","CHE",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"87","Ban on Export Credits Coal","DEU",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"88","Ban on Export Credits Coal","DNK",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"89","Ban on Export Credits Coal","ESP",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"90","Ban on Export Credits Coal","FIN",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"91","Ban on Export Credits Coal","FRA",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"92","Ban on Export Credits Coal","GBR",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"93","Ban on Export Credits Coal","ITA",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"94","Ban on Export Credits Coal","JPN",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"95","Ban on Export Credits Coal","KOR",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"96","Ban on Export Credits Coal","NLD",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"97","Ban on Export Credits Coal","NOR",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"98","Ban on Export Credits Coal","SWE",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"99","Ban on Export Credits Coal","USA",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",8,8,8,1,0,1,1,0,0
+"100","Ban on Financing Fossil Fuels Abroad","AUS",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"101","Ban on Financing Fossil Fuels Abroad","BEL",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"102","Ban on Financing Fossil Fuels Abroad","CAN",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"103","Ban on Financing Fossil Fuels Abroad","CAN",2022,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",9,3,9,0,0,1,0,0,0
+"104","Ban on Financing Fossil Fuels Abroad","CHE",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"105","Ban on Financing Fossil Fuels Abroad","CHN",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"106","Ban on Financing Fossil Fuels Abroad","DEU",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"107","Ban on Financing Fossil Fuels Abroad","DNK",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"108","Ban on Financing Fossil Fuels Abroad","DNK",2022,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",9,3,9,0,0,1,0,0,0
+"109","Ban on Financing Fossil Fuels Abroad","ESP",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"110","Ban on Financing Fossil Fuels Abroad","FIN",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"111","Ban on Financing Fossil Fuels Abroad","FRA",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"112","Ban on Financing Fossil Fuels Abroad","GBR",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",10,10,10,1,0,1,1,0,0
+"113","Ban on Financing Fossil Fuels Abroad","IND",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"114","Ban on Financing Fossil Fuels Abroad","ITA",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"115","Ban on Financing Fossil Fuels Abroad","JPN",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"116","Ban on Financing Fossil Fuels Abroad","KOR",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"117","Ban on Financing Fossil Fuels Abroad","NLD",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"118","Ban on Financing Fossil Fuels Abroad","RUS",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","slow_increase","positive","International",6,6,6,1,0,1,1,0,0
+"119","Ban on Financing Fossil Fuels Abroad","SWE",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
+"120","Ban on Financing Fossil Fuels Abroad","SWE",2022,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",9,3,9,0,0,1,0,0,0
+"121","Ban on Financing Fossil Fuels Abroad","USA",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","International",6,6,6,1,0,1,1,0,0
 "122","BanPhaseOutCoal","AUT",2016,"NMBI","Technology Standards","Ban & phase out (coal plants)","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Electricity",2,2,2,1,0,1,1,0,0
 "123","BanPhaseOutCoal","AUT",2017,"NMBI","Technology Standards","Ban & phase out (coal plants)","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Electricity",6,4,6,0,0,1,0,0,0
 "124","BanPhaseOutCoal","AUT",2020,"NMBI","Technology Standards","Ban & phase out (coal plants)","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Electricity",8,2,2,0,0,1,1,0,0
@@ -146,11 +146,11 @@
 "145","BanPhaseOutCoal","NOR",2021,"NMBI","Technology Standards","Ban & phase out (coal plants)","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Electricity",2,2,2,1,0,1,1,0,0
 "146","BanPhaseOutCoal","SWE",2017,"NMBI","Technology Standards","Ban & phase out (coal plants)","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Electricity",6,6,6,1,0,1,1,0,0
 "147","BanPhaseOutCoal","SWE",2020,"NMBI","Technology Standards","Ban & phase out (coal plants)","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Electricity",8,2,2,0,0,1,1,0,0
-"148","Bans Phase Outs Fossil Fuel Extraction","DNK",2020,"NMBI","Technology Standards","","Bans Phase Outs Fossil Fuel Extraction","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",5,5,5,1,0,1,1,0,0
-"149","Bans Phase Outs Fossil Fuel Extraction","ESP",2021,"NMBI","Technology Standards","","Bans Phase Outs Fossil Fuel Extraction","Ban & phase out","Non-market","Regulation","OECD","slow_increase","positive","Cross_sectoral",7,7,7,1,0,1,1,0,0
-"150","Bans Phase Outs Fossil Fuel Extraction","FRA",2017,"NMBI","Technology Standards","","Bans Phase Outs Fossil Fuel Extraction","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",4,4,4,1,0,1,1,0,0
-"151","Bans Phase Outs Fossil Fuel Extraction","FRA",2021,"NMBI","Technology Standards","","Bans Phase Outs Fossil Fuel Extraction","Ban & phase out","Non-market","Regulation","OECD","slow_increase","positive","Cross_sectoral",6,2,2,0,0,1,1,0,0
-"152","Bans Phase Outs Fossil Fuel Extraction","SWE",2021,"NMBI","Technology Standards","","Bans Phase Outs Fossil Fuel Extraction","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",4,4,4,1,0,1,1,0,0
+"148","Bans Phase Outs Fossil Fuel Extraction","DNK",2020,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",5,5,5,1,0,1,1,0,0
+"149","Bans Phase Outs Fossil Fuel Extraction","ESP",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","slow_increase","positive","Cross_sectoral",7,7,7,1,0,1,1,0,0
+"150","Bans Phase Outs Fossil Fuel Extraction","FRA",2017,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",4,4,4,1,0,1,1,0,0
+"151","Bans Phase Outs Fossil Fuel Extraction","FRA",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","slow_increase","positive","Cross_sectoral",6,2,2,0,0,1,1,0,0
+"152","Bans Phase Outs Fossil Fuel Extraction","SWE",2021,"NMBI","Technology Standards","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",4,4,4,1,0,1,1,0,0
 "153","Carbon Tax Electricity","CAN",2007,"MBI","Carbon Pricing","Carbon tax","Carbon tax","Taxation","Market","Pricing","OECD","jump","positive","Electricity",1,1,1,1,0,0,0,0,0
 "154","Carbon Tax Electricity","CAN",2011,"MBI","Carbon Pricing","Carbon tax","Carbon tax","Taxation","Market","Pricing","OECD","jump","positive","Electricity",3,1,2,0,0,0,1,0,0
 "155","Carbon Tax Electricity","CAN",2012,"MBI","Carbon Pricing","Carbon tax","Carbon tax","Taxation","Market","Pricing","OECD","slow_increase","positive","Electricity",4,1,2,0,0,0,1,0,0
@@ -460,20 +460,20 @@
 "459","MEPS electric motors","SWE",2015,"NMBI","Performance Standards","Performance standard (electric motors)","Performance standard","Performance standard","Non-market","Regulation","OECD","jump","positive","Industry",10,3,3,0,0,1,1,0,0
 "460","MEPS electric motors","USA",1997,"NMBI","Performance Standards","Performance standard (electric motors)","Performance standard","Performance standard","Non-market","Regulation","OECD","jump","positive","Industry",7,7,0,0,0,1,0,0,0
 "461","MEPS electric motors","USA",2011,"NMBI","Performance Standards","Performance standard (electric motors)","Performance standard","Performance standard","Non-market","Regulation","OECD","jump","positive","Industry",10,3,3,0,0,1,1,0,0
-"462","Methane Policies","AUS",2007,"NMBI","Other NMBI","","Methane Policies","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",2,2,2,1,0,1,1,0,0
-"463","Methane Policies","AUS",2008,"NMBI","Other NMBI","","Methane Policies","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",4,2,4,0,0,1,0,0,0
-"464","Methane Policies","CAN",2000,"NMBI","Other NMBI","","Methane Policies","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",2,2,2,1,0,1,1,0,0
-"465","Methane Policies","CAN",2020,"NMBI","Other NMBI","","Methane Policies","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",8,6,6,0,0,1,1,0,0
-"466","Methane Policies","CHN",2008,"NMBI","Other NMBI","","Methane Policies","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",6,6,6,1,0,1,1,0,0
-"467","Methane Policies","CHN",2021,"NMBI","Other NMBI","","Methane Policies","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",9,3,3,0,0,1,1,0,0
-"468","Methane Policies","GBR",1998,"NMBI","Other NMBI","","Methane Policies","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",4,2,2,0,0,1,1,0,0
-"469","Methane Policies","ITA",2017,"NMBI","Other NMBI","","Methane Policies","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",2,2,2,1,0,1,1,0,0
-"470","Methane Policies","NLD",2007,"NMBI","Other NMBI","","Methane Policies","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",2,2,2,1,0,1,1,0,0
-"471","Methane Policies","NLD",2018,"NMBI","Other NMBI","","Methane Policies","Ban & phase out","Non-market","Regulation","OECD","slow_increase","positive","Cross_sectoral",4,2,2,0,0,1,1,0,0
-"472","Methane Policies","NLD",2019,"NMBI","Other NMBI","","Methane Policies","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",6,2,4,0,0,1,0,0,0
-"473","Methane Policies","RUS",2002,"NMBI","Other NMBI","","Methane Policies","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",2,2,2,1,0,1,1,0,0
-"474","Methane Policies","USA",2009,"NMBI","Other NMBI","","Methane Policies","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",6,2,2,0,0,1,1,0,0
-"475","Methane Policies","USA",2012,"NMBI","Other NMBI","","Methane Policies","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",9,3,3,0,0,1,1,0,0
+"462","Methane Policies","AUS",2007,"NMBI","Other NMBI","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",2,2,2,1,0,1,1,0,0
+"463","Methane Policies","AUS",2008,"NMBI","Other NMBI","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",4,2,4,0,0,1,0,0,0
+"464","Methane Policies","CAN",2000,"NMBI","Other NMBI","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",2,2,2,1,0,1,1,0,0
+"465","Methane Policies","CAN",2020,"NMBI","Other NMBI","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",8,6,6,0,0,1,1,0,0
+"466","Methane Policies","CHN",2008,"NMBI","Other NMBI","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",6,6,6,1,0,1,1,0,0
+"467","Methane Policies","CHN",2021,"NMBI","Other NMBI","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",9,3,3,0,0,1,1,0,0
+"468","Methane Policies","GBR",1998,"NMBI","Other NMBI","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",4,2,2,0,0,1,1,0,0
+"469","Methane Policies","ITA",2017,"NMBI","Other NMBI","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",2,2,2,1,0,1,1,0,0
+"470","Methane Policies","NLD",2007,"NMBI","Other NMBI","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",2,2,2,1,0,1,1,0,0
+"471","Methane Policies","NLD",2018,"NMBI","Other NMBI","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","slow_increase","positive","Cross_sectoral",4,2,2,0,0,1,1,0,0
+"472","Methane Policies","NLD",2019,"NMBI","Other NMBI","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",6,2,4,0,0,1,0,0,0
+"473","Methane Policies","RUS",2002,"NMBI","Other NMBI","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",2,2,2,1,0,1,1,0,0
+"474","Methane Policies","USA",2009,"NMBI","Other NMBI","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",6,2,2,0,0,1,1,0,0
+"475","Methane Policies","USA",2012,"NMBI","Other NMBI","","Ban & phase out","Ban & phase out","Non-market","Regulation","OECD","jump","positive","Cross_sectoral",9,3,3,0,0,1,1,0,0
 "476","PlanningRenewablesExpansion","AUS",2020,"NMBI","Other regulatory instruments","Renewable expansion planning","Renewable expansion planning","Renewable planning","Non-market","Regulation","OECD","jump","positive","Electricity",9,2,2,0,0,1,1,0,0
 "477","PlanningRenewablesExpansion","AUT",2014,"NMBI","Other regulatory instruments","Renewable expansion planning","Renewable expansion planning","Renewable planning","Non-market","Regulation","OECD","jump","positive","Electricity",5,4,4,0,0,1,1,0,0
 "478","PlanningRenewablesExpansion","AUT",2018,"NMBI","Other regulatory instruments","Renewable expansion planning","Renewable expansion planning","Renewable planning","Non-market","Regulation","OECD","jump","positive","Electricity",7,1,2,0,0,0,1,0,0
@@ -497,217 +497,217 @@
 "496","PlanningRenewablesExpansion","NLD",2014,"NMBI","Other regulatory instruments","Renewable expansion planning","Renewable expansion planning","Renewable planning","Non-market","Regulation","OECD","jump","positive","Electricity",7,5,7,0,0,1,0,0,0
 "497","PlanningRenewablesExpansion","NOR",2016,"NMBI","Other regulatory instruments","Renewable expansion planning","Renewable expansion planning","Renewable planning","Non-market","Regulation","OECD","jump","positive","Electricity",9,3,4,0,0,1,1,0,0
 "498","PlanningRenewablesExpansion","SWE",2016,"NMBI","Other regulatory instruments","Renewable expansion planning","Renewable expansion planning","Renewable planning","Non-market","Regulation","OECD","jump","positive","Electricity",1,1,1,1,0,0,0,0,0
-"499","RDD_CCS","AUS",2007,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",1,1,1,1,0,0,0,0,0
-"500","RDD_CCS","AUS",2009,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,9,9,0,0,1,1,0,0
-"501","RDD_CCS","AUS",2015,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",7,-3,-3,0,0,0,0,1,1
-"502","RDD_CCS","AUS",2020,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-2,-3,0,0,0,0,1,1
-"503","RDD_CCS","AUS",2022,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,4,5,0,0,1,1,0,0
-"504","RDD_CCS","AUT",2005,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",1,1,1,1,0,0,0,0,0
-"505","RDD_CCS","BEL",2015,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,5,0,0,1,0,0,0
-"506","RDD_CCS","BEL",2016,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-5,-3,0,1,0,0,1,1
-"507","RDD_CCS","BEL",2021,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,5,6,0,0,1,1,0,0
-"508","RDD_CCS","BEL",2022,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,3,8,0,0,1,0,0,0
-"509","RDD_CCS","CAN",2004,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,8,8,1,0,1,1,0,0
-"510","RDD_CCS","CAN",2009,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,2,3,0,0,1,1,0,0
-"511","RDD_CCS","CHE",2006,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",3,3,3,1,0,1,1,0,0
-"512","RDD_CCS","DEU",2004,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",3,3,3,1,0,1,1,0,0
-"513","RDD_CCS","DEU",2006,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-3,-3,0,1,0,0,1,1
-"514","RDD_CCS","DEU",2008,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",2,2,2,0,0,1,1,0,0
-"515","RDD_CCS","DEU",2009,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,4,6,0,0,1,0,0,0
-"516","RDD_CCS","DNK",2005,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",5,5,5,1,0,1,1,0,0
-"517","RDD_CCS","DNK",2007,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-2,-1,0,0,0,0,0,1
-"518","RDD_CCS","DNK",2010,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",2,-5,-2,0,0,0,0,1,1
-"519","RDD_CCS","DNK",2018,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-5,-2,0,1,0,0,1,1
-"520","RDD_CCS","DNK",2020,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,7,8,0,0,1,1,0,0
-"521","RDD_CCS","DNK",2021,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,2,9,0,0,1,0,0,0
-"522","RDD_CCS","ESP",2007,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",2,2,2,1,0,1,1,0,0
-"523","RDD_CCS","ESP",2010,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-5,-3,0,1,0,0,1,1
-"524","RDD_CCS","ESP",2015,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,3,6,0,0,1,0,0,0
-"525","RDD_CCS","ESP",2017,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,0,-6,0,0,0,0,1,0
-"526","RDD_CCS","ESP",2021,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,4,4,0,0,1,1,0,0
-"527","RDD_CCS","FRA",2002,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",3,3,3,1,0,1,1,0,0
-"528","RDD_CCS","FRA",2004,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,2,0,0,1,1,0,0
-"529","RDD_CCS","FRA",2006,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,2,3,0,0,1,1,0,0
-"530","RDD_CCS","FRA",2009,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,2,2,0,0,1,1,0,0
-"531","RDD_CCS","FRA",2017,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-1,-2,0,0,0,0,1,0
-"532","RDD_CCS","FRA",2020,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,1,2,0,0,0,1,0,0
-"533","RDD_CCS","GBR",2004,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,5,5,1,0,1,1,0,0
-"534","RDD_CCS","GBR",2006,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",1,-4,-4,0,0,0,0,1,1
-"535","RDD_CCS","GBR",2009,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,6,0,0,0,1,0,0,0
-"536","RDD_CCS","GBR",2010,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,2,8,0,0,1,0,0,0
-"537","RDD_CCS","GBR",2015,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",5,-4,-3,0,0,0,0,1,1
-"538","RDD_CCS","ITA",2006,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",2,2,2,1,0,1,1,0,0
-"539","RDD_CCS","ITA",2008,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,3,0,0,1,1,0,0
-"540","RDD_CCS","ITA",2014,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",1,-3,0,0,0,0,0,0,1
-"541","RDD_CCS","ITA",2016,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,0,4,0,0,0,1,0,0
-"542","RDD_CCS","JPN",2006,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,5,5,1,0,1,1,0,0
-"543","RDD_CCS","JPN",2008,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,2,1,0,0,1,0,0,0
-"544","RDD_CCS","JPN",2009,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,3,5,0,0,1,0,0,0
-"545","RDD_CCS","KOR",2004,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",3,3,3,1,0,1,1,0,0
-"546","RDD_CCS","KOR",2005,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,5,0,0,1,0,0,0
-"547","RDD_CCS","KOR",2008,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,2,3,0,0,1,1,0,0
-"548","RDD_CCS","KOR",2021,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,2,2,0,0,1,1,0,0
-"549","RDD_CCS","NLD",2005,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,0,8,0,0,0,1,0,0
-"550","RDD_CCS","NLD",2011,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-4,-2,0,0,0,0,1,1
-"551","RDD_CCS","NLD",2013,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-1,-2,0,0,0,0,1,0
-"552","RDD_CCS","NLD",2017,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,4,4,0,0,1,1,0,0
-"553","RDD_CCS","NLD",2019,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-3,-2,0,0,0,0,1,1
-"554","RDD_CCS","NOR",2004,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,9,9,1,0,1,1,0,0
-"555","RDD_CCS","SWE",2011,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",3,3,3,1,0,1,1,0,0
-"556","RDD_CCS","SWE",2015,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",2,-2,-2,0,0,0,0,1,1
-"557","RDD_CCS","SWE",2019,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",4,3,0,0,0,1,0,0,0
-"558","RDD_CCS","SWE",2020,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,2,5,0,0,1,0,0,0
-"559","RDD_CCS","USA",2004,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",4,4,4,1,0,1,1,0,0
-"560","RDD_CCS","USA",2006,"MBI","Other MBI","","Public RD&D Carbon Capture and Storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,2,3,0,0,1,1,0,0
-"561","RDD_Hydrogen","AUS",2018,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,4,4,0,0,1,1,0,0
-"562","RDD_Hydrogen","AUS",2022,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,1,2,0,0,0,1,0,0
-"563","RDD_Hydrogen","AUT",2005,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,5,0,1,0,1,0,0,0
-"564","RDD_Hydrogen","AUT",2006,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,3,8,0,0,1,0,0,0
-"565","RDD_Hydrogen","AUT",2007,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,-5,-2,0,0,0,0,1,1
-"566","RDD_Hydrogen","AUT",2008,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,-3,0,0,1,0,0,0
-"567","RDD_Hydrogen","AUT",2015,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-4,-2,0,0,0,0,1,1
-"568","RDD_Hydrogen","AUT",2017,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,1,2,0,0,0,1,0,0
-"569","RDD_Hydrogen","AUT",2018,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",7,1,2,0,0,0,1,0,0
-"570","RDD_Hydrogen","AUT",2019,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",8,1,2,0,0,0,1,0,0
-"571","RDD_Hydrogen","AUT",2021,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,2,2,0,0,1,1,0,0
-"572","RDD_Hydrogen","BEL",2014,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,5,4,0,0,1,1,0,0
-"573","RDD_Hydrogen","BEL",2015,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,-2,3,0,0,0,0,0,1
-"574","RDD_Hydrogen","BEL",2019,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,4,4,0,0,1,1,0,0
-"575","RDD_Hydrogen","CAN",2012,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-2,-3,0,0,0,0,1,1
-"576","RDD_Hydrogen","CAN",2014,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-1,-2,0,0,0,0,1,0
-"577","RDD_Hydrogen","CAN",2016,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,2,2,0,0,1,1,0,0
-"578","RDD_Hydrogen","CAN",2020,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,3,2,0,0,1,1,0,0
-"579","RDD_Hydrogen","DEU",2019,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,1,2,0,0,0,1,0,0
-"580","RDD_Hydrogen","DEU",2020,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",7,1,2,0,0,0,1,0,0
-"581","RDD_Hydrogen","DEU",2021,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",10,3,4,0,0,1,1,0,0
-"582","RDD_Hydrogen","ESP",2006,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",2,2,2,1,0,1,1,0,0
-"583","RDD_Hydrogen","ESP",2010,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,3,2,0,0,1,1,0,0
-"584","RDD_Hydrogen","ESP",2012,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-1,-2,0,0,0,0,1,0
-"585","RDD_Hydrogen","ESP",2013,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",2,-2,-3,0,0,0,0,1,1
-"586","RDD_Hydrogen","ESP",2019,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,3,0,0,1,1,0,0
-"587","RDD_Hydrogen","ESP",2021,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,5,5,0,0,1,1,0,0
-"588","RDD_Hydrogen","FIN",2021,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,5,5,1,0,1,1,0,0
-"589","RDD_Hydrogen","FRA",2020,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,1,2,0,0,0,1,0,0
-"590","RDD_Hydrogen","GBR",2007,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",4,1,2,0,0,0,1,0,0
-"591","RDD_Hydrogen","GBR",2010,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,1,2,0,0,0,1,0,0
-"592","RDD_Hydrogen","GBR",2019,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,1,2,0,0,0,1,0,0
-"593","RDD_Hydrogen","ITA",2006,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,6,6,1,0,1,1,0,0
-"594","RDD_Hydrogen","JPN",2019,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,1,2,0,0,0,1,0,0
-"595","RDD_Hydrogen","NLD",2010,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-3,-2,0,0,0,0,1,1
-"596","RDD_Hydrogen","NLD",2011,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-4,-7,0,1,0,0,0,1
-"597","RDD_Hydrogen","NLD",2013,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",2,2,2,0,0,1,1,0,0
-"598","RDD_Hydrogen","NLD",2017,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,6,6,0,0,1,1,0,0
-"599","RDD_Hydrogen","NLD",2018,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-2,4,0,0,0,0,0,1
-"600","RDD_Hydrogen","NLD",2021,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,3,3,0,0,1,1,0,0
-"601","RDD_Hydrogen","NOR",2005,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,3,0,0,0,1,0,0,0
-"602","RDD_Hydrogen","NOR",2012,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",7,-2,-2,0,0,0,0,1,1
-"603","RDD_Hydrogen","NOR",2021,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,3,3,0,0,1,1,0,0
-"604","RDD_Hydrogen","SWE",2015,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,-2,-2,0,0,0,0,1,1
-"605","RDD_Hydrogen","USA",2005,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,2,0,0,0,1,0,0,0
-"606","RDD_Hydrogen","USA",2012,"MBI","Other MBI","","Public RD&D Hydrogen","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-3,-4,0,0,0,0,1,1
-"607","RDD_Nuclear","AUS",2004,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,4,0,0,0,1,0,0,0
-"608","RDD_Nuclear","AUS",2009,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",1,-3,-3,0,0,0,0,1,1
-"609","RDD_Nuclear","CAN",2001,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-1,-2,0,0,0,0,1,0
-"610","RDD_Nuclear","CAN",2005,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,3,3,0,0,1,1,0,0
-"611","RDD_Nuclear","CAN",2011,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",7,-2,-2,0,0,0,0,1,1
-"612","RDD_Nuclear","DEU",2022,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",5,-1,-2,0,0,0,0,1,0
-"613","RDD_Nuclear","DNK",1998,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,3,3,0,0,1,1,0,0
-"614","RDD_Nuclear","DNK",2008,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-3,-3,0,1,0,0,1,1
-"615","RDD_Nuclear","DNK",2010,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",3,3,3,0,0,1,1,0,0
-"616","RDD_Nuclear","DNK",2018,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-3,-3,0,1,0,0,1,1
-"617","RDD_Nuclear","ESP",1998,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",5,-1,-2,0,0,0,0,1,0
-"618","RDD_Nuclear","ESP",2010,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-5,-4,0,1,0,0,1,1
-"619","RDD_Nuclear","ESP",2012,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,4,5,0,0,1,1,0,0
-"620","RDD_Nuclear","ESP",2014,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",1,-3,-4,0,0,0,0,1,1
-"621","RDD_Nuclear","ESP",2020,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",3,2,2,0,0,1,1,0,0
-"622","RDD_Nuclear","ESP",2021,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,5,7,0,0,1,0,0,0
-"623","RDD_Nuclear","GBR",2015,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,2,2,0,0,1,1,0,0
-"624","RDD_Nuclear","KOR",2004,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,4,4,0,0,1,1,0,0
-"625","RDD_Nuclear","KOR",2008,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-4,-4,0,0,0,0,1,1
-"626","RDD_Nuclear","NOR",2019,"MBI","Other MBI","","Public RD&D Nuclear","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",2,-3,-3,0,0,0,0,1,1
-"627","RDD_Otherstorage","AUT",2010,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,3,4,0,0,1,1,0,0
-"628","RDD_Otherstorage","BEL",1997,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,-3,0,0,0,0,0,0,1
-"629","RDD_Otherstorage","BEL",1998,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,-1,0,0,1,0,0,0
-"630","RDD_Otherstorage","BEL",2011,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,8,0,0,0,1,0,0,0
-"631","RDD_Otherstorage","BEL",2012,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,2,10,0,0,1,0,0,0
-"632","RDD_Otherstorage","BEL",2013,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",8,-2,0,0,0,0,0,0,1
-"633","RDD_Otherstorage","BEL",2022,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-2,-2,0,0,0,0,1,1
-"634","RDD_Otherstorage","CAN",2000,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,3,3,0,0,1,1,0,0
-"635","RDD_Otherstorage","CAN",2004,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,-5,-4,0,0,0,0,1,1
-"636","RDD_Otherstorage","CAN",2009,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,4,5,0,0,1,1,0,0
-"637","RDD_Otherstorage","CAN",2018,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,2,2,0,0,1,1,0,0
-"638","RDD_Otherstorage","CHE",2010,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-2,-2,0,0,0,0,1,1
-"639","RDD_Otherstorage","CHE",2014,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,3,3,0,0,1,1,0,0
-"640","RDD_Otherstorage","DEU",2004,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",2,-3,-3,0,0,0,0,1,1
-"641","RDD_Otherstorage","DEU",2016,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,1,2,0,0,0,1,0,0
-"642","RDD_Otherstorage","DNK",2009,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,4,4,0,0,1,1,0,0
-"643","RDD_Otherstorage","DNK",2022,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,-3,-6,0,0,0,0,0,1
-"644","RDD_Otherstorage","ESP",2004,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-1,0,0,1,0,0,0,0
-"645","RDD_Otherstorage","ESP",2007,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",2,2,2,0,0,1,1,0,0
-"646","RDD_Otherstorage","ESP",2010,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",4,1,2,0,0,0,1,0,0
-"647","RDD_Otherstorage","ESP",2015,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,2,6,0,0,1,0,0,0
-"648","RDD_Otherstorage","ESP",2021,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,5,6,0,0,1,1,0,0
-"649","RDD_Otherstorage","FRA",2000,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",1,1,1,1,0,0,0,0,0
-"650","RDD_Otherstorage","FRA",2007,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",4,2,2,0,0,1,1,0,0
-"651","RDD_Otherstorage","FRA",2008,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,2,4,0,0,1,0,0,0
-"652","RDD_Otherstorage","FRA",2013,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,1,2,0,0,0,1,0,0
-"653","RDD_Otherstorage","FRA",2021,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,1,2,0,0,0,1,0,0
-"654","RDD_Otherstorage","GBR",2015,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,1,2,0,0,0,1,0,0
-"655","RDD_Otherstorage","GBR",2016,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",7,1,2,0,0,0,1,0,0
-"656","RDD_Otherstorage","ITA",2000,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,0,5,0,0,0,1,0,0
-"657","RDD_Otherstorage","ITA",2016,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",7,-2,-3,0,0,0,0,1,1
-"658","RDD_Otherstorage","JPN",1998,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,2,2,0,0,1,1,0,0
-"659","RDD_Otherstorage","JPN",2002,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",5,-3,-3,0,0,0,0,1,1
-"660","RDD_Otherstorage","JPN",2003,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,-2,-5,0,0,0,0,0,1
-"661","RDD_Otherstorage","JPN",2004,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,0,0,0,1,0,0,0
-"662","RDD_Otherstorage","JPN",2013,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-2,-2,0,0,0,0,1,1
-"663","RDD_Otherstorage","JPN",2016,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,3,3,0,0,1,1,0,0
-"664","RDD_Otherstorage","KOR",2003,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,2,0,0,0,1,0,0,0
-"665","RDD_Otherstorage","KOR",2008,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,2,1,0,0,1,0,0,0
-"666","RDD_Otherstorage","NLD",1999,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-1,-2,0,0,0,0,1,0
-"667","RDD_Otherstorage","NLD",2005,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,0,-3,0,0,0,0,1,0
-"668","RDD_Otherstorage","NOR",2009,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,5,3,0,0,1,1,0,0
-"669","RDD_Otherstorage","NOR",2022,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",7,-3,-3,0,0,0,0,1,1
-"670","RDD_Otherstorage","SWE",1997,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,6,0,0,0,1,0,0,0
-"671","RDD_Otherstorage","SWE",2005,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-2,-2,0,0,0,0,1,1
-"672","RDD_Otherstorage","SWE",2009,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,2,2,0,0,1,1,0,0
-"673","RDD_Otherstorage","USA",2012,"MBI","Other MBI","","Public RD&D Energy storage","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,-1,-2,0,0,0,0,1,0
-"674","RDD_Renewables","AUS",2011,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,2,3,0,0,1,1,0,0
-"675","RDD_Renewables","AUS",2016,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",5,-4,-2,0,0,0,0,1,1
-"676","RDD_Renewables","AUT",2008,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,2,2,0,0,1,1,0,0
-"677","RDD_Renewables","BEL",2011,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,6,0,0,0,1,0,0,0
-"678","RDD_Renewables","CAN",2009,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,2,3,0,0,1,1,0,0
-"679","RDD_Renewables","CAN",2013,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",7,-2,-2,0,0,0,0,1,1
-"680","RDD_Renewables","DEU",2009,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,2,3,0,0,1,1,0,0
-"681","RDD_Renewables","DNK",2002,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-3,-2,0,0,0,0,1,1
-"682","RDD_Renewables","DNK",2004,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,3,3,0,0,1,1,0,0
-"683","RDD_Renewables","ESP",2009,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,2,3,0,0,1,1,0,0
-"684","RDD_Renewables","ESP",2013,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",5,-3,-5,0,0,0,0,0,1
-"685","RDD_Renewables","ESP",2021,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,3,2,0,0,1,1,0,0
-"686","RDD_Renewables","FIN",2003,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,2,2,0,0,1,1,0,0
-"687","RDD_Renewables","FIN",2019,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",8,-2,-2,0,0,0,0,1,1
-"688","RDD_Renewables","FRA",2002,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",4,2,2,0,0,1,1,0,0
-"689","RDD_Renewables","FRA",2006,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,1,2,0,0,0,1,0,0
-"690","RDD_Renewables","FRA",2007,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,1,2,0,0,0,1,0,0
-"691","RDD_Renewables","FRA",2009,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,2,2,0,0,1,1,0,0
-"692","RDD_Renewables","GBR",2005,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",4,2,2,0,0,1,1,0,0
-"693","RDD_Renewables","GBR",2011,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",5,-4,-2,0,0,0,0,1,1
-"694","RDD_Renewables","ITA",2000,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",2,0,-2,0,0,0,0,1,0
-"695","RDD_Renewables","ITA",2001,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",4,2,0,0,0,1,0,0,0
-"696","RDD_Renewables","JPN",2004,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,3,2,0,0,1,1,0,0
-"697","RDD_Renewables","JPN",2011,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,5,6,0,0,1,1,0,0
-"698","RDD_Renewables","JPN",2016,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",8,-1,-2,0,0,0,0,1,0
-"699","RDD_Renewables","KOR",2004,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,4,4,0,0,1,1,0,0
-"700","RDD_Renewables","KOR",2009,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,1,2,0,0,0,1,0,0
-"701","RDD_Renewables","NLD",1998,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,1,2,0,0,0,1,0,0
-"702","RDD_Renewables","NLD",2020,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",7,-2,-3,0,0,0,0,1,1
-"703","RDD_Renewables","NOR",2007,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,3,0,0,1,1,0,0
-"704","RDD_Renewables","NOR",2009,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,5,5,0,0,1,1,0,0
-"705","RDD_Renewables","SWE",2000,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,2,2,0,0,1,1,0,0
-"706","RDD_Renewables","SWE",2009,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,2,2,0,0,1,1,0,0
-"707","RDD_Renewables","USA",2007,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",5,3,2,0,0,1,1,0,0
-"708","RDD_Renewables","USA",2009,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,6,5,0,0,1,1,0,0
-"709","RDD_Renewables","USA",2010,"MBI","Other MBI","","Public RD&D Renewables","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",8,-2,4,0,0,0,0,0,1
+"499","RDD_CCS","AUS",2007,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",1,1,1,1,0,0,0,0,0
+"500","RDD_CCS","AUS",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,9,9,0,0,1,1,0,0
+"501","RDD_CCS","AUS",2015,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",7,-3,-3,0,0,0,0,1,1
+"502","RDD_CCS","AUS",2020,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-2,-3,0,0,0,0,1,1
+"503","RDD_CCS","AUS",2022,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,4,5,0,0,1,1,0,0
+"504","RDD_CCS","AUT",2005,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",1,1,1,1,0,0,0,0,0
+"505","RDD_CCS","BEL",2015,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,5,0,0,1,0,0,0
+"506","RDD_CCS","BEL",2016,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-5,-3,0,1,0,0,1,1
+"507","RDD_CCS","BEL",2021,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,5,6,0,0,1,1,0,0
+"508","RDD_CCS","BEL",2022,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,3,8,0,0,1,0,0,0
+"509","RDD_CCS","CAN",2004,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,8,8,1,0,1,1,0,0
+"510","RDD_CCS","CAN",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,2,3,0,0,1,1,0,0
+"511","RDD_CCS","CHE",2006,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",3,3,3,1,0,1,1,0,0
+"512","RDD_CCS","DEU",2004,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",3,3,3,1,0,1,1,0,0
+"513","RDD_CCS","DEU",2006,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-3,-3,0,1,0,0,1,1
+"514","RDD_CCS","DEU",2008,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",2,2,2,0,0,1,1,0,0
+"515","RDD_CCS","DEU",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,4,6,0,0,1,0,0,0
+"516","RDD_CCS","DNK",2005,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",5,5,5,1,0,1,1,0,0
+"517","RDD_CCS","DNK",2007,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-2,-1,0,0,0,0,0,1
+"518","RDD_CCS","DNK",2010,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",2,-5,-2,0,0,0,0,1,1
+"519","RDD_CCS","DNK",2018,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-5,-2,0,1,0,0,1,1
+"520","RDD_CCS","DNK",2020,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,7,8,0,0,1,1,0,0
+"521","RDD_CCS","DNK",2021,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,2,9,0,0,1,0,0,0
+"522","RDD_CCS","ESP",2007,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",2,2,2,1,0,1,1,0,0
+"523","RDD_CCS","ESP",2010,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-5,-3,0,1,0,0,1,1
+"524","RDD_CCS","ESP",2015,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,3,6,0,0,1,0,0,0
+"525","RDD_CCS","ESP",2017,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,0,-6,0,0,0,0,1,0
+"526","RDD_CCS","ESP",2021,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,4,4,0,0,1,1,0,0
+"527","RDD_CCS","FRA",2002,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",3,3,3,1,0,1,1,0,0
+"528","RDD_CCS","FRA",2004,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,2,0,0,1,1,0,0
+"529","RDD_CCS","FRA",2006,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,2,3,0,0,1,1,0,0
+"530","RDD_CCS","FRA",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,2,2,0,0,1,1,0,0
+"531","RDD_CCS","FRA",2017,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-1,-2,0,0,0,0,1,0
+"532","RDD_CCS","FRA",2020,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,1,2,0,0,0,1,0,0
+"533","RDD_CCS","GBR",2004,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,5,5,1,0,1,1,0,0
+"534","RDD_CCS","GBR",2006,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",1,-4,-4,0,0,0,0,1,1
+"535","RDD_CCS","GBR",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,6,0,0,0,1,0,0,0
+"536","RDD_CCS","GBR",2010,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,2,8,0,0,1,0,0,0
+"537","RDD_CCS","GBR",2015,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",5,-4,-3,0,0,0,0,1,1
+"538","RDD_CCS","ITA",2006,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",2,2,2,1,0,1,1,0,0
+"539","RDD_CCS","ITA",2008,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,3,0,0,1,1,0,0
+"540","RDD_CCS","ITA",2014,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",1,-3,0,0,0,0,0,0,1
+"541","RDD_CCS","ITA",2016,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,0,4,0,0,0,1,0,0
+"542","RDD_CCS","JPN",2006,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,5,5,1,0,1,1,0,0
+"543","RDD_CCS","JPN",2008,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,2,1,0,0,1,0,0,0
+"544","RDD_CCS","JPN",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,3,5,0,0,1,0,0,0
+"545","RDD_CCS","KOR",2004,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",3,3,3,1,0,1,1,0,0
+"546","RDD_CCS","KOR",2005,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,5,0,0,1,0,0,0
+"547","RDD_CCS","KOR",2008,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,2,3,0,0,1,1,0,0
+"548","RDD_CCS","KOR",2021,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,2,2,0,0,1,1,0,0
+"549","RDD_CCS","NLD",2005,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,0,8,0,0,0,1,0,0
+"550","RDD_CCS","NLD",2011,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-4,-2,0,0,0,0,1,1
+"551","RDD_CCS","NLD",2013,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-1,-2,0,0,0,0,1,0
+"552","RDD_CCS","NLD",2017,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,4,4,0,0,1,1,0,0
+"553","RDD_CCS","NLD",2019,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-3,-2,0,0,0,0,1,1
+"554","RDD_CCS","NOR",2004,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,9,9,1,0,1,1,0,0
+"555","RDD_CCS","SWE",2011,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",3,3,3,1,0,1,1,0,0
+"556","RDD_CCS","SWE",2015,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",2,-2,-2,0,0,0,0,1,1
+"557","RDD_CCS","SWE",2019,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",4,3,0,0,0,1,0,0,0
+"558","RDD_CCS","SWE",2020,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,2,5,0,0,1,0,0,0
+"559","RDD_CCS","USA",2004,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",4,4,4,1,0,1,1,0,0
+"560","RDD_CCS","USA",2006,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,2,3,0,0,1,1,0,0
+"561","RDD_Hydrogen","AUS",2018,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,4,4,0,0,1,1,0,0
+"562","RDD_Hydrogen","AUS",2022,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,1,2,0,0,0,1,0,0
+"563","RDD_Hydrogen","AUT",2005,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,5,0,1,0,1,0,0,0
+"564","RDD_Hydrogen","AUT",2006,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,3,8,0,0,1,0,0,0
+"565","RDD_Hydrogen","AUT",2007,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,-5,-2,0,0,0,0,1,1
+"566","RDD_Hydrogen","AUT",2008,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,-3,0,0,1,0,0,0
+"567","RDD_Hydrogen","AUT",2015,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-4,-2,0,0,0,0,1,1
+"568","RDD_Hydrogen","AUT",2017,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,1,2,0,0,0,1,0,0
+"569","RDD_Hydrogen","AUT",2018,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",7,1,2,0,0,0,1,0,0
+"570","RDD_Hydrogen","AUT",2019,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",8,1,2,0,0,0,1,0,0
+"571","RDD_Hydrogen","AUT",2021,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,2,2,0,0,1,1,0,0
+"572","RDD_Hydrogen","BEL",2014,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,5,4,0,0,1,1,0,0
+"573","RDD_Hydrogen","BEL",2015,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,-2,3,0,0,0,0,0,1
+"574","RDD_Hydrogen","BEL",2019,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,4,4,0,0,1,1,0,0
+"575","RDD_Hydrogen","CAN",2012,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-2,-3,0,0,0,0,1,1
+"576","RDD_Hydrogen","CAN",2014,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-1,-2,0,0,0,0,1,0
+"577","RDD_Hydrogen","CAN",2016,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,2,2,0,0,1,1,0,0
+"578","RDD_Hydrogen","CAN",2020,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,3,2,0,0,1,1,0,0
+"579","RDD_Hydrogen","DEU",2019,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,1,2,0,0,0,1,0,0
+"580","RDD_Hydrogen","DEU",2020,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",7,1,2,0,0,0,1,0,0
+"581","RDD_Hydrogen","DEU",2021,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",10,3,4,0,0,1,1,0,0
+"582","RDD_Hydrogen","ESP",2006,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",2,2,2,1,0,1,1,0,0
+"583","RDD_Hydrogen","ESP",2010,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,3,2,0,0,1,1,0,0
+"584","RDD_Hydrogen","ESP",2012,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-1,-2,0,0,0,0,1,0
+"585","RDD_Hydrogen","ESP",2013,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",2,-2,-3,0,0,0,0,1,1
+"586","RDD_Hydrogen","ESP",2019,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,3,0,0,1,1,0,0
+"587","RDD_Hydrogen","ESP",2021,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,5,5,0,0,1,1,0,0
+"588","RDD_Hydrogen","FIN",2021,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,5,5,1,0,1,1,0,0
+"589","RDD_Hydrogen","FRA",2020,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,1,2,0,0,0,1,0,0
+"590","RDD_Hydrogen","GBR",2007,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",4,1,2,0,0,0,1,0,0
+"591","RDD_Hydrogen","GBR",2010,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,1,2,0,0,0,1,0,0
+"592","RDD_Hydrogen","GBR",2019,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,1,2,0,0,0,1,0,0
+"593","RDD_Hydrogen","ITA",2006,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,6,6,1,0,1,1,0,0
+"594","RDD_Hydrogen","JPN",2019,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,1,2,0,0,0,1,0,0
+"595","RDD_Hydrogen","NLD",2010,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-3,-2,0,0,0,0,1,1
+"596","RDD_Hydrogen","NLD",2011,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-4,-7,0,1,0,0,0,1
+"597","RDD_Hydrogen","NLD",2013,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",2,2,2,0,0,1,1,0,0
+"598","RDD_Hydrogen","NLD",2017,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,6,6,0,0,1,1,0,0
+"599","RDD_Hydrogen","NLD",2018,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-2,4,0,0,0,0,0,1
+"600","RDD_Hydrogen","NLD",2021,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,3,3,0,0,1,1,0,0
+"601","RDD_Hydrogen","NOR",2005,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,3,0,0,0,1,0,0,0
+"602","RDD_Hydrogen","NOR",2012,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",7,-2,-2,0,0,0,0,1,1
+"603","RDD_Hydrogen","NOR",2021,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,3,3,0,0,1,1,0,0
+"604","RDD_Hydrogen","SWE",2015,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,-2,-2,0,0,0,0,1,1
+"605","RDD_Hydrogen","USA",2005,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,2,0,0,0,1,0,0,0
+"606","RDD_Hydrogen","USA",2012,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-3,-4,0,0,0,0,1,1
+"607","RDD_Nuclear","AUS",2004,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,4,0,0,0,1,0,0,0
+"608","RDD_Nuclear","AUS",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",1,-3,-3,0,0,0,0,1,1
+"609","RDD_Nuclear","CAN",2001,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-1,-2,0,0,0,0,1,0
+"610","RDD_Nuclear","CAN",2005,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,3,3,0,0,1,1,0,0
+"611","RDD_Nuclear","CAN",2011,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",7,-2,-2,0,0,0,0,1,1
+"612","RDD_Nuclear","DEU",2022,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",5,-1,-2,0,0,0,0,1,0
+"613","RDD_Nuclear","DNK",1998,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,3,3,0,0,1,1,0,0
+"614","RDD_Nuclear","DNK",2008,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-3,-3,0,1,0,0,1,1
+"615","RDD_Nuclear","DNK",2010,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",3,3,3,0,0,1,1,0,0
+"616","RDD_Nuclear","DNK",2018,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-3,-3,0,1,0,0,1,1
+"617","RDD_Nuclear","ESP",1998,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",5,-1,-2,0,0,0,0,1,0
+"618","RDD_Nuclear","ESP",2010,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-5,-4,0,1,0,0,1,1
+"619","RDD_Nuclear","ESP",2012,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,4,5,0,0,1,1,0,0
+"620","RDD_Nuclear","ESP",2014,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",1,-3,-4,0,0,0,0,1,1
+"621","RDD_Nuclear","ESP",2020,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",3,2,2,0,0,1,1,0,0
+"622","RDD_Nuclear","ESP",2021,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,5,7,0,0,1,0,0,0
+"623","RDD_Nuclear","GBR",2015,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,2,2,0,0,1,1,0,0
+"624","RDD_Nuclear","KOR",2004,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,4,4,0,0,1,1,0,0
+"625","RDD_Nuclear","KOR",2008,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-4,-4,0,0,0,0,1,1
+"626","RDD_Nuclear","NOR",2019,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",2,-3,-3,0,0,0,0,1,1
+"627","RDD_Otherstorage","AUT",2010,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,3,4,0,0,1,1,0,0
+"628","RDD_Otherstorage","BEL",1997,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,-3,0,0,0,0,0,0,1
+"629","RDD_Otherstorage","BEL",1998,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,-1,0,0,1,0,0,0
+"630","RDD_Otherstorage","BEL",2011,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,8,0,0,0,1,0,0,0
+"631","RDD_Otherstorage","BEL",2012,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,2,10,0,0,1,0,0,0
+"632","RDD_Otherstorage","BEL",2013,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",8,-2,0,0,0,0,0,0,1
+"633","RDD_Otherstorage","BEL",2022,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-2,-2,0,0,0,0,1,1
+"634","RDD_Otherstorage","CAN",2000,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,3,3,0,0,1,1,0,0
+"635","RDD_Otherstorage","CAN",2004,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,-5,-4,0,0,0,0,1,1
+"636","RDD_Otherstorage","CAN",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,4,5,0,0,1,1,0,0
+"637","RDD_Otherstorage","CAN",2018,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,2,2,0,0,1,1,0,0
+"638","RDD_Otherstorage","CHE",2010,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-2,-2,0,0,0,0,1,1
+"639","RDD_Otherstorage","CHE",2014,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,3,3,0,0,1,1,0,0
+"640","RDD_Otherstorage","DEU",2004,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",2,-3,-3,0,0,0,0,1,1
+"641","RDD_Otherstorage","DEU",2016,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,1,2,0,0,0,1,0,0
+"642","RDD_Otherstorage","DNK",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,4,4,0,0,1,1,0,0
+"643","RDD_Otherstorage","DNK",2022,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,-3,-6,0,0,0,0,0,1
+"644","RDD_Otherstorage","ESP",2004,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",0,-1,0,0,1,0,0,0,0
+"645","RDD_Otherstorage","ESP",2007,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",2,2,2,0,0,1,1,0,0
+"646","RDD_Otherstorage","ESP",2010,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",4,1,2,0,0,0,1,0,0
+"647","RDD_Otherstorage","ESP",2015,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,2,6,0,0,1,0,0,0
+"648","RDD_Otherstorage","ESP",2021,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,5,6,0,0,1,1,0,0
+"649","RDD_Otherstorage","FRA",2000,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",1,1,1,1,0,0,0,0,0
+"650","RDD_Otherstorage","FRA",2007,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",4,2,2,0,0,1,1,0,0
+"651","RDD_Otherstorage","FRA",2008,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,2,4,0,0,1,0,0,0
+"652","RDD_Otherstorage","FRA",2013,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,1,2,0,0,0,1,0,0
+"653","RDD_Otherstorage","FRA",2021,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,1,2,0,0,0,1,0,0
+"654","RDD_Otherstorage","GBR",2015,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,1,2,0,0,0,1,0,0
+"655","RDD_Otherstorage","GBR",2016,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",7,1,2,0,0,0,1,0,0
+"656","RDD_Otherstorage","ITA",2000,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,0,5,0,0,0,1,0,0
+"657","RDD_Otherstorage","ITA",2016,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",7,-2,-3,0,0,0,0,1,1
+"658","RDD_Otherstorage","JPN",1998,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,2,2,0,0,1,1,0,0
+"659","RDD_Otherstorage","JPN",2002,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",5,-3,-3,0,0,0,0,1,1
+"660","RDD_Otherstorage","JPN",2003,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,-2,-5,0,0,0,0,0,1
+"661","RDD_Otherstorage","JPN",2004,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,0,0,0,1,0,0,0
+"662","RDD_Otherstorage","JPN",2013,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",4,-2,-2,0,0,0,0,1,1
+"663","RDD_Otherstorage","JPN",2016,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,3,3,0,0,1,1,0,0
+"664","RDD_Otherstorage","KOR",2003,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,2,0,0,0,1,0,0,0
+"665","RDD_Otherstorage","KOR",2008,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,2,1,0,0,1,0,0,0
+"666","RDD_Otherstorage","NLD",1999,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-1,-2,0,0,0,0,1,0
+"667","RDD_Otherstorage","NLD",2005,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,0,-3,0,0,0,0,1,0
+"668","RDD_Otherstorage","NOR",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,5,3,0,0,1,1,0,0
+"669","RDD_Otherstorage","NOR",2022,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",7,-3,-3,0,0,0,0,1,1
+"670","RDD_Otherstorage","SWE",1997,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,6,0,0,0,1,0,0,0
+"671","RDD_Otherstorage","SWE",2005,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-2,-2,0,0,0,0,1,1
+"672","RDD_Otherstorage","SWE",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,2,2,0,0,1,1,0,0
+"673","RDD_Otherstorage","USA",2012,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",3,-1,-2,0,0,0,0,1,0
+"674","RDD_Renewables","AUS",2011,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,2,3,0,0,1,1,0,0
+"675","RDD_Renewables","AUS",2016,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",5,-4,-2,0,0,0,0,1,1
+"676","RDD_Renewables","AUT",2008,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,2,2,0,0,1,1,0,0
+"677","RDD_Renewables","BEL",2011,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,6,0,0,0,1,0,0,0
+"678","RDD_Renewables","CAN",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,2,3,0,0,1,1,0,0
+"679","RDD_Renewables","CAN",2013,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",7,-2,-2,0,0,0,0,1,1
+"680","RDD_Renewables","DEU",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,2,3,0,0,1,1,0,0
+"681","RDD_Renewables","DNK",2002,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",6,-3,-2,0,0,0,0,1,1
+"682","RDD_Renewables","DNK",2004,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,3,3,0,0,1,1,0,0
+"683","RDD_Renewables","ESP",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,2,3,0,0,1,1,0,0
+"684","RDD_Renewables","ESP",2013,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",5,-3,-5,0,0,0,0,0,1
+"685","RDD_Renewables","ESP",2021,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,3,2,0,0,1,1,0,0
+"686","RDD_Renewables","FIN",2003,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,2,2,0,0,1,1,0,0
+"687","RDD_Renewables","FIN",2019,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",8,-2,-2,0,0,0,0,1,1
+"688","RDD_Renewables","FRA",2002,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",4,2,2,0,0,1,1,0,0
+"689","RDD_Renewables","FRA",2006,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,1,2,0,0,0,1,0,0
+"690","RDD_Renewables","FRA",2007,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,1,2,0,0,0,1,0,0
+"691","RDD_Renewables","FRA",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,2,2,0,0,1,1,0,0
+"692","RDD_Renewables","GBR",2005,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",4,2,2,0,0,1,1,0,0
+"693","RDD_Renewables","GBR",2011,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",5,-4,-2,0,0,0,0,1,1
+"694","RDD_Renewables","ITA",2000,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",2,0,-2,0,0,0,0,1,0
+"695","RDD_Renewables","ITA",2001,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",4,2,0,0,0,1,0,0,0
+"696","RDD_Renewables","JPN",2004,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",7,3,2,0,0,1,1,0,0
+"697","RDD_Renewables","JPN",2011,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,5,6,0,0,1,1,0,0
+"698","RDD_Renewables","JPN",2016,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",8,-1,-2,0,0,0,0,1,0
+"699","RDD_Renewables","KOR",2004,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",6,4,4,0,0,1,1,0,0
+"700","RDD_Renewables","KOR",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,1,2,0,0,0,1,0,0
+"701","RDD_Renewables","NLD",1998,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",9,1,2,0,0,0,1,0,0
+"702","RDD_Renewables","NLD",2020,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",7,-2,-3,0,0,0,0,1,1
+"703","RDD_Renewables","NOR",2007,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",5,2,3,0,0,1,1,0,0
+"704","RDD_Renewables","NOR",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,5,5,0,0,1,1,0,0
+"705","RDD_Renewables","SWE",2000,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",8,2,2,0,0,1,1,0,0
+"706","RDD_Renewables","SWE",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,2,2,0,0,1,1,0,0
+"707","RDD_Renewables","USA",2007,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","slow_increase","positive","Cross_sectoral",5,3,2,0,0,1,1,0,0
+"708","RDD_Renewables","USA",2009,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","positive","Cross_sectoral",10,6,5,0,0,1,1,0,0
+"709","RDD_Renewables","USA",2010,"MBI","Other MBI","","Public RD&D","Technology support","Market","Subsidy","OECD","jump","negative","Cross_sectoral",8,-2,4,0,0,0,0,0,1
 "710","Ratification of Climate Treaties","AUS",1999,"Other","International Co-operation","","Ratification of Climate Treaties","International cooperation","Non-market","Regulation","OECD","jump","positive","International",5,2,2,0,0,1,1,0,0
 "711","Ratification of Climate Treaties","AUS",2007,"Other","International Co-operation","","Ratification of Climate Treaties","International cooperation","Non-market","Regulation","OECD","jump","positive","International",7,2,2,0,0,1,1,0,0
 "712","Ratification of Climate Treaties","AUS",2017,"Other","International Co-operation","","Ratification of Climate Treaties","International cooperation","Non-market","Regulation","OECD","jump","positive","International",10,2,3,0,0,1,1,0,0
