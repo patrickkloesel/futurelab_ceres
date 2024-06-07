@@ -528,7 +528,7 @@ venn_diagram_plot_basic <- function(policy_match, tech, title, shape = 'circle')
     labels <- labels %>% mutate(label = case_when(combination=="Pricing" ~ "", TRUE ~ label))
   }
   
-  p <- plot(fit,labels = list(cex=1.7, padding=grid::unit(20, "mm")), quantities = list(labels = labels$label, cex = 2, padding=grid::unit(20, "mm")), fills=colors_plot) #adjust_labels = TRUE,
+  p <- plot(fit,labels = list(cex=3.7, padding=grid::unit(40, "mm")), quantities = list(labels = labels$label, cex = 4, padding=grid::unit(40, "mm")), fills=colors_plot) #adjust_labels = TRUE,
   ##transform into ggplot object to finalize 
   
   p <- cowplot::plot_grid(plotlist=list(p)) + ggtitle(title)+theme(text = element_text(size = 40), plot.title = element_text(size=40,face = 'bold',margin=margin(0,0,30,0)),plot.margin = unit(c(0,0,0,0), "cm"))

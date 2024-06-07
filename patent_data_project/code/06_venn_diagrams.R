@@ -48,10 +48,10 @@ vens = ven_diagrams$plot
 blank_plot <- ggdraw()
 ven_panel <- cowplot::plot_grid(plotlist=list(blank_plot,blank_plot,blank_plot,vens[[3]], 
                                               vens[[1]],blank_plot,vens[[2]],vens[[4]],
-                                              blank_plot,blank_plot,blank_plot,vens[[5]]), nrow=3,ncol=4,rel_widths = c(1,0.05,1,1),rel_heights = c(1,1,1,1))#+theme(plot.margin = unit(c(1,1,1,1),'cm'))
+                                              blank_plot,blank_plot,blank_plot,vens[[5]]), nrow=3,ncol=4,rel_widths = c(1,0.05,1,1),rel_heights = c(1,1,1,1))+theme(text=element_text(size = 50), plot.margin = unit(c(1,1,1,1),'cm'))
 
 #save fig
-png("Figs\\ven_diagrams_h.png", width     = 36.00,height    = 34.00,units     = "in",res       = 500)
+png("Figs\\ven_diagrams_h.png", width     = 36.00,height    = 34.00,units     = "in",res       = 300)
 ven_panel
 dev.off()
 
