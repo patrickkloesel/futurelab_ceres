@@ -19,12 +19,86 @@ library(patchwork)
 library(kableExtra)
 library(plm)
 library(forecast)
+library(here)
 
-df <- read_csv(".\\PAT_DEV_05112023163538234.csv", show_col_types = F) 
+df <- read_csv("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\data\\raw\\PAT_DEV_05112023163538234.csv", show_col_types = F) 
 
 df1 <- df %>% select(COU, `Inventor country`, `Technology domain`, Year, Value)
 
 #dat <- read_csv("D:\\Aggregated\\PAT_DEV_01112023143241837.csv")
+```
+
+```{r}
+
+```
+
+
+
+
+##3105 key technologies again
+```{r}
+here::i_am("code/initial_data_scoping/overview_patents2.Rmd")
+
+df_new <- read.csv("C:\\Users\\laura\\Downloads\\OECD.ENV.EPI,DSD_PAT_DEV@DF_PAT_DEV,1.0+AUS+AUT+BEL+CAN
++CHL+COL+CRI+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+ISL+IRL+ISR+ITA+JPN+KOR+LVA+LTU+LUX+MEX+NLD+NZL+NOR+POL+PRT
+                   +SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+AFG+ALB+DZA+AGO+AND+AT.csv")
+
+top_main <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR")
+
+df_new <- df_new %>% select(REF_AREA, TECH, TIME_PERIOD, OBS_VALUE) %>% filter(TIME_PERIOD > 1999)
+
+df_new %>% 
+  spread(key = TECH, value = OBS_VALUE) %>% 
+  group_by(TIME_PERIOD) %>% 
+  summarise(tot_all = sum(TOT), tot_ccmt = sum(CCM)) %>% 
+  arrange(TIME_PERIOD) %>% 
+  mutate(cagr_all = (last(tot_all)/first(tot_all))^(1/(2020-2000))-1, 
+         cagr_ccm = (last(tot_ccmt)/first(tot_ccmt))^(1/(2020-2000))-1) %>% 
+  ggplot(aes(x=TIME_PERIOD, y=tot_all, colour="All technologies")) +
+  geom_line(linewidth=1, linetype="dashed")+
+  geom_line(aes(x=TIME_PERIOD, y=tot_ccmt, colour="Climate Mitigation technologies"), linewidth=1) +
+  theme_bw() +
+  #scale_color_viridis(labels = c("All technologies", "Climate Mitigation technologies"), discrete=T) +
+  ylab("patent count") + xlab("year") +
+  ggtitle("Yearly inventions of key renewable energy technologies vs all clean energy technologies") +
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom", legend.title = element_blank())
+  
+
+##################################################################
+key_techs <- c("tot_energy", "tot_solar", "tot_storage", "tot_wind")
+
+key_techs_labels <- c("Avg clean energy patents", "Solar energy", "Energy storage", "Wind energy") #, 
+
+key_techs_plot <- df %>% 
+  group_by(ISO, year) %>% 
+  summarise(mean_energy = mean(count_energy), 
+            tot_solar = sum(count_solar), 
+            tot_storage = sum(count_storage), 
+            tot_wind = sum(count_wind), 
+            tot_tot = sum(tot_count), 
+            .groups = "keep") %>%
+  #filter(year %in% c(2010,2019)) %>% 
+  #mutate(aagr_energy = ((last(tot_energy)/first(tot_energy))^(1/(2020-1995))-1), 
+  #       aagr_solar = ((last(tot_solar)/first(tot_solar))^(1/(2020-1995))-1),
+  #       aagr_storage = ((last(tot_storage)/first(tot_storage))^(1/(2020-1995))-1),
+  #       aagr_wind = ((last(tot_wind)/first(tot_wind))^(1/(2020-1995))-1)) %>% 
+  ggplot(aes(x = year, y= mean_energy, colour="mean_energy")) + 
+  geom_line(na.rm = F, linewidth=1) +
+  #geom_point(na.rm = F) +
+  geom_line(aes(x = year, y = tot_solar, colour="tot_solar"), linewidth=1) +
+  #geom_point(aes(x = year, y = totsolar), colour="tot_solar"), ) +
+  geom_line(aes(x = year, y = tot_storage, colour="tot_storage"), linewidth=1) +
+  #geom_point(aes(x = year, y = totstorage), colour="tot_storage")) +
+  geom_line(aes(x = year, y = tot_wind, colour="tot_wind"), linewidth=1) +
+  #geom_point(aes(x = year, y = totwind), colour="tot_wind")) +
+  facet_wrap(~ISO, scales="free_y") +
+  scale_colour_brewer(labels = key_techs_labels, palette = "Set2") +
+  theme_minimal() +
+  ylab("patent count") +
+  ggtitle("Yearly inventions of key renewable energy technologies vs all clean energy technologies") +
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom", legend.title = element_blank())
+
+ggsave("key_techs_plot.pdf", plot = key_techs_plot, device = "pdf", width = 20, height = 20)
 ```
 
 
@@ -212,31 +286,45 @@ sectors_techs_log_trends
 #ggsave(".\\sectors_techs_log_trends.pdf", plot = sectors_techs_log_trends, device = "pdf", width = 33, height = 22)
 
 ```
+
 ## Four key technologies
 
 ```{r, fig.height=15, fig.width=15, echo=FALSE, warning=FALSE}
 
-key_techs <- c("Solar photovoltaic (PV) energy", "Wind energy", "Batteries", "Hydrogen technology")
+df <- read.csv(here::here("data/out/patents_panel_5techs_spread.csv")) %>% filter(year < 2020 & year > 1999) %>% # cut time series 
+  filter(ISO %in% top_main)
 
-key_techs_labels <- c("Solar photovoltaic (PV) energy", "Wind energy", "Batteries (storage)", "Hydrogen technology")
+key_techs <- c("tot_energy", "tot_solar", "tot_storage", "tot_wind")
 
-key_techs_plot <- df1 %>% 
-  filter((`Inventor country` == "World")) %>% 
-  filter(Year>=1990) %>% 
-  filter(`Technology domain` %in% key_techs) %>% 
-  select(`Technology domain`, Value, Year) %>% 
-  group_by(`Technology domain`, Year) %>% 
-  summarise(tot_pats = sum(Value), .groups = "keep") %>%
-  ggplot(aes(x = Year, y= log(tot_pats), colour = `Technology domain`)) + 
-  geom_line(na.rm = F) +
+key_techs_labels <- c("Energy (Y02E)", "Solar energy", "Energy storage","Wind energy")
+
+df %>% 
+  group_by(year) %>% 
+  summarise(tot_energy = sum(count_energy), 
+            tot_solar = sum(count_solar), 
+            tot_storage = sum(count_storage), 
+            tot_wind = sum(count_wind), 
+            tot_tot = sum(tot_count), 
+            .groups = "keep") %>%
+  filter(year %in% c(2010,2019)) %>% 
+  #mutate(aagr_energy = ((last(tot_energy)/first(tot_energy))^(1/(2020-1995))-1), 
+  #       aagr_solar = ((last(tot_solar)/first(tot_solar))^(1/(2020-1995))-1),
+  #       aagr_storage = ((last(tot_storage)/first(tot_storage))^(1/(2020-1995))-1),
+  #       aagr_wind = ((last(tot_wind)/first(tot_wind))^(1/(2020-1995))-1)) %>% 
+  ggplot(aes(x = year, y= log(aagr_energy), colour="tot_energy")) + 
+  geom_line(na.rm = F, linewidth=3) +
   geom_point(na.rm = F) +
-  scale_colour_brewer(breaks= key_techs, labels = key_techs_labels, palette = "Set2") +
+  geom_line(aes(x = year, y = log(aagr_solar), colour="tot_solar"), linewidth=3) +
+  #geom_point(aes(x = year, y = log(tot_solar), colour="tot_solar"), ) +
+  geom_line(aes(x = year, y = log(aagr_storage), colour="tot_storage"), linewidth=3) +
+  #geom_point(aes(x = year, y = log(tot_storage), colour="tot_storage")) +
+  geom_line(aes(x = year, y = log(aagr_wind), colour="tot_wind"), linewidth=3) +
+  #geom_point(aes(x = year, y = log(tot_wind), colour="tot_wind")) +
+  scale_colour_brewer(labels = key_techs_labels, palette = "Set2") +
   theme_bw() +
   ylab("log(patent count)") +
-  ggtitle("Yearly inventions of four key technologies (1990-2020)")+
-  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom") + guides(col = guide_legend(title = "", ncol = 2))
-
-key_techs_plot
+  ggtitle("Yearly inventions of key renewable energy technologies vs all clean energy technologies") +
+  theme(text = element_text(size= 20, color="Black"), title = element_text(size= 20, color="Black"), legend.text = element_text(size= 20, color="Black"), axis.text.x = element_text(angle = 45, hjust=1), legend.position = "bottom", legend.title = element_blank())
 
 #ggsave(".\\key_techs_plot.pdf", plot = key_techs_plot, device = "pdf", width = 15, height = 15)
 ```
@@ -273,6 +361,7 @@ key_techs_plot_full_series
 ```{r, fig.width=22,fig.height=13, echo=FALSE}
 
 agg_dat2 <- df1 %>% 
+  filter(Year>1999) %>% 
   filter(`Technology domain` == "Climate change mitigation") %>% 
   rename("Inventor_country" = "Inventor country") %>% 
   filter(!(Inventor_country == "World")) %>% 
@@ -331,17 +420,17 @@ world_oecd <- left_join(world, agg_dat4, by = c("region" = "Inventor_country"))
 p <- ggplot()
 world_map <- p + geom_polygon(data=world_oecd, 
           aes(x=long, y=lat, group=group, fill = log(tot_counts)),
-          color="white", size = 0.1) + 
+          color="white", linewidth = 0.1) + 
   #scale_fill_gradient2(low = "blue", mid = "white", high = "red", 
   #                     midpoint = 000, 
   #                     breaks = seq(0, 18000, 2000), 
   #                     limits = c(0, 18000)) +
   #
   theme_bw() + 
-  scale_fill_viridis() +
+  scale_fill_viridis(direction=-1) +
   ggtitle("Geographical distribution of climate-change mitigation technologies (CCMT)") + 
   labs(fill='log(patent count)') +
-  theme(title = element_text(size= 22, color="Black"), legend.text = element_text(size= 20, color="Black"), legend.position = c(0.12, 0.30), legend.box.background = element_rect(colour = "black")) + 
+  theme(title = element_text(size= 22, color="Black"), legend.text = element_text(size= 20, color="Black"), legend.position.inside = c(0.12, 0.30), legend.box.background = element_rect(colour = "black")) + 
    theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank(), 
@@ -354,7 +443,13 @@ world_map <- p + geom_polygon(data=world_oecd,
 
 world_map
 
-ggsave(".\\world_map_prova_size.pdf", plot = world_map, device = "pdf", width = 22, height = 13)
+#ggsave(".\\world_map_prova_size.pdf", plot = world_map, device = "pdf", width = 22, height = 13)
+
+path = paste("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\figs\\",'world_map_3105',".png",sep='')
+png(path, width   =22,height    = 13,units     = "in",res= 200)
+world_map
+dev.off()
+
 
 ```
 
