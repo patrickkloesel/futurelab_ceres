@@ -6,7 +6,7 @@ here::i_am("code/06_Fig_4.R")
 source('code/00_oecd_project_functions.R')
 
 #load raw policy data for computing detection shares
-oecd_grouped = read.csv('data/out/OECD_data_preprocessed_May_24.csv')
+oecd_grouped = read.csv('data/out/OECD_data_preprocessed_June_24.csv')
 
 oecd_grouped = oecd_grouped[oecd_grouped$year >1999,]
 oecd_grouped = oecd_grouped[oecd_grouped$year <2021,]
@@ -16,7 +16,7 @@ policy_out_pos = readRDS("results/28_05_policy_out_pos.RDS")
 
 #remove ratification of climate treaties
 for(i in 1:5){
-  policy_out_pos$policy_match_pos_2y[[i]] <- policy_out_pos$policy_match_pos_2y[[i]] %>% filter(!Policy == 'Ratification of Climate Treaties')
+  policy_out_pos$policy_match_pos[[i]] <- policy_out_pos$policy_match_pos[[i]] %>% filter(!Policy == 'Ratification of Climate Treaties')
 }
 
 #list different confidence interval matching options
@@ -26,13 +26,19 @@ specs = c('policy_match_pos','policy_match_pos_2y','policy_match_pos_3y')
 filtered_all <- sector_policy_match(policy_out_pos, specs)
 
 #we operate based on the 2y match in the main text 
-filtered_all <- filtered_all[filtered_all$spec == 'policy_match_pos_2y',]
+filtered_all <- filtered_all[filtered_all$spec == 'policy_match_pos',]
+
+## count how many breaks we have matched 
+sum_breaks = 0
+for(i in 1:5){
+  tech_iter <- filtered_all$sector_policy_match[[i]]
+  unique_breaks <- tech_iter %>% pull(unique_break_identifier) %>% unique() %>% length()
+  sum_breaks = sum_breaks + unique_breaks
+}
+print(sum_breaks)
+##20 (+1 unmatched break from china 2004 wind)
 
 ##count out how many breaks are matched to more than 1 policy (to report in main text)
-
-#notes: Merging them all together does not lead to the true count because unique break identifiers are not unique across sectors 
-#total merged breaks: 66. Unmatched merged breaks: 6 (as only merged breaks have overlapping CIs), the 4 breaks with EU matches are not considered here either.
-
 total_more_matches = 0
 total_single_match = 0
 
@@ -43,53 +49,61 @@ for(i in 1:5){
   total_more_matches = total_more_matches + nrow(sector_count[sector_count$n>1,])
   total_single_match = total_single_match + nrow(sector_count[sector_count$n<=1,])
   
-  print(paste("for ", filtered_all$sector[i]," the number of breaks with at least 2 matches is ", nrow(sector_count[sector_count$n>1,]), sep = ''))
-  print(paste("for ", filtered_all$sector[i]," the number of breaks with a single match is ", nrow(sector_count[sector_count$n<=1,]), sep = ''))
+  print(paste("for ", filtered_all$tech[i]," the number of breaks with at least 2 matches is ", nrow(sector_count[sector_count$n>1,]), sep = ''))
+  print(paste("for ", filtered_all$tech[i]," the number of breaks with a single match is ", nrow(sector_count[sector_count$n<=1,]), sep = ''))
 }
 
-# total single match= 18, total_more_matches: 38 -> 38/56 = 0.678 -> ~68%. (without considering EU policies or unmatched breaks!)
+# total single match= 2, total_more_matches: 18 -> 18/20 = 0.9 -> ~90%. (without considering ratification of climate treaties or unmatched breaks!)
 
-#In addition, manually adjust the count where a break is matched with a policy + EU policy or 2 EU policies: 
+## if we add climate treaties then we have no break matching a single policy, as spain 2003 in energy and solar is matched by air emissions standards + kyoto
 
-#Additional breaks now matched by mix containing EU policy: Buildings Ireland 14-16; Slovakia 09-13; Slovakia 13-17; Industry BGR_2006_2010; -> +4 for mix, +4 for single
-#Additoinal breaks now matched at all (by single EU policy): Buildings Czechia, Slovakia (2nd) Industry Romania, Czechia -> +4 for single
+## for effect size bars we need to remove countries with break where the previous year there was a low number
+##we need to look into the data, cutoff at 10
+#df <- read.csv(here::here("data/out/patents_panel_5techs_spread.csv"))
+### ccmt
+#ccmt <- df %>% select(ISO, year, count_ccmt) %>% filter(ISO %in% c("CHN", "DNK", "NOR"))
+### energy
+#energy <- df %>% select(ISO, year, count_energy) %>% filter(ISO %in% c("CHN", "DNK", "ESP"))
+###wind
+#wind <- df %>% select(ISO, year, count_wind) %>% filter(ISO %in% c("CHN", "DNK", "AUS", "IND")) ##AUS 2002, CHN 2004 <10
+### solar
+#solar <- df %>% select(ISO, year, count_solar) %>% filter(ISO %in% c("CHN", "ESP", "FIN", "KOR")) ##ESP 2003 <10
+### storage
+#storage <- df %>% select(ISO, year, count_storage) %>% filter(ISO %in% c("AUT", "DNK", "NOR", "ESP", "FIN")) ## ESP 2005, FIN 2005, NOR 2003 <10
 
-#net single stays the same. mix is +4. total breaks goes up by +4 to 60
-#new total single match: 18
-#new total more matches: 42
-# 42/60 -> 70%
+low_breaks_wind <- c("AUS_2001_2003")
+low_breaks_solar <- c("ESP_2002_2004")
+low_breaks_storage <- c("ESP_2004_2006", "FIN_2004_2006", "NOR_2001_2005")
+##to do: make automated here: if in the ci of the break the count is <10, add in a list and then use it to drop
 
-##by sector: 
+for (i in 1:5){
+    if (filtered_all[i,2] == 'Solar'){
+    filtered_all[[1]][[i]] <- filtered_all[[1]][[i]] %>% filter(!unique_break_identifier %in% low_breaks_solar)
+    
+  } else if (filtered_all[i,2] == 'Wind'){
+    filtered_all[[1]][[i]] <- filtered_all[[1]][[i]] %>% filter(!unique_break_identifier %in% low_breaks_wind)
+    
+  } else if (filtered_all[i,2] == 'Storage') {
+    filtered_all[[1]][[i]] <- filtered_all[[1]][[i]] %>% filter(!unique_break_identifier %in% low_breaks_storage)
+    
+  }}
 
-#more than 2 before EU + missing: 
-#Buildings: 9, Electricity:6, Industry: 6, Transport: 17
-#single match before EU + missing: 
-#Buildings: 9, Electricity: 3, Industry:5, Transport: 1 
-
-#Buildings: 9+3 from EU mix; 9-3+2 for single mix. 12/20 (60% for Buildings without blank breaks)
-#Transport: 17/18 -> 94% (without blank breaks)
-
-#Electricity: 6/9 -> 67% (without blank breaks)
-
-#Industry: 6+1,5-1+2 -> 7/13 -> 54% (without blank breaks)
 
 ### effect size bars (Fig. 4A)
-sector_policy_match_2y = filtered_all$sector_policy_match[filtered_all$spec == "policy_match_pos_2y"]
-sector_policy_match_2y = sector_policy_match_2y[-1] # remove ccmt 
-
-#icon_links = c("Logos\\Buildings.png","Logos\\Electricity.png","Logos\\Industry.png","Logos\\Transport.png")
-
-techs <- c('Energy', 'Solar','Wind','Storage')
+sector_policy_match = filtered_all$sector_policy_match[filtered_all$spec == "policy_match_pos"]
+tech_colors = c("#bfef45", "#EB5600", "#E7C019","#3B9AB2","#BAC36B")
+names(tech_colors) = c('CCMTs','Energy','Solar','Wind','Storage')
+ylims= list(c(0,43),c(0,97),c(0,105),c(0,250),c(0,255))
+tech_titles = c("CCMTs", "Energy (Y02E)","Wind (Y02E10/70-76)", "Solar (Y02E10/40-60)", "Storage (Y02E60/10-16)")
 my_mean_plots = list()
 
-for(i in 1:4){
+for(i in 1:5){
   
   #compute mean effect size (mix vs single policy)
-  mean_df <- get_effect_size_means(sector_policy_match_2y[[i]])
-  #mean_df$Policy_name_fig_4[mean_df$Policy_name_fig_4=='Minimum energy performance standard'] = 'MEPS'
-  
+  mean_df <- get_effect_size_means(sector_policy_match[[i]])
+
   ##get effect for pricig vs. no pricing mixes as well 
-  mean_df_pricing_mixes <- get_effect_size_means_pricing(sector_policy_match_2y[[i]])
+  mean_df_pricing_mixes <- get_effect_size_means_pricing(sector_policy_match[[i]])
   
   #only keep mixes that display prices to plot comparison in overall mixes
   mean_df_pricing_mixes <- mean_df_pricing_mixes[mean_df_pricing_mixes$Pricing_indicator==1,]
@@ -141,8 +155,8 @@ for(i in 1:4){
     scale_color_manual(values = c('black'),labels = c('Mix with Pricing'))+
     scale_fill_manual(values = c('white'))+
     guides(alpha = guide_legend(order=1,override.aes = list(linetype=c(0,0))),fill=guide_legend(override.aes = list(fill = "white", color = 'black'),order=2),color = guide_legend(override.aes = list(fill = "white",color='white',linetype = c(1), shape = c("-"))))+
-    ylim(c(0,606))+
-    ggtitle(techs[i]) +
+    ylim(ylims[[i]])+
+    ggtitle(tech_titles[i]) +
     theme(plot.margin = margin(2, 1, 1, 3, "cm"),
           panel.grid.minor = element_blank(),
           panel.grid.major.x = element_blank(),
@@ -155,7 +169,7 @@ for(i in 1:4){
           # legend.position = 'Bottom',
           legend.title = element_blank(),
           legend.text = element_text(size=22), 
-          title = element_text(size=20)) 
+          title = element_text(size=25)) 
   
   legend <- get_legend(p)
   
@@ -180,7 +194,7 @@ for(i in 1:4){
   
   line_legend = get_legend(line_legend_plot)
   
-  final_legend = cowplot::plot_grid(plotlist = list(legend,NULL,line_legend),nrow=3,rel_heights = c(1,-0.5,1))
+  final_legend = cowplot::plot_grid(plotlist = list(legend,NULL,line_legend),nrow=3,rel_heights = c(0.8,-0.2,0.9))
   
   p = p + theme(legend.position = 'none')
   p <- cowplot::plot_grid(plotlist = list(p, final_legend),ncol=2, rel_widths = c(1,0.1))
@@ -199,7 +213,7 @@ for(i in 1:4){
 
 
 
-p_mean_bars <- cowplot::plot_grid(plotlist = c(my_mean_plots,NULL),ncol=1,rel_heights = c(1,1,1,1,0.5), align='v',axis='b')
+p_mean_bars <- cowplot::plot_grid(plotlist = c(my_mean_plots,NULL),ncol=1,rel_heights = c(1,1,1,1,1,0.5), align='v',axis='b')
 
 p_mean_bars <- p_mean_bars+ theme(plot.margin = margin(1,1, 1, 1, "cm"))+ geom_text(aes(x = 0.03, y = 0.5, label = 'Average effect size (%)'),
                                                                                     angle = 90,
@@ -210,18 +224,17 @@ p_mean_bars <- p_mean_bars+ theme(plot.margin = margin(1,1, 1, 1, "cm"))+ geom_t
 
 
 #save subplot
-
-png("figs\\mean_effect_size_bars1.png", width     = 40.00,height    = 15.00,units     = "in",res       = 800)
+png("figs/mean_effect_size_bars_no_low_patents.png", width= 40.00,height= 35.00,units = "in",res= 200)
 p_mean_bars
 dev.off()
 
 
 #store means dfs 
 mean_df_store = data.frame()
-for(i in 1:4){
-  mean_df <- get_effect_size_means(sector_policy_match_2y[[i]])
-  mean_df$tech = techs[i]
+for(i in 1:5){
+  mean_df <- get_effect_size_means(sector_policy_match[[i]])
+  mean_df$tech = filtered_all$tech[i]
   mean_df_store <- rbind(mean_df_store,mean_df)
 }
 
-#write.csv(mean_df_store,'data/out/mean_dfs_fig_4b.csv')
+#write.csv(mean_df_store,'data/out/mean_dfs_fig_4b_no_low_patents.csv')

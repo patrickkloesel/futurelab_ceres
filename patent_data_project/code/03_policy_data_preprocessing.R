@@ -320,6 +320,8 @@ oecd_grouped_f <- oecd_grouped_f %>%
   ) %>% 
   unique()
 
+oecd_grouped_f = as.data.frame(oecd_grouped_f)
+rownames(oecd_grouped_f) <- NULL
 
 # number of introductions and tightenings
 oecd_grouped_f %>% filter(policy_sign == "positive") %>% nrow() #619 
@@ -337,3 +339,8 @@ oecd_grouped_f %>% nrow() #799
 oecd_grouped_f %>% pull(Policy) %>% unique() %>% length() #27
 
 write.csv(oecd_grouped_f,'data/out/OECD_data_preprocessed_June_24.csv')
+
+# make label df for climate treaties
+climate_treaty_label <- oecd_grouped_f %>% filter(Policy %in% "Ratification of Climate Treaties") %>% select(ISO, Module, Policy, Policy_name_fig_2_3, year) %>% mutate(label = 1)
+
+write.csv(climate_treaty_label,'data/out/climate_treaty_label.csv')

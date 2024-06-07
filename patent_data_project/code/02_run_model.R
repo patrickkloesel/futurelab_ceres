@@ -64,7 +64,7 @@ registerDoParallel(cl)
 models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel')) %:%  
   foreach(smpl = c("top_main"), .combine = rbind) %:% # specify samples
   foreach(a = c(1), .combine = rbind) %:%
-  foreach(p.value = c(0.01), .combine = rbind, .errorhandling = "remove") %dopar% {
+  foreach(p.value = c(0.025, 0.05), .combine = rbind, .errorhandling = "remove") %dopar% {
     dat <- df_mod %>% filter(ISO %in% samples[[smpl]])
     is <- isatpanel( # main function
       data = dat,
@@ -92,7 +92,7 @@ models <- foreach(f = f, .combine = rbind, .packages = c('tidyverse', 'getspanel
 print(nrow(models))
 stopCluster(cl) # stop parallelizing 
 
-saveRDS(models, ".\\results\\29_04_ihs_top22.RDS")  # save model output
+saveRDS(models, ".\\results\\03_06_ihs_top22_pval_robcheck_nils.RDS")  # save model output
 
 
 ## BROWN PATENTS (ROBUSTNESS CHECK)

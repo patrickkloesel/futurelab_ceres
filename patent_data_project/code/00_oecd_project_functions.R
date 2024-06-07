@@ -284,11 +284,8 @@ plot_counterfactual <- function(x, country, out, plus_t = 5, facet.scales = "fre
   
 }
 
-# Policy_name was originally Policy_name_fig_2_3 - 22.04 UPDATED TO 'POLICY' MOMENTANEOUSLY
 #produces Fig. 2+3
-plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5,symbol_size=3, ylim=c(0,10),policy_plot_prop=1, tech = "x",int_size=2,legend=TRUE){  
-  # removed label_df, after policy_match
-  # changed ylim (number of policy boxes per year) from 3 to 5
+plot_ts_example_with_policy <- function(country,res,out,policy_match,label_df, cube_size=5,symbol_size=3, ylim=c(0,10),policy_plot_prop=1, tech = "x",int_size=2,legend=TRUE){  
   p <- plot_counterfactual(res,country,out,int_size=int_size)
   
   iso = country ## here removed countrycode function
@@ -300,10 +297,6 @@ plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5
   #  country = 'South Korea'
   #}
   policy_match_country <- policy_match[policy_match$ISO==iso,]
-  # commented: patent proj doesnt need this
-  #if(sector != "x"){
-  #  policy_match_country = policy_match_country[policy_match_country$Module==sector,]
-  #}
   
   policy_match_country <- policy_match_country %>%
     group_by(year) %>%
@@ -311,24 +304,18 @@ plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5
   
   policy_match_plot <- policy_match_country[c('year','Policy_name_fig_2_3',"enumeration")] # remove 'Module' after year
   
-  # commented: patent proj doesnt need this 
-  #label_df_sub = label_df[label_df$country == country & label_df$Module==sector,]
-  #label_df_sub = select(label_df_sub,-c('country'))
-  #
-  #if(nrow(label_df_sub)>0){
-  #  EU_flags = data.frame(year = unique(label_df_sub$year), indicator = 0.9, icon = "\U1F1EA\U1F1FA")
-  #  
-  #  label_df_sub$icon <- ifelse(label_df_sub$Policy_name_fig_2_3 == "EU-MEPS", "\u2699",  # Manufacturing wheel icon
-  #                              ifelse(label_df_sub$Policy_name_fig_2_3 == "EU-Labels", "\U0001f3f7",  # Label icon
-  #                                     ifelse(label_df_sub$Policy_name_fig_2_3 == "EU-ETS", "\u20ac",  # Euro sign icon
-  #                                            ifelse(label_df_sub$Policy_name_fig_2_3 == 'EU', "\U0001F1E9\U0001F1EA", #EU flag
-  #                                                   ""))))}
-  #
-  ##enumerate the labels in each year s.t. they do not overlap in case of duplications, start at 2 bc we plot eu sign on 1
-  #label_df_sub <- label_df_sub %>%
-  #  group_by(year) %>%
-  #  mutate(enumeration = row_number()) %>% ungroup
-  #label_df_sub$enumeration = (label_df_sub$enumeration+1)-0.2
+  label_df_sub = label_df[label_df$ISO == iso,]
+  label_df_sub = select(label_df_sub,-c('ISO'))
+  
+  if(nrow(label_df_sub)>0){
+    label_df_sub$icon <- ifelse(label_df_sub$Policy_name_fig_2_3 == "Ratification of Climate Treaties", "\uD83C\uDF0D",  # globe icon ("\uD83C\uDF10" for other option)
+                                                     "")}
+  
+  #enumerate the labels in each year s.t. they do not overlap in case of duplications
+  label_df_sub <- label_df_sub %>%
+    group_by(year) %>%
+    mutate(enumeration = row_number()) %>% ungroup
+  label_df_sub$enumeration = (label_df_sub$enumeration)-0.5
   
   
   out_sub = out[out$id == country,]
@@ -365,13 +352,11 @@ plot_ts_example_with_policy <- function(country,res,out,policy_match,cube_size=5
       geom_rect(data = out_sub, aes(xmin = time-int_size, xmax = time+int_size, ymin = -Inf, ymax = Inf),fill = "grey",alpha = 0.3, na.rm = TRUE, show.legend=FALSE) +
       geom_point(data = policy_match_country, aes(x=year, y=enumeration, fill=Policy_name_fig_2_3),shape=22,size=cube_size)
       }
-    # commented: patent proj doesnt need this 
-    #if(nrow(label_df_sub)>0){
-    #  p_policy <- p_policy+geom_text(data = label_df_sub, aes(x = year, y = enumeration, label = icon),
-    #            hjust = 0, size = symbol_size)+
-    #    geom_text(data = EU_flags, aes(x = year, y = indicator, label = icon),
-    #              hjust = -0.1, size = symbol_size)
-    #}
+
+      if(nrow(label_df_sub)>0){
+      p_policy <- p_policy+geom_text(data = label_df_sub, aes(x = year, y = enumeration, label = icon),
+                hjust = 0, size = symbol_size)
+    }
     
     if(legend==FALSE){
       p_policy <- p_policy + theme(legend.position="none")
@@ -481,15 +466,24 @@ venn_diagram_plot_basic <- function(policy_match, tech, title, shape = 'circle')
   euler_input$percent = paste(euler_input$percent,'%', sep = '')
   
   euler_input$label = euler_input$percent
+  #
+  #if(tech == 'Energy' & title == 'Energy (Y02E)'){
+  #  pricing_subsidy = data.frame(combination = "Pricing&Subsidy", 
+  #                               n=0.5, 
+  #                               mean_coeff = 0, 
+  #                               percent=1, 
+  #                               label=1)
+  #  euler_input <- rbind(euler_input, pricing_subsidy)
+  #}
   
-  if(tech == 'Energy' & title == 'Energy'){
-    pricing_subsidy = data.frame(combination = "Pricing&Subsidy", 
+   if(tech == 'Ccmt' & title == 'CCMTs'){
+    pricing = data.frame(combination = "Pricing", 
                                  n=0.5, 
                                  mean_coeff = 0, 
                                  percent=1, 
                                  label=1)
-    euler_input <- rbind(euler_input, pricing_subsidy)
-    }
+    euler_input <- rbind(euler_input, pricing)
+  }
   
   euler_plot <- round(euler_input$n/sum(euler_input$n),2)*100
   
@@ -527,14 +521,17 @@ venn_diagram_plot_basic <- function(policy_match, tech, title, shape = 'circle')
   
   labels <- labels[match(labels_store$combination, labels$combination), ]
   
-  if(tech == 'Energy' & title == 'Energy'){
-    labels <- labels %>% mutate(label = case_when(combination=="Pricing&Subsidy" ~ "", TRUE ~ label))
+  #if(tech == 'Energy' & title == 'Energy (Y02E)'){
+  #  labels <- labels %>% mutate(label = case_when(combination=="Pricing&Subsidy" ~ "", TRUE ~ label))
+  #} else 
+  if(tech == 'Ccmt' & title == 'CCMTs'){
+    labels <- labels %>% mutate(label = case_when(combination=="Pricing" ~ "", TRUE ~ label))
   }
   
   p <- plot(fit,labels = list(cex=1.7, padding=grid::unit(20, "mm")), quantities = list(labels = labels$label, cex = 2, padding=grid::unit(20, "mm")), fills=colors_plot) #adjust_labels = TRUE,
   ##transform into ggplot object to finalize 
   
-  p <- cowplot::plot_grid(plotlist=list(p)) + ggtitle(title)+theme(plot.title = element_text(size=40,face = 'bold',margin=margin(0,0,30,0)),plot.margin = unit(c(0,0,0,0), "cm"))
+  p <- cowplot::plot_grid(plotlist=list(p)) + ggtitle(title)+theme(text = element_text(size = 40), plot.title = element_text(size=40,face = 'bold',margin=margin(0,0,30,0)),plot.margin = unit(c(0,0,0,0), "cm"))
   
   
   return(list(p, euler_input))
@@ -555,7 +552,7 @@ get_effect_size_means <- function(out){
     ungroup() %>%
     mutate(SinglePolicy = if_else(Count == 1, 1, 0))
   
-  out$coef_percent <- (exp(policy_no_dups$coeff)-1)*100
+  out$coef_percent <- (exp(out$coeff)-1)*100
   
   mean_df <- out %>% 
     group_by(Policy_name_fig_4, SinglePolicy, Cluster_categories) %>% 
@@ -581,7 +578,7 @@ get_effect_size_means_pricing <- function(out){
   #only keep mixes 
   out <- out[out$SinglePolicy == 0,]
   
-  out$coef_percent <- (exp(policy_no_dups$coeff)-1)*100
+  out$coef_percent <- (exp(out$coeff)-1)*100
   
   #label as pricing mix/no pricing mix 
   
