@@ -62,6 +62,6 @@ ven_panel <- cowplot::plot_grid(plotlist=list(blank_plot,blank_plot,blank_plot,b
                                               blank_plot,blank_plot,blank_plot,blank_plot,vens[[5]]), nrow=5,ncol=5,rel_widths = c(1,0.1, 1,0.1,1),rel_heights = c(1,0.1,1,0.1,1))+theme(text=element_text(size = 50), plot.margin = unit(c(1,1,1,1),'cm'))
 
 #save fig
-png("Figs\\ven_diagrams_h_09_063.png", width     = 40.00,height    = 40.00,units     = "in",res       = 300)
+png("Figs\\ven_diagrams_09_06.png", width     = 40.00,height    = 40.00,units     = "in",res       = 300)
 ven_panel
 dev.off()

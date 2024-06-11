@@ -54,7 +54,7 @@ for(i in 1:5){
 }
 
 # total single match= 2, total_more_matches: 18 -> 18/20 = 0.9 -> ~90%. (without considering ratification of climate treaties or unmatched breaks!)
-
+# total unmatched breaks: 1 (CHN, WIND,2004)
 ## if we add climate treaties then we have no break matching a single policy, as spain 2003 in energy and solar is matched by air emissions standards + kyoto
 
 ## for effect size bars we need to remove countries with break where the previous year there was a low number
