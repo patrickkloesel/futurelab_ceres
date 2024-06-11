@@ -260,9 +260,10 @@ plot_counterfactual <- function(x, country, out, plus_t = 5, facet.scales = "fre
     scale_y_continuous(breaks = pretty_breaks(n=3))+
     xlim(c(1998,max(max(out$time)+2,max(out$max_year),2022)))+
     theme(
-      plot.title = element_text(size=25),
+      plot.title = element_blank(), # changed from element_text(size=25) for china plot
       plot.margin = unit(c(0, 0, 0, 0), "cm"),
       strip.background = element_blank(),
+      strip.text.x = element_blank(), # added this for the china case
       panel.border = element_rect(colour = "grey",fill = NA),
       panel.background = element_blank(),
       axis.line.x = element_blank(),
@@ -342,7 +343,8 @@ plot_ts_example_with_policy <- function(country,res,out,policy_match,label_df, c
       legend.key.size = unit(0.2,'cm'),
       legend.text = element_text(size=10),
       legend.title = element_blank(),
-      legend.position = 'none')
+      legend.position = 'none', 
+     ) 
     
   if(nrow(policy_match_plot)>0){
       policy_match_plot <- policy_match_plot %>%
@@ -375,8 +377,8 @@ plot_ts_example_with_policy <- function(country,res,out,policy_match,label_df, c
 create_fig_2_3_legend <- function(key_size = 1, font_size = 15, CI_width = 2){
   
   legend_data_1 <- data.frame('x' = 1:10, 'y' = 1:10, color = 'Model fit ')
-  legend_data_2 <- data.frame('x' = 1:10, 'y' = 1:10, color = 'Observed emissions')
-  legend_data_3 <- data.frame('x' = 1:10, 'y' = 1:10,lower = 0:9,upper=2:11, color = 'Counterfactual emissions\nand 95% CI')
+  legend_data_2 <- data.frame('x' = 1:10, 'y' = 1:10, color = 'Observed patents')
+  legend_data_3 <- data.frame('x' = 1:10, 'y' = 1:10,lower = 0:9,upper=2:11, color = 'Counterfactual patents\nand 95% CI')
   legend_data_4 <- data.frame('x' = 1:10, 'y' = 1:10,color = 'Break with 99% CI')
   
   g_1 <- ggplot(legend_data_1)+geom_line(aes(y=y,x=x,color=color),linewidth=1)+
@@ -528,7 +530,7 @@ venn_diagram_plot_basic <- function(policy_match, tech, title, shape = 'circle')
     labels <- labels %>% mutate(label = case_when(combination=="Pricing" ~ "", TRUE ~ label))
   }
   
-  p <- plot(fit,labels = list(cex=3.7, padding=grid::unit(40, "mm")), quantities = list(labels = labels$label, cex = 4, padding=grid::unit(40, "mm")), fills=colors_plot) #adjust_labels = TRUE,
+  p <- plot(fit,labels = list(cex=3.7, padding=grid::unit(40, "mm")), quantities = list(labels = labels$label, cex = 4, padding=grid::unit(40, "mm")), fills=colors_plot, adjust_labels = TRUE)
   ##transform into ggplot object to finalize 
   
   p <- cowplot::plot_grid(plotlist=list(p)) + ggtitle(title)+theme(text = element_text(size = 40), plot.title = element_text(size=40,face = 'bold',margin=margin(0,0,30,0)),plot.margin = unit(c(0,0,0,0), "cm"))

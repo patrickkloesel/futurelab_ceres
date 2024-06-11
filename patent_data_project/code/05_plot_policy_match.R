@@ -52,8 +52,8 @@ for(s in unique(policy_out_neg$tech)){
     #}else{
     #  res = policy_out_neg_sub[2,]$is[[1]]
     #}
-    p_out<- plot_ts_example_with_policy(c,res,out,policy_match,label_df = label_df, tech = s,ylim = ylims[[i]], symbol_size = 4,cube_size = box_size[i],policy_plot_prop = prop[i]) # levato label_df = label_df
-    p_out <- p_out + labs(title = tech_titles[counter])
+    p_out<- plot_ts_example_with_policy(c,res,out,policy_match,label_df = label_df, tech = s,ylim = ylims[[i]], symbol_size = 4,cube_size = box_size[i],policy_plot_prop = prop[i]) 
+    p_out <- p_out #+ labs(title = tech_titles[counter])
     myplots[[counter]] <- p_out
     counter = counter+1
   }

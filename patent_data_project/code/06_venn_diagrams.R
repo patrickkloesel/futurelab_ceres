@@ -3,11 +3,11 @@ library(eulerr)
 library(here)
 library("xtable")
 
-here::i_am("code/06_Fig_4.R")
+here::i_am("code/06_venn_diagrams.R")
 source('code/00_oecd_project_functions.R')
 
 #load raw policy data for computing detection shares
-oecd_grouped = read.csv('data/out/OECD_data_preprocessed_May_24.csv')
+oecd_grouped = read.csv('data/out/OECD_data_preprocessed_June_24.csv')
 
 oecd_grouped = oecd_grouped[oecd_grouped$year >1999,]
 oecd_grouped = oecd_grouped[oecd_grouped$year <2021,]
@@ -30,10 +30,12 @@ filtered_all <- sector_policy_match(policy_out_pos, specs)
 filtered_all <- filtered_all[filtered_all$spec == 'policy_match_pos',]
 
 ###venn diagrams
+tech_colors = c("#bfef45", "#FF0000", "#00A08A","#F2AD00", "#5BBCD6")
+names(tech_colors) = c('CCMTs','Energy','Wind','Solar','Storage')
 
 ###create venn diagrams (Fig. 4B)
 
-tech_titles = c("CCMTs", "Energy (Y02E)","Wind (Y02E10/70-76)", "Solar (Y02E10/40-60)", "Storage (Y02E60/10-16)")
+tech_titles = c("CCMTs", "Energy","Wind", "Solar", "Storage")
 ven_diagrams <- foreach(i = 1:nrow(filtered_all), .combine = rbind, .packages = c('tidyverse', 'getspanel')) %dopar% {
   #list[res,out,policy_match] <- extract_and_match(i,results,oecd_grouped)
   models = tibble(year_sample = filtered_all$spec[i],
@@ -45,17 +47,25 @@ ven_diagrams <- foreach(i = 1:nrow(filtered_all), .combine = rbind, .packages = 
 
 vens = ven_diagrams$plot
 
+for (i in 1:5){
+  vens[[i]] <- vens[[i]] + theme(plot.background = element_rect(color = tech_colors[i],linewidth=3), plot.margin = unit(c(1,1,1,1), "cm"))
+}
+
+
+
 blank_plot <- ggdraw()
-ven_panel <- cowplot::plot_grid(plotlist=list(blank_plot,blank_plot,blank_plot,vens[[3]], 
-                                              vens[[1]],blank_plot,vens[[2]],vens[[4]],
-                                              blank_plot,blank_plot,blank_plot,vens[[5]]), nrow=3,ncol=4,rel_widths = c(1,0.05,1,1),rel_heights = c(1,1,1,1))+theme(text=element_text(size = 50), plot.margin = unit(c(1,1,1,1),'cm'))
+ven_panel <- cowplot::plot_grid(plotlist=list(blank_plot,blank_plot,blank_plot,blank_plot,vens[[3]], 
+                                              blank_plot,blank_plot,blank_plot,blank_plot,blank_plot,
+                                              vens[[1]],blank_plot,vens[[2]],blank_plot,vens[[4]],
+                                              blank_plot,blank_plot,blank_plot,blank_plot,blank_plot, 
+                                              blank_plot,blank_plot,blank_plot,blank_plot,vens[[5]]), nrow=5,ncol=5,rel_widths = c(1,0.1, 1,0.1,1),rel_heights = c(1,0.1,1,0.1,1))+theme(text=element_text(size = 50), plot.margin = unit(c(1,1,1,1),'cm'))
 
 #save fig
-png("Figs\\ven_diagrams_h.png", width     = 36.00,height    = 34.00,units     = "in",res       = 300)
+png("Figs\\ven_diagrams_h_09_063.png", width     = 40.00,height    = 40.00,units     = "in",res       = 300)
 ven_panel
 dev.off()
 
-#### save plot 1 by 1 
-png("Figs\\ven_diagrams_storage.png", width     = 25.00,height    = 25.00,units     = "in",res       = 600)
-vens[[5]]
-dev.off()
+##### save plot 1 by 1 
+#png("Figs\\ven_diagrams_storage.png", width     = 25.00,height    = 25.00,units     = "in",res       = 600)
+#vens[[5]]
+#dev.off()
