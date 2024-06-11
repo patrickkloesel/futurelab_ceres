@@ -73,16 +73,16 @@ oecd_phaseout = oecd_grouped
 #we catch all zero values after a non-zero value
 oecd_phaseout = oecd_phaseout %>% group_by(ISO,Module,Policy) %>% filter(Value == 0 & lag(Value, default = 0) > 0)
 
-#now filter out all 2022 (and 2021?) phase out
+#now filter out all 2022 phase out
 oecd_phaseout = oecd_phaseout[!oecd_phaseout$year == 2022,]
-#oecd_phaseout = oecd_phaseout[!oecd_phaseout$year == 2021,]
+#oecd_phaseout = oecd_phaseout[!oecd_phaseout$year == 2021,] what about 2021? not filtered for now
 
 #add a marker for phase outs
 oecd_phaseout$phase_out = 1
-#
-# #subset and merge
+
+#subset and merge
 oecd_phaseout_sub = as.data.frame(oecd_phaseout[c('ISO','Module','Policy','year','phase_out')])
-#
+
 oecd_grouped = merge(oecd_grouped,oecd_phaseout_sub,by=c('ISO','Module','Policy','year'),all.x=TRUE)
 oecd_grouped$phase_out[is.na(oecd_grouped$phase_out)] = 0
 
@@ -117,6 +117,7 @@ oecd_grouped$diff_2_adj[is.na(oecd_grouped$diff_2_adj)] = 0
 #4. get policy slow phase out (loosening)
 
 oecd_slowout = oecd_grouped
+
 #make dummies if we get a negative jump from first or second lag
 oecd_slowout = oecd_slowout %>% mutate(diff_adj_neg = ifelse(diff<=-2,1,0), diff_2_adj_neg = ifelse(diff_2<=-2,1,0))
 
@@ -140,6 +141,7 @@ oecd_slowout <- oecd_slowout %>% filter(diff_adj_neg==1 | diff_2_adj_neg==1)
 
 #subset
 oecd_slowout_sub = as.data.frame(oecd_slowout[c('ISO','Module','Policy','year','diff_2_adj_neg', 'diff_adj_neg')])
+
 #merge
 oecd_grouped = merge(oecd_grouped,oecd_slowout_sub,by=c('ISO','Module','Policy','year'),all.x=TRUE)
 oecd_grouped$diff_adj_neg[is.na(oecd_grouped$diff_adj_neg)] = 0
@@ -156,14 +158,15 @@ oecd_grouped %>% filter(diff_adj ==1 & diff_2_adj_neg ==1)
 oecd_grouped %>% filter(diff_2_adj ==1 & diff_adj_neg ==1)
 
 ## restrict policy instrument types 
-## ALLORA QUESTO PROBABILMENTE VA RIFATTO PERCHE QUI ABBIAMO SELEZIONATO SOLO LE POLICIES CHE HANNO EFFETTIVAMENTE UN MATCH!! PERO CON IL NUOVO CODING POTREBBERO ESSERE DIVERSE? MM FORSE NO PERCHE IN REALTA FILTRIAMO TUTTO QUELLO CHE GIA C'ERA QUINDI IN CASO CE N'è DI MENO
-policy_types <- read_csv("data/out/policy_types_innovation.csv") %>% pull(Policy) #   %>% filter(Policy_match == 1) levato questo per ora: prima facciamo il policy matching e poi vediamo come sono matchate
+## we only include instruments related to: electricity, industry, RDD, and international climate treaties and phase-outs
+policy_types <- read_csv("data/out/policy_types_innovation.csv") %>% pull(Policy) 
 
 oecd_grouped = oecd_grouped %>% filter(Policy %in% policy_types)
 
 ## RDD policies: filter out policy introductions, tightenings, phase-outs, loosenings that are result of policy instability
 ISO_main <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR")
 
+# create measure of policy instability by using ad-hoc z-score
 oecd_rdd <- oecd_data %>% 
   group_by(ISO, Policy) %>% 
   mutate(rollsd_5 = roll_sd(Value, width=5, min_obs=1), # compute rolling standard deviation for 5 years
@@ -187,12 +190,15 @@ instability_detection <- oecd_rdd %>%
                                  change_5 == 1 & z_score_5 > 0 ~ "spike",
                                  TRUE ~ NA)) 
 
+# merge information on instability with our oecd policy data 
 oecd_grouped_instability <- left_join(instability_detection, oecd_grouped, by =c("ISO","year", "Module", "Policy", "Value", "Policytype", "Policytype_detail"))
 
 ### Additional rule to filter out tightenings and loosenings that are results of spikes:
+
 # for each year where there is a loosening or a tightening:
-#1. if there is a dip or a spike in previous y or 2y the T/L, 
-#2. if the difference between the value and the rolling median (in the previous year) has to be less/more than -2/2 
+#1. if there is a dip or a spike in previous year or 2 year of the tigtening/loosening, 
+#2. if the difference between the actual CAPMF value and the rolling median (in the previous year) is small (more/less than -2/2)
+#3. filter out (turn to 0)
 
 oecd_grouped_instability <- oecd_grouped_instability %>% 
   group_by(ISO, Policy) %>% 
@@ -212,9 +218,9 @@ oecd_grouped_instability <- oecd_grouped_instability %>%
          phase_out = ifelse(condition_1_t2 ==1 & condition_2_t2 == 1, 0,phase_out), 
          introduction = ifelse(condition_1_t2 ==1 & condition_2_t2 == 1, 0,introduction))
 
-## Filter out instability detection too now
+## Filter out instability detection results as well 
 filtered_oecd <- oecd_grouped_instability %>%  # total 211 policies
-  filter(is.na(change_type)==T) %>% # remove dips and spikes
+  filter(is.na(change_type)==T) %>% # remove
   filter(diff_adj==1 | diff_2_adj==1 | introduction==1 | phase_out==1 | diff_adj_neg ==1 | diff_2_adj_neg==1 ) %>% # select tightenings, loosenings, introductions, phase-outs
   select(ISO, Module, Policy, year, Value, Policytype, Policytype_detail, diff, diff_2, introduction, phase_out, diff_adj, diff_2_adj, diff_adj_neg, diff_2_adj_neg) 
 
@@ -249,7 +255,7 @@ names(oecd_names)[names(oecd_names) == "Policy_new"] <- "Policy"
 oecd_grouped <- merge(oecd_grouped, oecd_names, by=c('Module','Policy'),all.x=TRUE)
 
 ## filter for our current country sample
-#ISO_main <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR")
+ISO_main <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR")
 oecd_grouped_f <- oecd_grouped %>% filter(ISO %in% ISO_main)
 
 #order the data by year in each group 
@@ -265,8 +271,6 @@ oecd_grouped_f <- oecd_grouped_f %>%
 
 #we clean up the remaining NAs in the label column. They come from add-on policies and the first occurrence of policies that exist multiple times
 oecd_grouped_f$label[is.na(oecd_grouped_f$label)] = 'jump'
-
-## create label international climate treaties 
 
 ##code whether policy is an introduction or tightening vs phase-out and loosening
 oecd_grouped_f <- oecd_grouped_f %>% 
@@ -330,7 +334,7 @@ oecd_grouped_f %>% filter(policy_sign == "positive") %>% nrow() #619
 oecd_grouped_f %>% filter(policy_sign == "negative") %>% nrow() #175
 
 # number of countries
-oecd_grouped_f %>% pull(ISO) %>% unique() %>% length() # 22
+oecd_grouped_f %>% pull(ISO) %>% unique() %>% length() #22
 
 # number of policies retained
 oecd_grouped_f %>% nrow() #799

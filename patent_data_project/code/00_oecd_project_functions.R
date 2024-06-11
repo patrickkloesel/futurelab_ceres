@@ -52,7 +52,7 @@ get_breaks_list <- function(res){
 
 
 ## filters for correct country and interval years of breaks to match correctly with OECD climate policy data
-##nNecessary for match_oecd_policies()
+##necessary for match_oecd_policies()
 filter_oecd <- function(data,country,min_year,max_year){
   data = data %>% 
     filter(ISO %in% country) %>% 
@@ -260,7 +260,7 @@ plot_counterfactual <- function(x, country, out, plus_t = 5, facet.scales = "fre
     scale_y_continuous(breaks = pretty_breaks(n=3))+
     xlim(c(1998,max(max(out$time)+2,max(out$max_year),2022)))+
     theme(
-      plot.title = element_blank(), # changed from element_text(size=25) for china plot
+      plot.title = element_text(size=25), # change to element_blank() to remove country titles
       plot.margin = unit(c(0, 0, 0, 0), "cm"),
       strip.background = element_blank(),
       strip.text.x = element_blank(), # added this for the china case
@@ -289,27 +289,21 @@ plot_counterfactual <- function(x, country, out, plus_t = 5, facet.scales = "fre
 plot_ts_example_with_policy <- function(country,res,out,policy_match,label_df, cube_size=5,symbol_size=3, ylim=c(0,10),policy_plot_prop=1, tech = "x",int_size=2,legend=TRUE){  
   p <- plot_counterfactual(res,country,out,int_size=int_size)
   
-  iso = country ## here removed countrycode function
-  # commented: patent proj doesnt need this 
-  #if(country == 'SouthAfrica'){
-  #  iso = 'ZAF'
-  #}
-  #if(iso == 'KOR'){
-  #  country = 'South Korea'
-  #}
+  iso = country ## difference with global evidence paper: here removed countrycode function
+  
   policy_match_country <- policy_match[policy_match$ISO==iso,]
   
   policy_match_country <- policy_match_country %>%
     group_by(year) %>%
     mutate(enumeration = row_number()) %>% ungroup
   
-  policy_match_plot <- policy_match_country[c('year','Policy_name_fig_2_3',"enumeration")] # remove 'Module' after year
+  policy_match_plot <- policy_match_country[c('year','Policy_name_fig_2_3',"enumeration")] # difference with global evidence paper: removed 'Module' after year
   
   label_df_sub = label_df[label_df$ISO == iso,]
   label_df_sub = select(label_df_sub,-c('ISO'))
   
   if(nrow(label_df_sub)>0){
-    label_df_sub$icon <- ifelse(label_df_sub$Policy_name_fig_2_3 == "Ratification of Climate Treaties", "\uD83C\uDF0D",  # globe icon ("\uD83C\uDF10" for other option)
+    label_df_sub$icon <- ifelse(label_df_sub$Policy_name_fig_2_3 == "Ratification of Climate Treaties", "\uD83C\uDF0D",  # globe icon ("\uD83C\uDF10" as other option)
                                                      "")}
   
   #enumerate the labels in each year s.t. they do not overlap in case of duplications
@@ -417,26 +411,26 @@ create_fig_2_3_legend <- function(key_size = 1, font_size = 15, CI_width = 2){
   return(my_legend)
 }
 
-##match across sectors 
+##match across technologies (old 'sector_policy_match' from global evidence paper) 
 
-sector_policy_match <- function(df, spec){
-  sector_policy_match = tibble()
+tech_policy_match <- function(df, spec){
+  tech_policy_match = tibble()
   counter=1
   for(s in c('Ccmt','Energy','Solar','Wind','Storage')){
     for(sp in spec){
       policy_out_sub = df[df$tech==s,]
       combined_out = rbind(policy_out_sub[1,sp][[1]][[1]],policy_out_sub[2,sp][[1]][[1]])
       
-      spec_tibble = tibble(sector_policy_match = list(combined_out),
+      spec_tibble = tibble(tech_policy_match = list(combined_out),
                            tech = s,
                            spec = sp)
-      sector_policy_match = rbind(sector_policy_match, spec_tibble)
+      tech_policy_match = rbind(tech_policy_match, spec_tibble)
       
-      #sector_policy_match[[counter]] = combined_out
+      #tech_policy_match[[counter]] = combined_out
       #counter = counter+1
     }
   }
-  return(sector_policy_match)
+  return(tech_policy_match)
 }
 
 venn_diagram_plot_basic <- function(policy_match, tech, title, shape = 'circle'){
@@ -468,15 +462,15 @@ venn_diagram_plot_basic <- function(policy_match, tech, title, shape = 'circle')
   euler_input$percent = paste(euler_input$percent,'%', sep = '')
   
   euler_input$label = euler_input$percent
-  #
-  #if(tech == 'Energy' & title == 'Energy (Y02E)'){
-  #  pricing_subsidy = data.frame(combination = "Pricing&Subsidy", 
-  #                               n=0.5, 
-  #                               mean_coeff = 0, 
-  #                               percent=1, 
-  #                               label=1)
-  #  euler_input <- rbind(euler_input, pricing_subsidy)
-  #}
+  
+  if(tech == 'Energy' & title == 'Energy (Y02E)'){
+    pricing_subsidy = data.frame(combination = "Pricing&Subsidy", 
+                                 n=0.5, 
+                                 mean_coeff = 0, 
+                                 percent=1, 
+                                 label=1)
+    euler_input <- rbind(euler_input, pricing_subsidy)
+  }
   
    if(tech == 'Ccmt' & title == 'CCMTs'){
     pricing = data.frame(combination = "Pricing", 
@@ -523,9 +517,9 @@ venn_diagram_plot_basic <- function(policy_match, tech, title, shape = 'circle')
   
   labels <- labels[match(labels_store$combination, labels$combination), ]
   
-  #if(tech == 'Energy' & title == 'Energy (Y02E)'){
-  #  labels <- labels %>% mutate(label = case_when(combination=="Pricing&Subsidy" ~ "", TRUE ~ label))
-  #} else 
+  if(tech == 'Energy' & title == 'Energy (Y02E)'){
+    labels <- labels %>% mutate(label = case_when(combination=="Pricing&Subsidy" ~ "", TRUE ~ label))
+  } else 
   if(tech == 'Ccmt' & title == 'CCMTs'){
     labels <- labels %>% mutate(label = case_when(combination=="Pricing" ~ "", TRUE ~ label))
   }

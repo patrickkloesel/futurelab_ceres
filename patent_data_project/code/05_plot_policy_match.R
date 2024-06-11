@@ -6,6 +6,7 @@ source('code/00_oecd_project_functions.R')
 conflicts_prefer(ggpubr::get_legend)
 
 oecd_grouped = read.csv("data/out/OECD_data_preprocessed_June_24.csv")
+## filter oecd data for 'sign'. positive= introductions and tightenings, negative=phase-outs and loosenings
 #oecd_grouped_pos <- oecd_grouped %>% filter(policy_sign=="positive") %>% filter(!Policy == "Ratification of Climate Treaties")
 oecd_grouped_neg <- oecd_grouped %>% filter(policy_sign=="negative") %>% filter(!Policy == "Ratification of Climate Treaties")
 
@@ -29,9 +30,9 @@ tech_plots = list()
 ncol = c(4,1,4,2,6)  # n of col for each panel: adjust to the unique number of countries in each technology
 box_size = c(5,5,5,5,5) # size of policy boxes 
 ylims = list(c(0,9),c(0,9),c(0,9),c(0,9),c(0,9)) # max n of policy boxes that can be stacked on top of each other
-prop = c(0.9,0.9,0.9,0.9,0.8)
+prop = c(0.9,0.9,0.9,0.9,0.9)
 tech_titles = c("Climate change mitigation technologies (CCMTs)", "Energy (Y02E)","Wind (Y02E10/70-76)", "Solar (Y02E10-40)", "Storage (Y02E60/10-16)")
-#icon_links = c("Logos\\Buildings.png","Logos\\Electricity.png","Logos\\Industry.png","Logos\\Transport.png")
+
 i=1
 for(s in unique(policy_out_neg$tech)){
   policy_out_neg_sub = policy_out_neg[policy_out_neg$tech == s,] # iterate on row of tech class
@@ -39,27 +40,20 @@ for(s in unique(policy_out_neg$tech)){
   policy_match = oecd_grouped_neg
   
   myplots = list()
-  #logo <- ggdraw() +
-  #  draw_image(icon_links[i])
+
   counter = 1
-  #myplots[[counter]] = logo
-  
+
   countries = unique(out$id)
-  #counter = counter+1
+  
   for(c in countries){
-    #if(c %in% hi_countries){
-    res = policy_out_neg_sub[1,]$is[[1]] # here we only have one country grouping so only [[1]] is needed
-    #}else{
-    #  res = policy_out_neg_sub[2,]$is[[1]]
-    #}
+    res = policy_out_neg_sub[1,]$is[[1]]
+
     p_out<- plot_ts_example_with_policy(c,res,out,policy_match,label_df = label_df, tech = s,ylim = ylims[[i]], symbol_size = 4,cube_size = box_size[i],policy_plot_prop = prop[i]) 
-    p_out <- p_out #+ labs(title = tech_titles[counter])
+    p_out <- p_out 
     myplots[[counter]] <- p_out
     counter = counter+1
   }
-  #sector_policies = data.frame(sector_policies = oecd_grouped[,c('Policy_name_fig_2_3')]) # removed oecd_grouped$Module == s inside squared brackets before comma (filters rows)
-  #sector_policies = sector_policies[!duplicated(sector_policies),]
-  #sector_policies = data.frame(Policy_name_fig_2_3 = sector_policies)
+
   p_legend <- ggplot(oecd_grouped_neg,aes(x=Policy_name_fig_2_3,fill=Policy_name_fig_2_3))+
     geom_bar(color='black',size = 0.02)+
     scale_fill_manual('',values = color_dict)+
@@ -70,8 +64,7 @@ for(s in unique(policy_out_neg$tech)){
           rect = element_rect(fill = "transparent"),
           legend.position = 'bottom')
   
-  #legend_1 <- create_fig_2_3_legend() removed general legend for now to make things simpler
-  
+  # add policy legend to 2=energy plot and 5=storage plot 
   if(i==2 | i==5){
     legend <- ggpubr::get_legend(p_legend)
     p <- cowplot::plot_grid(plotlist=myplots,ncol=ncol[i])
@@ -92,7 +85,7 @@ for(s in unique(policy_out_neg$tech)){
   
 }
 
-# save figure
+# save figure 1 by 1
 
 #path = paste("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\figs\\",'Ccmt_Energy_03_06_pos',".png",sep='')
 #

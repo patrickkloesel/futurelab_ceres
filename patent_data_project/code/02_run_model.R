@@ -7,6 +7,7 @@ library(here)
 
 here::i_am("code/02_run_model.R")
 
+## load main dataset
 df <- read.csv(here::here("data/out/patents_panel_5techs_spread.csv"))
 
 # For coding ETS dummy
@@ -29,7 +30,7 @@ df_mod <- df %>%
          lgdp_sq = log(gdp)^2, 
          lbrown = log(brown_patents+1), # add 1 because there are 3 zeros
          across(contains("count"), ~log(.x + 1), .names = "log_{.col}"), # log transformation
-         across(starts_with("count"), ~asinh(.x), .names = "ihs_{.col}"), # inverse hyperbolic sign transformation
+         across(starts_with("count"), ~asinh(.x), .names = "ihs_{.col}"), # inverse hyperbolic sine transformation
          #across(starts_with("count"), ~(.x / max(.x)), .names = "max_{.col}"), # normalisation wrt max of each technology
          share_energy_tot = (count_energy / tot_count)*100, # create shares
          share_solar_tot = (count_solar / tot_count)*100,

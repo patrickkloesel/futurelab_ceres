@@ -24,7 +24,7 @@ for(i in 1:5){
 specs = c('policy_match_pos','policy_match_pos_2y','policy_match_pos_3y')
 
 #extract DFs
-filtered_all <- sector_policy_match(policy_out_pos, specs)
+filtered_all <- tech_policy_match(policy_out_pos, specs)
 
 #we operate based on the 2y match in the main text 
 filtered_all <- filtered_all[filtered_all$spec == 'policy_match_pos',]
@@ -40,13 +40,14 @@ ven_diagrams <- foreach(i = 1:nrow(filtered_all), .combine = rbind, .packages = 
   #list[res,out,policy_match] <- extract_and_match(i,results,oecd_grouped)
   models = tibble(year_sample = filtered_all$spec[i],
                   tech = filtered_all$tech[i],
-                  plot = list(venn_diagram_plot_basic(filtered_all$sector_policy_match[[i]],filtered_all$tech[i], title = tech_titles[i])[[1]]),
-                  euler_input = list(venn_diagram_plot_basic(filtered_all$sector_policy_match[[i]],filtered_all$tech[i], title = tech_titles[i])[[2]]))
+                  plot = list(venn_diagram_plot_basic(filtered_all$tech_policy_match[[i]],filtered_all$tech[i], title = tech_titles[i])[[1]]),
+                  euler_input = list(venn_diagram_plot_basic(filtered_all$tech_policy_match[[i]],filtered_all$tech[i], title = tech_titles[i])[[2]]))
   
 }
 
 vens = ven_diagrams$plot
 
+## add coloured rectangles
 for (i in 1:5){
   vens[[i]] <- vens[[i]] + theme(plot.background = element_rect(color = tech_colors[i],linewidth=3), plot.margin = unit(c(1,1,1,1), "cm"))
 }
@@ -64,8 +65,3 @@ ven_panel <- cowplot::plot_grid(plotlist=list(blank_plot,blank_plot,blank_plot,b
 png("Figs\\ven_diagrams_h_09_063.png", width     = 40.00,height    = 40.00,units     = "in",res       = 300)
 ven_panel
 dev.off()
-
-##### save plot 1 by 1 
-#png("Figs\\ven_diagrams_storage.png", width     = 25.00,height    = 25.00,units     = "in",res       = 600)
-#vens[[5]]
-#dev.off()

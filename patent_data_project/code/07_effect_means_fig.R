@@ -2,7 +2,7 @@ library(eulerr)
 library(here)
 library("xtable")
 
-here::i_am("code/06_Fig_4.R")
+here::i_am("code/07_effect_means_fig.R")
 source('code/00_oecd_project_functions.R')
 
 #load raw policy data for computing detection shares
@@ -11,7 +11,7 @@ oecd_grouped = read.csv('data/out/OECD_data_preprocessed_June_24.csv')
 oecd_grouped = oecd_grouped[oecd_grouped$year >1999,]
 oecd_grouped = oecd_grouped[oecd_grouped$year <2021,]
 
-#load matched policy + break data (filtered version for counting) 
+#load matched policy + break data (positive breaks only) 
 policy_out_pos = readRDS("results/28_05_policy_out_pos.RDS") 
 
 #remove ratification of climate treaties
@@ -23,7 +23,7 @@ for(i in 1:5){
 specs = c('policy_match_pos','policy_match_pos_2y','policy_match_pos_3y')
 
 #extract DFs
-filtered_all <- sector_policy_match(policy_out_pos, specs)
+filtered_all <- tech_policy_match(policy_out_pos, specs)
 
 #we operate based on the 2y match in the main text 
 filtered_all <- filtered_all[filtered_all$spec == 'policy_match_pos',]
@@ -31,7 +31,7 @@ filtered_all <- filtered_all[filtered_all$spec == 'policy_match_pos',]
 ## count how many breaks we have matched 
 sum_breaks = 0
 for(i in 1:5){
-  tech_iter <- filtered_all$sector_policy_match[[i]]
+  tech_iter <- filtered_all$tech_policy_match[[i]]
   unique_breaks <- tech_iter %>% pull(unique_break_identifier) %>% unique() %>% length()
   sum_breaks = sum_breaks + unique_breaks
 }
@@ -43,14 +43,14 @@ total_more_matches = 0
 total_single_match = 0
 
 for(i in 1:5){
-  sector_match <- filtered_all$sector_policy_match[[i]]
-  sector_count <- sector_match %>% group_by(unique_break_identifier) %>% count()
+  tech_match <- filtered_all$tech_policy_match[[i]]
+  tech_count <- tech_match %>% group_by(unique_break_identifier) %>% count()
   
-  total_more_matches = total_more_matches + nrow(sector_count[sector_count$n>1,])
-  total_single_match = total_single_match + nrow(sector_count[sector_count$n<=1,])
+  total_more_matches = total_more_matches + nrow(tech_count[tech_count$n>1,])
+  total_single_match = total_single_match + nrow(tech_count[tech_count$n<=1,])
   
-  print(paste("for ", filtered_all$tech[i]," the number of breaks with at least 2 matches is ", nrow(sector_count[sector_count$n>1,]), sep = ''))
-  print(paste("for ", filtered_all$tech[i]," the number of breaks with a single match is ", nrow(sector_count[sector_count$n<=1,]), sep = ''))
+  print(paste("for ", filtered_all$tech[i]," the number of breaks with at least 2 matches is ", nrow(tech_count[tech_count$n>1,]), sep = ''))
+  print(paste("for ", filtered_all$tech[i]," the number of breaks with a single match is ", nrow(tech_count[tech_count$n<=1,]), sep = ''))
 }
 
 # total single match= 2, total_more_matches: 18 -> 18/20 = 0.9 -> ~90%. (without considering ratification of climate treaties or unmatched breaks!)
@@ -90,8 +90,8 @@ for (i in 1:5){
 
 
 ### effect size bars (Fig. 4A)
-sector_policy_match = filtered_all$sector_policy_match[filtered_all$spec == "policy_match_pos"]
-tech_colors = c("#bfef45", "#EB5600", "#E7C019","#3B9AB2","#BAC36B")
+tech_policy_match = filtered_all$tech_policy_match[filtered_all$spec == "policy_match_pos"]
+tech_colors = c("#bfef45", "#FF0000", "#F2AD00","#00A08A","#5BBCD6")
 names(tech_colors) = c('CCMTs','Energy','Solar','Wind','Storage')
 ylims= list(c(0,43),c(0,97),c(0,105),c(0,250),c(0,255))
 tech_titles = c("CCMTs", "Energy (Y02E)","Wind (Y02E10/70-76)", "Solar (Y02E10/40-60)", "Storage (Y02E60/10-16)")
@@ -100,10 +100,10 @@ my_mean_plots = list()
 for(i in 1:5){
   
   #compute mean effect size (mix vs single policy)
-  mean_df <- get_effect_size_means(sector_policy_match[[i]])
+  mean_df <- get_effect_size_means(tech_policy_match[[i]])
 
   ##get effect for pricig vs. no pricing mixes as well 
-  mean_df_pricing_mixes <- get_effect_size_means_pricing(sector_policy_match[[i]])
+  mean_df_pricing_mixes <- get_effect_size_means_pricing(tech_policy_match[[i]])
   
   #only keep mixes that display prices to plot comparison in overall mixes
   mean_df_pricing_mixes <- mean_df_pricing_mixes[mean_df_pricing_mixes$Pricing_indicator==1,]
@@ -199,18 +199,8 @@ for(i in 1:5){
   p = p + theme(legend.position = 'none')
   p <- cowplot::plot_grid(plotlist = list(p, final_legend),ncol=2, rel_widths = c(1,0.1))
   
-  #logo <- ggdraw() +
-  #  draw_image(icon_links[i])
-  #
-  #p <- cowplot::plot_grid(plotlist=list(logo,p),ncol=2,rel_widths = c(0.07,1))
-  
   my_mean_plots[[i]]<-p
 }
-
-
-#guide_legend(override.aes = list(fill = "white", color = 'black'))
-
-
 
 
 p_mean_bars <- cowplot::plot_grid(plotlist = c(my_mean_plots,NULL),ncol=1,rel_heights = c(1,1,1,1,1,0.5), align='v',axis='b')
@@ -232,7 +222,7 @@ dev.off()
 #store means dfs 
 mean_df_store = data.frame()
 for(i in 1:5){
-  mean_df <- get_effect_size_means(sector_policy_match[[i]])
+  mean_df <- get_effect_size_means(tech_policy_match[[i]])
   mean_df$tech = filtered_all$tech[i]
   mean_df_store <- rbind(mean_df_store,mean_df)
 }
