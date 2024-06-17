@@ -9,7 +9,7 @@ library(ggplot2)
 library(countrycode)
 
 ## directory
-here::i_am("code/08_conference.R")
+here::i_am("code/08_wwcs_plots.R")
 
 pos <- readRDS("results/28_05_policy_out_pos.RDS")
 top_main <- c("JPN", "USA", "KOR", "DEU", "CHN", "FRA", "GBR", "CAN", "ITA", "DNK", "NLD", "IND", "AUT", "CHE", "SWE", "ESP", "AUS", "ISR", "BEL", "FIN", "RUS", "NOR")
@@ -112,7 +112,7 @@ tech_colors = c("#bfef45", "#FF0000", "#F2AD00","#00A08A","#5BBCD6")
 names(tech_colors) = c('Ccmt','Energy','Solar','Wind','Storage')
 
 ##results
-policy_out_pos = readRDS("results/28_05_policy_out_pos.RDS")
+#policy_out_pos = readRDS("results/28_05_policy_out_pos.RDS")
 
 # load df w climate treaties label
 label_df = read.csv("data/out/climate_treaty_label.csv")
