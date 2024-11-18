@@ -136,3 +136,4 @@ df6[df6$year == 2015 & df6$ISO == "ISR", "brown_patents"] <- 0
 #write.csv(df4, ".\\data\\patents_panel_5techs.csv")
 
 write.csv(df6, ".\\data\\patents_panel_5techs_spread.csv") 
+

@@ -36,7 +36,7 @@ suppressWarnings(suppressMessages(library(gridExtra)))
 suppressWarnings(suppressMessages(library(ggridges)))
 
 # Load plotting functions
-source("C:\\Users\\laura\\OneDrive\\Documenti\\LAURA\\MCC\\futurelab_ceres\\patent_data_project\\code\\plotting_functions.R")
+source("C:\\Users\\patrickk\\Documents\\Github\\futurelab_ceres\\patent_data_project\\code\\plotting_functions.R")
 ```
 
 

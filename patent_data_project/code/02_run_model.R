@@ -5,7 +5,7 @@ library(doParallel)
 library(foreach)
 library(here)
 
-here::i_am("code/run_model.R")
+here::i_am("code/02_run_model.R")
 
 df <- read.csv(here::here("data/patents_panel_5techs_spread.csv"))
 
@@ -100,6 +100,7 @@ stopCluster(cl) # stop parallelizing
 
 saveRDS(models, ".\\results\\29_04_ihs_top22.RDS")  # save model output
 
+ddddd
 
 ## BROWN PATENTS (ROBUSTNESS CHECK)
 f_ihs_brown <- paste0(f_ihs, " + lbrown") 
